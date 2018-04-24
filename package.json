@@ -1,20 +1,28 @@
 {
-  "name": "vapi-server",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "start": "node dist/index.js"
-  },
-  "author": "Ricardo Maltez & Rúben Caceiro",
-  "license": "ISC",
-  "dependencies": {
-    "@types/express": "^4.11.1",
-    "@types/socket.io": "^1.4.33",
-    "express": "^4.16.3",
-    "path": "^0.12.7",
-    "socket.io": "^1.7.2",
-    "tslint": "^5.9.1",
-    "typescript": "^2.8.1"
-  }
+   "name": "vapi-server",
+   "version": "1.0.0",
+   "description": "",
+   "main": "index.js",
+   "scripts": {
+      "start": "node -r ./node_modules/ts-node/register.js src/index.ts"
+   },
+   "author": "Ricardo Maltez & Rúben Caceiro",
+   "license": "ISC",
+   "dependencies": {
+      "bcrypt": "^2.0.1",
+      "express": "^4.16.3",
+      "mysql2": "^1.5.3",
+      "path": "^0.12.7",
+      "reflect-metadata": "^0.1.10",
+      "socket.io": "^1.7.2",
+      "tslint": "^5.9.1",
+      "typeorm": "0.2.0",
+      "typescript": "^2.8.1"
+   },
+   "devDependencies": {
+      "ts-node": "3.3.0",
+      "@types/express": "^4.11.1",
+      "@types/node": "^9.6.6",
+      "@types/socket.io": "^1.4.33"
+   }
 }

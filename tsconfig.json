@@ -1,10 +1,16 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+    "lib": [
+      "es5",
+      "es6"
+    ],
     "target": "es2016",
     "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "sourceMap": true,
-    "outDir": "dist",
+    "outDir": "dist"
   },
   "exclude": [
     "node_modules",
@@ -14,3 +20,5 @@
     "src/**/*"
   ]
 }
+
+

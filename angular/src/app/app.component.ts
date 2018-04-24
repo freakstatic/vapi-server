@@ -5,6 +5,9 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { Router, NavigationEnd, NavigationStart } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 import PerfectScrollbar from 'perfect-scrollbar';
+import {Observable} from "rxjs/Observable";
+import {AuthService} from "./auth/auth.service";
+import {BehaviorSubject} from "rxjs/BehaviorSubject";
 
 declare const $: any;
 
@@ -18,9 +21,17 @@ export class AppComponent implements OnInit {
     private lastPoppedUrl: string;
     private yScrollStack: number[] = [];
 
+    showNav: boolean = false;
+    isLoggedIn: boolean;
+
+
     @ViewChild(NavbarComponent) navbar: NavbarComponent;
 
-    constructor( public location: Location, private router: Router) {}
+    constructor( public location: Location, private router: Router, private authService: AuthService) {
+        authService.isLoggedIn.subscribe((value) => {
+            this.isLoggedIn = value
+        });
+    }
 
     ngOnInit() {
         $.material.init();
@@ -79,4 +90,5 @@ export class AppComponent implements OnInit {
         }
         return bool;
     }
+
 }

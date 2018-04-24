@@ -61,3 +61,7 @@ typings/
 .next
 
 .idea/
+.vscode/
+node_modules/
+tmp/
+temp/
