@@ -1,20 +1,83 @@
 import {Component, OnInit} from '@angular/core';
+import { environment } from './../../environments/environment';
+import {Http} from '@angular/http';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {AuthService} from '../auth/auth.service';
+import {TranslateService} from '@ngx-translate/core';
+import {Router} from "@angular/router";
+declare var $: any;
 
 @Component({
     selector: 'app-login',
     templateUrl: './login.component.html',
-    styleUrls: ['./login.component.scss']
+    styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
 
     showNav: boolean;
+    username: string;
+    password: string;
+    usernameEmpty : boolean = false;
+    passwordEmpty: boolean = false;
 
-    constructor() {
+    constructor(private http: HttpClient, private authService: AuthService, private translateService: TranslateService, private router: Router) {
         this.showNav = true;
+        this.username = '';
+        this.password = '';
     }
 
     ngOnInit() {
-
+        this.authService.checkLogin().then((isLoggedIn) => {
+            if (isLoggedIn){
+                this.router.navigate(['/']);
+                this.translateService.get('WELCOME_BACK').subscribe((res: string) => {
+                    $.notify({
+                        icon: 'material-icons',
+                        message:  res
+                    },{
+                        type: 'success',
+                        timer: 2000,
+                    });
+                });
+            }
+        })
     }
 
+
+    login(){
+        this.usernameEmpty = false;
+        this.passwordEmpty = false;
+
+        if (this.username.trim().length == 0){
+            this.usernameEmpty = true;
+        }
+
+        if (this.password.trim().length == 0){
+            this.passwordEmpty = true;
+        }
+
+        if (this.usernameEmpty || this.passwordEmpty){
+            return;
+        }
+
+        this.http.post('api/login', {username : this.username, password : this.password}).subscribe(() => {
+            this.authService.login(this.username);
+        }, (errorResponse: HttpErrorResponse) => {
+            let json =  JSON.parse(errorResponse.error);
+             console.log(json);
+            this.showWarningMessage(json.code);
+        });
+    }
+
+    showWarningMessage(errorCode){
+        this.translateService.get('ERROR-' + errorCode).subscribe((res: string) => {
+            $.notify({
+                icon: 'material-icons',
+                message:  res
+            },{
+                type: 'warning',
+                timer: 4000,
+            });
+        });
+    }
 }

@@ -11,6 +11,7 @@
    "dependencies": {
       "bcrypt": "^2.0.1",
       "express": "^4.16.3",
+      "express-session": "^1.15.6",
       "mysql2": "^1.5.3",
       "path": "^0.12.7",
       "reflect-metadata": "^0.1.10",
@@ -20,9 +21,10 @@
       "typescript": "^2.8.1"
    },
    "devDependencies": {
-      "ts-node": "3.3.0",
+      "@types/bcrypt": "^1.0.0",
       "@types/express": "^4.11.1",
       "@types/node": "^9.6.6",
-      "@types/socket.io": "^1.4.33"
+      "@types/socket.io": "^1.4.33",
+      "ts-node": "3.3.0"
    }
 }

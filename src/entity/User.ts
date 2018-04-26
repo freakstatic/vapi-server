@@ -1,4 +1,5 @@
-import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn} from "typeorm";
+import {UserGroup} from "./UserGroup";
 
 @Entity()
 export class User {
@@ -15,8 +16,9 @@ export class User {
     @Column()
     email: string;
 
-
-
+    @OneToOne(type => UserGroup)
+    @JoinColumn()
+    group: UserGroup;
 }
 
 

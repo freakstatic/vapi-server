@@ -1,0 +1,7 @@
+{
+  "WELCOME": "Welcome!",
+  "ERROR-EMPTY_USERNAME": "Please fill the username",
+  "ERROR-EMPTY_PASSWORD": "Please fill the password",
+  "ERROR-INVALID_USERNAME_OR_PASSWORD": "Username and password combination not found",
+  "WELCOME_BACK": "Session detected, welcome back!"
+}

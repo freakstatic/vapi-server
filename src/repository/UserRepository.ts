@@ -1,13 +1,13 @@
 import {EntityRepository, Repository} from "typeorm";
 import {User} from "../entity/User";
 
-@EntityRepository()
+@EntityRepository(User)
 export class UserRepository extends Repository<User> {
 
-    findByUsername(username: string) {
+    async findByUsername(username: string) {
         return this.createQueryBuilder("user")
             .where("user.username = :username", { username })
+            .leftJoinAndSelect("user.group", "userGroup")
             .getOne();
     }
-
 }

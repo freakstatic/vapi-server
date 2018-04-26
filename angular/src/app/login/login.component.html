@@ -1,40 +1,45 @@
 <div class="main-content">
 
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-md-offset-3 col-md-4">
-        <div class="card">
-          <div class="card-header" data-background-color="purple">
-            <h4 class="title">Login</h4>
-            <p class="category">Welcome!</p>
-          </div>
-          <div class="card-content">
-            <form>
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="form-group form-black label-floating is-empty">
-                    <label for="username" class="control-label">Username</label>
-                    <input id="username" type="text" class="form-control" autofocus>
-                  </div>
+    <div >
+        <div class="row">
+            <div class="col-md-5 col-lg-4 col-centered">
+                <div style="display: flex">
+                    <img id="img-camera" class="hidden-xs" src="../../assets/img/security-camera.svg"/>
+                    <div class="card">
+                        <div class="card-header" data-background-color="purple">
+                            <h4 class="title">Login</h4>
+                            <p class="category">{{ 'WELCOME' | translate:param }}</p>
+                        </div>
+                        <div class="card-content">
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group form-black label-floating" [ngClass]="{'has-error': usernameEmpty, 'is-empty': username.trim().length == 0}">
+                                            <label for="username" class="control-label">Username</label>
+                                            <input id="username" name="username" type="text" class="form-control" autofocus [(ngModel)]="username">
+                                            <span class="material-icons form-control-feedback">clear</span>
+                                            <span class="material-input"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group form-black label-floating is-empty"  [ngClass]="{'has-error': passwordEmpty, 'is-empty': password.trim().length == 0}">
+                                            <label for="password" class="control-label">Password</label>
+                                            <input id="password" name="password" type="text" class="form-control" [(ngModel)]="password">
+                                            <span class="material-icons form-control-feedback">clear</span>
+                                            <span class="material-input"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn pull-right" data-background-color="purple" (click)="login()">Login
+                                </button>
+                                <div class="clearfix"></div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-              </div>
-              <div class="row">
-              <div class="col-md-12">
-                  <div class="form-group form-black label-floating is-empty">
-                    <label for="password" class="control-label">Password</label>
-                    <input id="password" type="text" class="form-control">
-                  </div>
-                </div>
-              </div>
-
-              <button type="submit" class="btn pull-right" data-background-color="purple">Login</button>
-              <div class="clearfix"></div>
-
-            </form>
-          </div>
-
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </div>

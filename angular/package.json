@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --proxy-config proxy-conf.json --base-href / --host 0.0.0.0",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
@@ -22,6 +22,8 @@
     "@angular/platform-browser-dynamic": "4.4.4",
     "@angular/platform-server": "4.4.4",
     "@angular/router": "4.4.4",
+    "@ngx-translate/core": "^7.2.2",
+    "@ngx-translate/http-loader": "^3.0.1",
     "arrive": "2.4.1",
     "bootstrap": "3.3.7",
     "bootstrap-material-design": "0.5.10",

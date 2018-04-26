@@ -1,11 +1,10 @@
 <div class="wrapper">
-    <div class="sidebar" data-color='red' data-image="" [ngClass]="{'hidden': !isLoggedIn}">
+    <div class="sidebar" data-color='red' data-image="" *ngIf="isLoggedIn" >
         <app-sidebar></app-sidebar>
         <div class="sidebar-background" style="background-image: url(../assets/img/sidebar-4.jpg)"></div>
     </div>
-    <div class="main-panel">
+    <div class="main-panel" [ngStyle]="{'width': mainPanelStyle}" >
         <app-navbar  [ngClass]="{'hidden': !isLoggedIn}"></app-navbar>
         <router-outlet></router-outlet>
-
     </div>
 </div>

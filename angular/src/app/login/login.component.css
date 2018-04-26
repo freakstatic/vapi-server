@@ -1,0 +1,12 @@
+#main-panel {
+  width: 100% !important;
+}
+
+#img-camera{
+  height: 110px;
+}
+
+.col-centered {
+  float: none;
+  margin: 0 auto;
+}
