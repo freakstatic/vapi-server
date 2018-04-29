@@ -52,4 +52,6 @@ export class DbHelper {
         let nrOfUsers = await getConnection().getRepository(User).count();
         return nrOfUsers == 0;
     }
+
+
 }
