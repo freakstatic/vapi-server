@@ -1,10 +1,10 @@
 import "reflect-metadata";
 import {createConnection, getConnection, getConnectionOptions} from "typeorm";
-import {User} from "./entity/User";
+import {User} from "../entity/User";
 import {Connection} from "typeorm/connection/Connection";
 import * as bcrypt from 'bcrypt';
-import {CustomNamingStrategy} from "./custom-naming-strategy";
-import {UserGroup} from "./entity/UserGroup";
+import {CustomNamingStrategy} from "../custom-naming-strategy";
+import {UserGroup} from "../entity/UserGroup";
 
 export class DbHelper {
     constructor(){

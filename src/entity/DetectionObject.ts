@@ -9,7 +9,7 @@ export class DetectionObject{
     id: number;
 
     @Column()
-    score: number;
+    probability: number;
 
     @Column()
     x: number;
@@ -23,7 +23,8 @@ export class DetectionObject{
     @Column()
     height: number;
 
-    @OneToOne(type => Detection, detection => detection.detectionObjects)
+    @OneToOne(type => Detection)
+    @JoinColumn()
     detection: Detection;
 
     @ManyToOne(type => DetectableObject)

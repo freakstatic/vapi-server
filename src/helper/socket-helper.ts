@@ -2,14 +2,14 @@ import * as http from 'http';
 import * as express from 'express';
 import {DbHelper} from "./db-helper";
 import {getConnection} from "typeorm";
-import {User} from "./entity/User";
-import {Detection} from "./entity/Detection";
+import {User} from "../entity/User";
+import {Detection} from "../entity/Detection";
 import moment = require("moment");
-import {DetectionObject} from "./entity/DetectionObject";
-import {DetectableObject} from "./entity/DetectableObject";
-import {DetectionRepository} from "./repository/DetectionRepository";
-import {DetectableObjectRepository} from "./repository/DetectableObjectRepository";
+import {DetectionObject} from "../entity/DetectionObject";
+import {DetectableObject} from "../entity/DetectableObject";
+import {DetectableObjectRepository} from "../repository/DetectableObjectRepository";
 
+let config = require('../../config.json');
 
 export class SocketHelper {
     constructor(dbHelper: DbHelper) {
@@ -19,11 +19,8 @@ export class SocketHelper {
         io.on('connection', client => {
             console.log('connected');
 
-            client.on('detection', async data => {
-                console.log(data);
-                let json = JSON.parse(data);
-
-                this.handleNewDetection(json).catch((error) => {
+            client.on('detection', async arrayOfDetections => {
+                this.handleNewDetections(arrayOfDetections).catch((error) => {
                     console.error('[socket-helper] [detection] ' + error);
                 });
             });
@@ -32,40 +29,42 @@ export class SocketHelper {
                 console.log('connected');
             });
         });
-        server.listen(3000);
+        server.listen(config.socketPort);
     }
 
 
-    async handleNewDetection(detectionJson){
+    async handleNewDetections(detectionsArray){
         try {
             let detection = new Detection();
             detection.date = moment().toDate();
             let detectableObjectRepository = getConnection()
                 .getCustomRepository(DetectableObjectRepository);
 
-            let promises = <Promise<DetectionObject>[]> detectionJson.map(
+            let promises = <Promise<DetectionObject>[]> detectionsArray.map(
                 async (detectionObjectReceived): Promise<DetectionObject> => {
 
                     let detectionObject = new DetectionObject();
 
                     detectionObject.object = await detectableObjectRepository
-                        .findByName(detectionObjectReceived[0]);
+                        .findByName(detectionObjectReceived.className);
 
                     if (detectionObject.object == undefined) {
                         detectionObject.object = new DetectableObject();
-                        detectionObject.object.name = detectionObjectReceived[0];
+                        detectionObject.object.name = detectionObjectReceived.className;
                         detectionObject.object = await detectableObjectRepository.save(detectionObject.object);
                     }
 
-                    detectionObject.score = detectionObjectReceived[1];
-                    let box = detectionObjectReceived[2];
-                    detectionObject.x = box[0];
-                    detectionObject.y = box[1];
-                    detectionObject.width = box[2];
-                    detectionObject.height = box[3];
+                    detectionObject.probability = detectionObjectReceived.probability;
+                    let box = detectionObjectReceived.box;
+                    detectionObject.x = box.x;
+                    detectionObject.y = box.y;
+                    detectionObject.width = box.w;
+                    detectionObject.height = box.h;
+                    detectionObject.id = null;
                     detectionObject = await getConnection().getRepository(DetectionObject).save(detectionObject);
                     return detectionObject;
                 });
+            detection.numberOfDetections = detectionsArray.length;
             detection.detectionObjects = await Promise.all(promises);
             await getConnection().getRepository(Detection).save(detection);
         }catch (e) {

@@ -1,6 +1,6 @@
-import {SocketHelper} from "./socket-helper"
-import {WebServerHelper} from "./web-server-helper";
-import {DbHelper} from "./db-helper";
+import {SocketHelper} from "./helper/socket-helper"
+import {WebServerHelper} from "./helper/web-server-helper";
+import {DbHelper} from "./helper/db-helper";
 
 let dbHelper = new DbHelper();
 

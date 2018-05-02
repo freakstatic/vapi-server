@@ -78,7 +78,7 @@ class WebServerHelper {
         if (req.session.userId) {
             return next();
         }
-        res.redirect('/login');
+        res.status(403);
     }
 }
 exports.WebServerHelper = WebServerHelper;

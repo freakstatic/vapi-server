@@ -6,12 +6,17 @@ export class Detection {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({
+        precision: 4
+    })
     date: Date;
 
     @OneToMany(type => DetectionObject, detectionObject => detectionObject.detection, {
-        cascade: true,
+        cascade: ['insert'],
     })
     detectionObjects: DetectionObject[];
+
+    @Column()
+    numberOfDetections: number;
 
 }

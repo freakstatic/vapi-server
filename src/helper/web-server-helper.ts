@@ -4,11 +4,11 @@ import * as bodyParser from 'body-parser';
 import * as path from 'path';
 import {DbHelper} from "./db-helper";
 import {getConnection} from "typeorm";
-import {UserRepository} from "./repository/UserRepository";
+import {UserRepository} from "../repository/UserRepository";
 import * as bcrypt from 'bcrypt';
-import {ErrorObject} from "./error-object";
+import {ErrorObject} from "../error-object";
 
-let config = require('../config.json');
+let config = require('../../config.json');
 
 export class WebServerHelper {
     constructor(dbHelper: DbHelper) {
@@ -86,7 +86,6 @@ export class WebServerHelper {
         if (req.session.userId){
             return next();
         }
-
-        res.redirect('/login');
+        res.status(403);
     }
 }
