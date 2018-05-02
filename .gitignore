@@ -65,3 +65,5 @@ typings/
 node_modules/
 tmp/
 temp/
+package-lock.json
+.DS_Store
