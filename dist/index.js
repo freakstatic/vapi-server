@@ -11,10 +11,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const socket_helper_1 = require("./helper/socket-helper");
 const web_server_helper_1 = require("./helper/web-server-helper");
 const db_helper_1 = require("./helper/db-helper");
+const motion_helper_1 = require("./helper/motion-helper");
 let dbHelper = new db_helper_1.DbHelper();
 (() => __awaiter(this, void 0, void 0, function* () {
     yield dbHelper.connect();
     let socketHelper = new socket_helper_1.SocketHelper(dbHelper);
     let webSocketHelper = new web_server_helper_1.WebServerHelper(dbHelper);
+    let motionHelper = new motion_helper_1.MotionHelper();
 }))();
 //# sourceMappingURL=index.js.map
