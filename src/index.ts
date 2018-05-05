@@ -8,8 +8,9 @@ let dbHelper = new DbHelper();
 (async () => {
     await dbHelper.connect();
     let socketHelper = new SocketHelper(dbHelper);
-    let webSocketHelper = new WebServerHelper(dbHelper);
     let motionHelper = new MotionHelper();
+    let webSocketHelper = new WebServerHelper(motionHelper);
+
 })();
 
 

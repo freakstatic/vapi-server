@@ -6,12 +6,14 @@ import {DbHelper} from "./db-helper";
 import {getConnection} from "typeorm";
 import {UserRepository} from "../repository/UserRepository";
 import * as bcrypt from 'bcrypt';
-import {ErrorObject} from "../error-object";
+import {ErrorObject} from "../class/error-object";
+import {MotionHelper} from "./motion-helper";
+import {ConfigObject} from "../class/config-object";
 
 let config = require('../../config.json');
 
 export class WebServerHelper {
-    constructor(dbHelper: DbHelper) {
+    constructor(motionHelper: MotionHelper) {
         const WEB_SERVER_PORT = 8080;
         const API_URL = '/api/';
 
@@ -20,6 +22,7 @@ export class WebServerHelper {
         app.use(bodyParser.urlencoded({extended: false, type: 'application/json'}));
         app.use(express.static(__dirname + '/../angular/dist/'));
         app.use(session({secret: config.expressSecret, resave: true, saveUninitialized: true}));
+
 
         app.post(API_URL + 'login', async (req: any, res, next) => {
 
@@ -61,12 +64,30 @@ export class WebServerHelper {
             }
         );
 
+        app.get(API_URL + 'motion/settings', async (req: any, res, next) => {
+            let settings = await motionHelper.settingsArray();
+            res.status(200);
+            res.send(settings);
+            return;
+        });
+        app.post(API_URL + 'motion/settings/update', async (req: any, res, next) => {
+            let settings = req.body;
+            try {
+                await motionHelper.editSettings(settings);
+                res.status(200);
+            }catch (e) {
+                res.status(500);
+            }
+            res.send({});
+            return;
+        });
+
 
         app.get(API_URL + 'login/check', async (req: any, res, next) => {
             res.status(200);
-            if (req.session.userId){
+            if (req.session.userId) {
                 res.send({isLoggedIn: true});
-            }else {
+            } else {
                 res.send({isLoggedIn: false});
             }
             return;
@@ -81,9 +102,10 @@ export class WebServerHelper {
         console.log('Started web server on ' + WEB_SERVER_PORT);
     }
 
+
     isAuthenticated(req, res, next): boolean {
 
-        if (req.session.userId){
+        if (req.session.userId) {
             return next();
         }
         res.status(403);

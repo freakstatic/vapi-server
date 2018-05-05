@@ -1,4 +1,5 @@
 import properties = require('properties');
+import {ConfigObject} from "../class/config-object";
 
 const util = require('util');
 const stringifyAsync = util.promisify(properties.stringify);
@@ -10,7 +11,7 @@ const fs = require('fs');
 
 export class MotionHelper {
 
-    private configs;
+    private _settings;
     private motion;
 
     constructor() {
@@ -18,20 +19,20 @@ export class MotionHelper {
     }
 
     async init() {
-        await this.loadConfigs();
+        await this.loadSettings();
         await this.startMotion();
     }
 
 
-    async loadConfigs() {
+    async loadSettings() {
         return new Promise((resolve, reject) => {
-            if (!fs.exists(config.motion.config)){
+            if (!fs.existsSync(__dirname + '/../../' + config.motion.config)) {
                 console.log('[MotionHelper] Config file not found, loading default one');
                 fs.copyFileSync(config.motion.defaultConfig, config.motion.config);
             }
 
             parseAsync(config.motion.config, {path: true, comments: [';', '#']}).then((obj) => {
-                this.configs = obj;
+                this._settings = obj;
                 if (config.debugMode) {
                     console.log('[MotionHelper] Configs loaded');
                 }
@@ -44,27 +45,28 @@ export class MotionHelper {
 
     }
 
-    private editConfig(config: any) {
-        if (this.configs[config.mame] == undefined) {
+    private editConfig(config: ConfigObject) {
+        if (this._settings[config.name] == undefined) {
             throw new Error('[MotionHelper] Config not found!');
         }
-        this.configs[config.mame] = config.value;
+        this._settings[config.name] = config.value;
     }
 
-    async editConfigs(configs: any) {
-        configs.forEach((config) => {
+    async editSettings(settings: ConfigObject[]) {
+        settings.forEach((config) => {
             this.editConfig(config);
         });
 
-        await this.saveConfigs();
+        await this.saveSettings();
         await this.exitMotion();
         await this.startMotion();
+
     }
 
-    async saveConfigs() {
+    saveSettings() {
         return new Promise((resolve, reject) => {
-            stringifyAsync(this.configs, {
-                path: config.motionConfigLocation
+            stringifyAsync(this._settings, {
+                path: config.motion.config
             }).then(() => {
                 if (config.debugMode) {
                     console.log('[MotionHelper] Configs saved');
@@ -72,8 +74,9 @@ export class MotionHelper {
                 resolve();
             }).catch((error) => {
                 if (error) {
-                    reject('[MotionHelper]' + error);
+                    console.error('[MotionHelper]' + error);
                 }
+                reject(error);
             });
         });
 
@@ -102,6 +105,16 @@ export class MotionHelper {
                     console.log('[Motion] stderr: ' + data);
                 }
                 if (!started) {
+                    let text = Buffer.from(data).toString();
+                    let nrOfClines = text.split('\n').length;
+
+                    if (nrOfClines > 2) {
+                        console.log('[MotionHelper] [startMotion] detected more output from Motion than expected, probably error found');
+                        this.exitMotion();
+                        reject();
+                        return;
+                    }
+
                     started = true;
                     resolve();
                 }
@@ -111,16 +124,29 @@ export class MotionHelper {
 
     }
 
-    async exitMotion() {
+    exitMotion() {
         return new Promise((resolve) => {
-            this.motion.on('close', (code, signal) => {
+            this.motion.on('exit', (code, signal) => {
                 if (config.debugMode) {
                     console.log('[Motion] Closed with signal: ' + signal);
                 }
                 resolve();
             });
-            this.motion.kill();
+            this.motion.kill('SIGHUP');
         });
+
+    }
+
+    get settings() {
+        return this._settings;
+    }
+
+    async settingsArray() {
+        let promises = Object.keys(this._settings).map(async (key) => {
+            return new ConfigObject(key, this._settings[key])
+        });
+
+        return await Promise.all(promises);
 
     }
 }

@@ -3,5 +3,9 @@
   "ERROR-EMPTY_USERNAME": "Please fill the username",
   "ERROR-EMPTY_PASSWORD": "Please fill the password",
   "ERROR-INVALID_USERNAME_OR_PASSWORD": "Username and password combination not found",
-  "WELCOME_BACK": "Session detected, welcome back!"
+  "WELCOME_BACK": "Session detected, welcome back!",
+  "SETTINGS" : "Settings",
+  "SETTINGS_SECOND_TITLE": "Here you can a adjust things to your needs",
+  "SETTINGS_NOTHING_TO_UPDATE": "There is nothing to update!",
+  "SETTINGS_UPDATED": "Settings saved"
 }

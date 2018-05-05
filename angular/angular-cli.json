@@ -22,7 +22,8 @@
           "../node_modules/bootstrap/dist/css/bootstrap.css",
           "../node_modules/perfect-scrollbar/css/perfect-scrollbar.css",
           "./assets/sass/material-dashboard.scss",
-          "./assets/css/demo.css"
+          "./assets/css/demo.css",
+        "../node_modules/mfb/src/mfb.css"
       ],
       "scripts": [
           "../node_modules/jquery/dist/jquery.js",
@@ -33,7 +34,8 @@
           "../node_modules/moment/moment.js",
           "../node_modules/perfect-scrollbar/dist/perfect-scrollbar.min.js",
           "../node_modules/bootstrap-notify/bootstrap-notify.js",
-          "../node_modules/chartist/dist/chartist.js"
+          "../node_modules/chartist/dist/chartist.js",
+        "../node_modules/mfb/src/mfb.js"
       ],
       "environmentSource": "environments/environment.ts",
       "environments": {

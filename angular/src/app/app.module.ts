@@ -25,6 +25,8 @@ import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 import {HttpClient, HttpClientModule} from "@angular/common/http";
 import {TitleService} from "./title.service";
+import { SettingsComponent } from './settings/settings.component';
+import {SettingsService} from "./settings/settings.service";
 
 
 export function createTranslateLoader(http: HttpClient) {
@@ -42,7 +44,8 @@ export function createTranslateLoader(http: HttpClient) {
         MapsComponent,
         NotificationsComponent,
         UpgradeComponent,
-        LoginComponent
+        LoginComponent,
+        SettingsComponent
     ],
     imports: [
         BrowserModule,
@@ -60,7 +63,7 @@ export function createTranslateLoader(http: HttpClient) {
             }
         })
     ],
-    providers: [AuthService, AuthGuard, TitleService],
+    providers: [AuthService, AuthGuard, TitleService, SettingsService],
     bootstrap: [AppComponent]
 })
 export class AppModule {

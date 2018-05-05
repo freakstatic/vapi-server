@@ -13,11 +13,13 @@ import {NotificationsComponent} from './notifications/notifications.component';
 import {UpgradeComponent} from './upgrade/upgrade.component';
 import {LoginComponent} from "./login/login.component";
 import {AuthGuard} from "./auth/auth.guard";
+import {SettingsComponent} from "./settings/settings.component";
 
 const routes: Routes = [
     {path: 'login', component: LoginComponent, data: {title: 'Login'}},
     {path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard], data: {title: 'Dashboard'}},
     {path: 'user-manager', component: UserProfileComponent},
+    {path: 'settings', component: SettingsComponent},
 
     {path: 'user-profile', component: UserProfileComponent},
     {path: 'table-list', component: TableListComponent},

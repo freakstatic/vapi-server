@@ -5,6 +5,7 @@ import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {AuthService} from '../auth/auth.service';
 import {TranslateService} from '@ngx-translate/core';
 import {Router} from "@angular/router";
+import {AppComponent} from "../app.component";
 declare var $: any;
 
 @Component({
@@ -20,7 +21,9 @@ export class LoginComponent implements OnInit {
     usernameEmpty : boolean = false;
     passwordEmpty: boolean = false;
 
-    constructor(private http: HttpClient, private authService: AuthService, private translateService: TranslateService, private router: Router) {
+    constructor(private appComponent: AppComponent, private http: HttpClient,
+                private authService: AuthService,
+                private translateService: TranslateService, private router: Router) {
         this.showNav = true;
         this.username = '';
         this.password = '';
@@ -60,24 +63,13 @@ export class LoginComponent implements OnInit {
             return;
         }
 
-        this.http.post('api/login', {username : this.username, password : this.password}).subscribe(() => {
-            this.authService.login(this.username);
-        }, (errorResponse: HttpErrorResponse) => {
-            let json =  JSON.parse(errorResponse.error);
-             console.log(json);
-            this.showWarningMessage(json.code);
-        });
+      this.authService.login(this.username, this.password).then(() => {
+          this.router.navigate(['/']);
+      }).catch((error) => {
+          this.translateService.get('ERROR-' + error.code).subscribe((res: string) => {
+                this.appComponent.showErrorMessage(res);
+          });
+      })
     }
 
-    showWarningMessage(errorCode){
-        this.translateService.get('ERROR-' + errorCode).subscribe((res: string) => {
-            $.notify({
-                icon: 'material-icons',
-                message:  res
-            },{
-                type: 'warning',
-                timer: 4000,
-            });
-        });
-    }
 }
