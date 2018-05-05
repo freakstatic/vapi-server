@@ -66,6 +66,7 @@ node_modules/
 tmp/
 temp/
 package-lock.json
+angular/package-lock.json
 .DS_Store
 
 motion/motion.conf
