@@ -62,11 +62,12 @@ typings/
 
 .idea/
 .vscode/
-node_modules/
 tmp/
 temp/
 package-lock.json
 angular/package-lock.json
 .DS_Store
+
+dist/
 
 motion/motion.conf
