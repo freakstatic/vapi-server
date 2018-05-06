@@ -1,13 +1,12 @@
-import * as http from 'http';
 import * as express from 'express';
-import {DbHelper} from "./db-helper";
+import * as http from 'http';
 import {getConnection} from "typeorm";
-import {User} from "../entity/User";
-import {Detection} from "../entity/Detection";
-import moment = require("moment");
-import {DetectionObject} from "../entity/DetectionObject";
 import {DetectableObject} from "../entity/DetectableObject";
+import {Detection} from "../entity/Detection";
+import {DetectionObject} from "../entity/DetectionObject";
 import {DetectableObjectRepository} from "../repository/DetectableObjectRepository";
+import {DbHelper} from "./db-helper";
+import moment = require("moment");
 
 let config = require('../../config.json');
 
@@ -65,7 +64,7 @@ export class SocketHelper {
                     return detectionObject;
                 });
             detection.numberOfDetections = detectionsArray.length;
-            detection.detectionObjects = await Promise.all(promises);
+            detection.detectionObjects = Promise.all(promises);
             await getConnection().getRepository(Detection).save(detection);
         }catch (e) {
             console.error(e);
