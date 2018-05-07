@@ -6,9 +6,10 @@ import {DbHelper} from "./db-helper";
 import {getConnection} from "typeorm";
 import {UserRepository} from "../repository/UserRepository";
 import * as bcrypt from 'bcrypt';
-import {ErrorObject} from "../class/error-object";
+import {ErrorObject} from "../class/ErrorObject";
 import {MotionHelper} from "./motion-helper";
-import {ConfigObject} from "../class/config-object";
+import {ConfigObject} from "../class/ConfigObject";
+import {MotionSettingsError} from "../exception/MotionSettingsError";
 
 let config = require('../../config.json');
 
@@ -59,8 +60,6 @@ export class WebServerHelper {
                 req.session.groupId = user.group.id;
                 res.status(200);
                 res.send({});
-                return next();
-
             }
         );
 
@@ -68,18 +67,22 @@ export class WebServerHelper {
             let settings = await motionHelper.settingsArray();
             res.status(200);
             res.send(settings);
-            return;
         });
         app.post(API_URL + 'motion/settings/update', async (req: any, res, next) => {
             let settings = req.body;
             try {
                 await motionHelper.editSettings(settings);
-                res.status(200);
+               // res.status(200);
+                res.send({});
             }catch (e) {
-                res.status(500);
+                if (e instanceof MotionSettingsError){
+                    res.status(400);
+                    res.send(new ErrorObject(ErrorObject.MOTION_INVALID_SETTINGS));
+                }else {
+                    res.status(500);
+                    res.send({});
+                }
             }
-            res.send({});
-            return;
         });
 
 
@@ -90,7 +93,6 @@ export class WebServerHelper {
             } else {
                 res.send({isLoggedIn: false});
             }
-            return;
         });
 
         app.get('*', function (req, res) {

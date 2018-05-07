@@ -69,5 +69,6 @@ angular/package-lock.json
 .DS_Store
 
 dist/
+angular/dist
 
 motion/motion.conf

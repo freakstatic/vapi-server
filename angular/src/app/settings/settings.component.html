@@ -24,7 +24,9 @@
                                     <ng-template #checkOption>
                                         <div class="checkbox">
                                             <label>
-                                                <input type="checkbox" name="{{config.value}}" [checked]="config.value == 'on'">
+                                                <input type="checkbox" name="{{config.value}}" [checked]="config.value == 'on'"
+                                                       (change)="motionCheckboxClicked($event, config)"
+                                                >
                                             </label>
                                         </div>
                                     </ng-template>
@@ -32,7 +34,7 @@
                             </tr>
                             </tbody>
                         </table>
-                        <button type="submit" class="btn btn-success pull-right" (click)="updateMotionSettings()">Save</button>
+                        <button type="submit" class="btn btn-success pull-right" (click)="updateMotionSettings()" [disabled]="waitingResponse">Save</button>
                     </div>
                 </div>
 

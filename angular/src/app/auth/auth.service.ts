@@ -24,8 +24,7 @@ export class AuthService {
                 this.loggedIn.next(true);
                 resolve();
             }, (errorResponse: HttpErrorResponse) => {
-                let json = JSON.parse(errorResponse.error);
-                reject(json);
+                reject(errorResponse);
             });
         })
     }

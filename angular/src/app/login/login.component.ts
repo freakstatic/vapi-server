@@ -47,29 +47,35 @@ export class LoginComponent implements OnInit {
     }
 
 
-    login(){
+    login() {
         this.usernameEmpty = false;
         this.passwordEmpty = false;
 
-        if (this.username.trim().length == 0){
+        if (this.username.trim().length == 0) {
             this.usernameEmpty = true;
         }
 
-        if (this.password.trim().length == 0){
+        if (this.password.trim().length == 0) {
             this.passwordEmpty = true;
         }
 
-        if (this.usernameEmpty || this.passwordEmpty){
+        if (this.usernameEmpty || this.passwordEmpty) {
             return;
         }
 
-      this.authService.login(this.username, this.password).then(() => {
-          this.router.navigate(['/']);
-      }).catch((error) => {
-          this.translateService.get('ERROR-' + error.code).subscribe((res: string) => {
+        this.authService.login(this.username, this.password).then(() => {
+            this.router.navigate(['/']);
+        }).catch((error) => {
+            let messageKey;
+            if (error.code) {
+                messageKey = 'ERROR-' + error.code;
+            } else {
+                messageKey = 'ERROR_NO_CONNECTION';
+            }
+            this.translateService.get(messageKey).subscribe((res: string) => {
                 this.appComponent.showErrorMessage(res);
-          });
-      })
-    }
+            });
 
+        })
+    }
 }

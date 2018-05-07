@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {SettingsService} from "./settings.service";
-import {ConfigObject} from "../../../../src/class/config-object";
+import {ConfigObject} from "../../../../src/class/ConfigObject";
 import {AppComponent} from "../app.component";
 import {TranslateService} from "@ngx-translate/core";
 
@@ -17,7 +17,8 @@ export class SettingsComponent implements OnInit {
     @Input()
     motionSettings: ConfigObject[];
     private originalMotionSettings: ConfigObject[];
-
+    waitingResponse: boolean;
+    
     ngOnInit() {
 
         this.getMotionSettings();
@@ -26,10 +27,14 @@ export class SettingsComponent implements OnInit {
     getMotionSettings() {
         this.settingsService.getMotionSettings().then((settings: ConfigObject[]) => {
             this.motionSettings = settings;
-            this.originalMotionSettings = JSON.parse(JSON.stringify(settings)); //making a deep clone
+            this.copySettings();
         }).catch((error) => {
-
+            console.error(error);
         });
+    }
+
+    private copySettings(){
+        this.originalMotionSettings = JSON.parse(JSON.stringify(this.motionSettings)); //making a deep clone
     }
 
     updateMotionSettings() {
@@ -41,14 +46,21 @@ export class SettingsComponent implements OnInit {
         console.log(changes);
 
         if (changes.length) {
+            this.waitingResponse = true;
             this.settingsService.sendMotionSettings(changes).then(() => {
                 this.translateService.get("SETTINGS_UPDATED").subscribe((res: string) => {
                     this.appComponent.showMessage(res);
                 });
-
-
+                this.copySettings();
+                this.waitingResponse = false;
             }).catch((error) => {
+                if (error.code){
+                    this.translateService.get('ERROR-' + error.code).subscribe((res: string) => {
+                        this.appComponent.showErrorMessage(res);
+                    });
+                }
                 console.error(error);
+                this.waitingResponse = false;
             })
         }else {
             this.translateService.get("SETTINGS_NOTHING_TO_UPDATE").subscribe((res: string) => {
@@ -56,7 +68,10 @@ export class SettingsComponent implements OnInit {
             });
 
         }
+    }
 
+    motionCheckboxClicked(event: any, config : ConfigObject){
+        config.value = event.target.checked ? 'on' : 'off';
     }
 
 }
