@@ -64,7 +64,7 @@ export class SocketHelper {
                     return detectionObject;
                 });
             detection.numberOfDetections = detectionsArray.length;
-            detection.detectionObjects = Promise.all(promises);
+            detection.detectionObjects = Promise.resolve(Promise.all(promises));
             await getConnection().getRepository(Detection).save(detection);
         }catch (e) {
             console.error(e);
