@@ -123,7 +123,7 @@ export class WebServerHelper
    }
    if(req.query.endDate!==undefined&&req.query.endDate!==null)
    {
-    endDate=Date.parse(req.query.endDate);
+    endDate=new Date(req.query.endDate);
    }
    let detections = await getConnection().getCustomRepository(DetectionRepository).get(startDate,endDate);
    res.status(200).send(detections);
