@@ -115,18 +115,43 @@ export class WebServerHelper
 
   app.get(API_URL + 'detection', async (req: any, res, next) =>
   {
-   let startDate=null;
-   let endDate=null;
-   if(req.query.startDate!==undefined&&req.query.startDate!==null)
+   let startDate = null;
+   let endDate = null;
+   if (req.query.startDate !== undefined && req.query.startDate !== null)
    {
-    startDate=new Date(req.query.startDate);
+    startDate = new Date(req.query.startDate);
    }
-   if(req.query.endDate!==undefined&&req.query.endDate!==null)
+   if (req.query.endDate !== undefined && req.query.endDate !== null)
    {
-    endDate=new Date(req.query.endDate);
+    endDate = new Date(req.query.endDate);
    }
-   let detections = await getConnection().getCustomRepository(DetectionRepository).get(startDate,endDate);
+   let detections = await getConnection().getCustomRepository(DetectionRepository).get(startDate, endDate);
    res.status(200).send(detections);
+   return next();
+  });
+
+  app.get(API_URL + 'stats/detection', async (req: any, res, next) =>
+  {
+   let startDate = null;
+   let endDate = null;
+   if (req.query.startDate !== undefined && req.query.startDate !== null)
+   {
+    startDate = new Date(req.query.startDate);
+   }
+   if (req.query.endDate !== undefined && req.query.endDate !== null)
+   {
+    endDate = new Date(req.query.endDate);
+   }
+   let detections = await getConnection().getCustomRepository(DetectionRepository).getStats(startDate,endDate);
+   if(detections==null)
+   {
+    res.status(204)
+   }
+   else
+   {
+    res.status(200)
+   }
+   res.send(detections);
    return next();
   });
 
