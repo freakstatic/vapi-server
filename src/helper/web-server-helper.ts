@@ -145,13 +145,9 @@ export class WebServerHelper
    let detections = await getConnection().getCustomRepository(DetectionRepository).getStats(startDate,endDate);
    if(detections==null)
    {
-    res.status(204)
+    res.status(204).send();
    }
-   else
-   {
-    res.status(200)
-   }
-   res.send(detections);
+   res.status(200).send(detections);
    return next();
   });
 
