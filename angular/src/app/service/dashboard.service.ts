@@ -14,7 +14,7 @@ export class DashboardService
   startDate.setDate(startDate.getDate() - 6);
   startDate.setHours(0,0,0,0);
   let endDate=new Date();
-  endDate.setHours(0,0,0,0);
+  endDate.setHours(24,0,0,0);
   return this.getDetectionStats(startDate, endDate);
  }
 
