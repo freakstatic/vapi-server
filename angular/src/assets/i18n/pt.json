@@ -1,3 +1,6 @@
 {
-  "WELCOME": "Bem vindo!"
+  "WELCOME": "Bem vindo!",
+
+  "DASHBOARD_DETECTION_STATS_LASTEST_DETECTION":"Últimas Deteções",
+  "DASHBOARD_DETECTION_STATS_PERCENTAGE_MESSAGE":" face ao dia anterior"
 }
