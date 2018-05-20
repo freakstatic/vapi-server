@@ -12,5 +12,13 @@
   "SETTINGS_UPDATED": "Settings saved",
 
   "DASHBOARD_DETECTION_STATS_LASTEST_DETECTION":"Latest detection",
-  "DASHBOARD_DETECTION_STATS_PERCENTAGE_MESSAGE":" from the previous day"
+  "DASHBOARD_DETECTION_STATS_PERCENTAGE_MESSAGE":" from the previous day",
+
+ "MONDAY":"Monday",
+ "TUESDAY":"Tuesday",
+ "WEDNESDAY":"Wednesday",
+ "THURSDAY":"Thursday",
+ "FRIDAY":"Friday",
+ "SATURDAY":"Saturday",
+ "SUNDAY":"Sunday"
 }

@@ -2,5 +2,13 @@
   "WELCOME": "Bem vindo!",
 
   "DASHBOARD_DETECTION_STATS_LASTEST_DETECTION":"Últimas Deteções",
-  "DASHBOARD_DETECTION_STATS_PERCENTAGE_MESSAGE":" face ao dia anterior"
+  "DASHBOARD_DETECTION_STATS_PERCENTAGE_MESSAGE":" face ao dia anterior",
+
+  "MONDAY":"segunda-feira",
+  "TUESDAY":"terça-feira",
+  "WEDNESDAY":"quarta-feira",
+  "THURSDAY":"quinta-feira",
+  "FRIDAY":"sexta-feira",
+  "SATURDAY":"sábado",
+  "SUNDAY":"domingo"
 }
