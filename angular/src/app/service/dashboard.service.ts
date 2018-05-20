@@ -10,12 +10,10 @@ export class DashboardService
 
  public async getDetectionStatsLastWeek():Promise<Detection[]>
  {
-  // let startDate = new Date();
-  // startDate.setDate(startDate.getDate() - 6);
-  // return this.getDetectionStats(startDate, new Date());
-  let startDate = new Date("2018-05-09T00:00:00");
-  let endDate = new Date("2018-05-15T00:00:00");
+  let startDate = new Date();
+  startDate.setDate(startDate.getDate() - 6);
   startDate.setHours(0,0,0,0);
+  let endDate=new Date();
   endDate.setHours(0,0,0,0);
   return this.getDetectionStats(startDate, endDate);
  }
