@@ -1,6 +1,8 @@
 import {Component, OnInit} from '@angular/core';
+import {TranslateService} from '@ngx-translate/core';
 import {DashboardService} from 'app/service/dashboard.service';
 import * as Chartist from 'chartist';
+import './../../utils/date.extensions';
 
 @Component({
  selector: 'app-dashboard',
@@ -9,9 +11,10 @@ import * as Chartist from 'chartist';
 })
 export class DashboardComponent implements OnInit
 {
- detectionPercentage='ahahah';
+ detectionPercentage: number;
+ detectionUpDownClass = "fa ";
 
- constructor(private dashboardService: DashboardService) { }
+ constructor(private dashboardService: DashboardService,private translate:TranslateService) { }
 
  startAnimationForLineChart(chart)
  {
@@ -90,16 +93,45 @@ export class DashboardComponent implements OnInit
    };
 
    let maxNumDetections = 0;
-   let serie=[];
+   let serie = [];
    dataDailySalesChart.series.push(serie);
    for (let detection of detections)
    {
-    dataDailySalesChart.labels.push(detection.date.getDay().toString());
+    let weekdayName = detection.date.getDayName();
+    this.translate.get(weekdayName.toUpperCase()).subscribe((res: string) =>
+    {
+     dataDailySalesChart.labels.push(res.substr(0,1).toUpperCase());
+    });
     serie.push(detection.numberOfDetections);
     if (detection.numberOfDetections > maxNumDetections)
     {
      maxNumDetections = detection.numberOfDetections;
     }
+   }
+   let yesterdayDetection = detections[detections.length - 2];
+   let todayDetection = detections[detections.length - 1];
+
+   this.detectionPercentage = todayDetection.numberOfDetections * 100;
+   if (yesterdayDetection.numberOfDetections != 0)
+   {
+    this.detectionPercentage /= yesterdayDetection.numberOfDetections;
+   }
+   if (this.detectionPercentage != 0)
+   {
+    this.detectionPercentage -= 100;
+   }
+
+   if (this.detectionPercentage > 0)
+   {
+    this.detectionUpDownClass += 'fa-long-arrow-up';
+   }
+   else if (this.detectionPercentage < 0)
+   {
+    this.detectionUpDownClass += 'fa-long-arrow-down';
+   }
+   else
+   {
+    this.detectionUpDownClass += 'fa-equals';
    }
 
    const optionsDailySalesChart: any = {
