@@ -34,17 +34,22 @@ export class DetectionRepository extends Repository<Detection>
    let date = new Date();
    let currentDate = new Date();
    date.setTime(startDate.getTime());
+   let response = {};
 
    while (date.getTime() <= endDate.getTime() && date.getTime() <= currentDate.getTime())
    {
     let dateString = date.toLocaleDateString('pt-PT', dateOptions);
     if (obj[dateString] == null || obj[dateString] == undefined)
     {
-     obj[dateString] = 0;
+     response[dateString] = 0;
+    }
+    else
+    {
+     response[dateString]=obj[dateString];
     }
     date.setDate(date.getDate() + 1);
    }
-   resolve(obj);
+   resolve(response);
   });
  }
 
