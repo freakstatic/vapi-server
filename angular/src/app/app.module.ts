@@ -9,7 +9,7 @@ import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 
 import {DashboardService} from 'app/dashboard/dashboard.service';
-import {AppService} from 'app/services/app.service';
+import {SocketIoConfig, SocketIoModule} from 'ngx-socket-io';
 
 import {AppComponent} from './app.component';
 
@@ -32,42 +32,47 @@ import {UpgradeComponent} from './upgrade/upgrade.component';
 import {UserProfileComponent} from './user-profile/user-profile.component';
 
 
-export function createTranslateLoader(http: HttpClient) {
-    return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+export function createTranslateLoader(http: HttpClient)
+{
+ return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 
+const config: SocketIoConfig = {url: '', options: {}};
+
 @NgModule({
-    declarations: [
-        AppComponent,
-        DashboardComponent,
-        UserProfileComponent,
-        TableListComponent,
-        TypographyComponent,
-        IconsComponent,
-        MapsComponent,
-        NotificationsComponent,
-        UpgradeComponent,
-        LoginComponent,
-        SettingsComponent
-    ],
-    imports: [
-        BrowserModule,
-        FormsModule,
-        HttpModule,
-        ComponentsModule,
-        RouterModule,
-        AppRoutingModule,
-        HttpClientModule,
-        TranslateModule.forRoot({
-            loader: {
-                provide: TranslateLoader,
-                useFactory: createTranslateLoader,
-                deps: [HttpClient]
-            }
-        })
-    ],
-    providers: [AuthService, AuthGuard, TitleService, SettingsService,DashboardService,AppService],
-    bootstrap: [AppComponent]
+ declarations: [
+  AppComponent,
+  DashboardComponent,
+  UserProfileComponent,
+  TableListComponent,
+  TypographyComponent,
+  IconsComponent,
+  MapsComponent,
+  NotificationsComponent,
+  UpgradeComponent,
+  LoginComponent,
+  SettingsComponent
+ ],
+ imports: [
+  BrowserModule,
+  FormsModule,
+  HttpModule,
+  ComponentsModule,
+  RouterModule,
+  AppRoutingModule,
+  HttpClientModule,
+  TranslateModule.forRoot({
+   loader: {
+    provide: TranslateLoader,
+    useFactory: createTranslateLoader,
+    deps: [HttpClient]
+   }
+  }),
+  SocketIoModule.forRoot(config)
+ ],
+ providers: [AuthService, AuthGuard, TitleService, SettingsService, DashboardService],
+ bootstrap: [AppComponent]
 })
-export class AppModule {
+export class AppModule
+{
 }
