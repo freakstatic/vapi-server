@@ -7,7 +7,9 @@ import {RouterModule} from '@angular/router';
 
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
-import {DashboardService} from 'app/service/dashboard.service';
+
+import {DashboardService} from 'app/dashboard/dashboard.service';
+import {AppService} from 'app/services/app.service';
 
 import {AppComponent} from './app.component';
 
@@ -64,7 +66,7 @@ export function createTranslateLoader(http: HttpClient) {
             }
         })
     ],
-    providers: [AuthService, AuthGuard, TitleService, SettingsService,DashboardService],
+    providers: [AuthService, AuthGuard, TitleService, SettingsService,DashboardService,AppService],
     bootstrap: [AppComponent]
 })
 export class AppModule {
