@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
-import {DashboardService} from 'app/service/dashboard.service';
+import {DashboardService} from 'app/dashboard/dashboard.service';
 import * as Chartist from 'chartist';
 import './../../utils/date.extensions';
 
