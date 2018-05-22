@@ -10,6 +10,7 @@ import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 
 import {DashboardService} from 'app/dashboard/dashboard.service';
 import {SocketIoConfig, SocketIoModule} from 'ngx-socket-io';
+import {environment} from './../environments/environment';
 
 import {AppComponent} from './app.component';
 
@@ -31,13 +32,12 @@ import {TypographyComponent} from './typography/typography.component';
 import {UpgradeComponent} from './upgrade/upgrade.component';
 import {UserProfileComponent} from './user-profile/user-profile.component';
 
-
 export function createTranslateLoader(http: HttpClient)
 {
  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 
-const config: SocketIoConfig = {url: '', options: {}};
+const config: SocketIoConfig = {url: environment.socketURL, options: {}};
 
 @NgModule({
  declarations: [
