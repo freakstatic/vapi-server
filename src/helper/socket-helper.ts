@@ -24,6 +24,7 @@ export class SocketHelper
   const io = require('socket.io')(server);
   io.on('connection', client =>
   {
+   let socketLoggedIn=false;
    console.log('connected');
 
    client.on('authenticate', async userCredentials =>
@@ -31,10 +32,15 @@ export class SocketHelper
     let user = await this.checkUserCredentials(userCredentials.username, userCredentials.password);
     if (user == null || user == undefined)
     {
+     socketLoggedIn=false;
      client.disconnect(true);
      return;
     }
-
+    if(socketLoggedIn)
+    {
+     return;
+    }
+    socketLoggedIn=true;
     if (user.group.name === YOLO_GROUP_NAME)
     {
      client.join('yolo');
