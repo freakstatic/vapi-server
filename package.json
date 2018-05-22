@@ -18,7 +18,7 @@
     "path": "^0.12.7",
     "properties": "^1.2.1",
     "reflect-metadata": "^0.1.10",
-    "socket.io": "^1.7.2",
+    "socket.io": "^2.1.1",
     "superchild": "^0.1.10",
     "tslint": "^5.9.1",
     "typeorm": "0.2.3",
