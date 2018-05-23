@@ -29,6 +29,10 @@ export class SocketHelper
 
    client.on('authenticate', async userCredentials =>
    {
+    if(userCredentials==null||userCredentials==undefined)
+    {
+     return;
+    }
     let user = await this.checkUserCredentials(userCredentials.username, userCredentials.password);
     if (user == null || user == undefined)
     {
@@ -41,6 +45,7 @@ export class SocketHelper
      return;
     }
     socketLoggedIn=true;
+    console.log('authenticated');
     if (user.group.name === YOLO_GROUP_NAME)
     {
      client.join('yolo');
