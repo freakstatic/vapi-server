@@ -1,5 +1,5 @@
-import {DetectableObject} from 'app/dto/detections/detectable.object';
-import {Detection} from 'app/dto/detections/detection';
+import {DetectableObject} from 'app/objects/detections/detectable.object';
+import {Detection} from 'app/objects/detections/detection';
 
 export class DetectionObject
 {

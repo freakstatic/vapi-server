@@ -1,4 +1,4 @@
-import {DetectionObject} from 'app/dto/detections/detection.object';
+import {DetectionObject} from 'app/objects/detections/detection.object';
 
 export class Detection
 {
