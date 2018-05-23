@@ -127,7 +127,6 @@ export class WebServerHelper
    }
    let detections = await getConnection().getCustomRepository(DetectionRepository).get(startDate, endDate);
    res.status(200).send(detections);
-   return next();
   });
 
   app.get(API_URL + 'stats/detection', async (req: any, res, next) =>
@@ -148,7 +147,6 @@ export class WebServerHelper
     res.status(204).send();
    }
    res.status(200).send(detections);
-   return next();
   });
 
   app.get('*', function (req, res)
