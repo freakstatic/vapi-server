@@ -1,16 +1,13 @@
-import {Component, OnInit, ViewChild, AfterViewInit} from '@angular/core';
-import {Location, LocationStrategy, PathLocationStrategy, PopStateEvent} from '@angular/common';
-import 'rxjs/add/operator/filter';
-import {NavbarComponent} from './components/navbar/navbar.component';
-import {Router, NavigationEnd, NavigationStart} from '@angular/router';
-import {Subscription} from 'rxjs/Subscription';
-import PerfectScrollbar from 'perfect-scrollbar';
-import {Observable} from "rxjs/Observable";
-import {AuthService} from "./auth/auth.service";
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
-import {TranslateService} from "@ngx-translate/core";
-import {HttpErrorResponse} from "@angular/common/http";
+import {Location, PopStateEvent} from '@angular/common';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {Http} from "@angular/http";
+import {NavigationEnd, NavigationStart, Router} from '@angular/router';
+import {TranslateService} from "@ngx-translate/core";
+import PerfectScrollbar from 'perfect-scrollbar';
+import 'rxjs/add/operator/filter';
+import {Subscription} from 'rxjs/Subscription';
+import {AuthService} from "./auth/auth.service";
+import {NavbarComponent} from './components/navbar/navbar.component';
 import {TitleService} from "./title.service";
 
 declare const $: any;
@@ -35,8 +32,7 @@ export class AppComponent implements OnInit {
                 private router: Router,
                 private authService: AuthService,
                 translate: TranslateService, http: Http,
-                private titleService: TitleService
-                ) {
+                private titleService: TitleService) {
 
 
         translate.setDefaultLang('en');

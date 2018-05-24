@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {TranslateService} from '@ngx-translate/core';
 import {DashboardService} from 'app/dashboard/dashboard.service';
 import * as Chartist from 'chartist';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import './../../utils/date.extensions';
 
 @Component({
@@ -13,8 +13,12 @@ export class DashboardComponent implements OnInit
 {
  detectionPercentage: number;
  detectionUpDownClass = "fa ";
+ private detectionChartLast7Weeks: BehaviorSubject<any>;
 
- constructor(private dashboardService: DashboardService,private translate:TranslateService) { }
+ constructor(private dashboardService: DashboardService)
+ {
+  this.detectionChartLast7Weeks = this.dashboardService.detectionChartLast7Weeks;
+ }
 
  startAnimationForLineChart(chart)
  {
@@ -84,32 +88,15 @@ export class DashboardComponent implements OnInit
 
  ngOnInit()
  {
-  /* ----------==========     Daily Sales Chart initialization For Documentation    ==========---------- */
-  this.dashboardService.getDetectionStatsLastWeek().then(detections =>
+  this.detectionChartLast7Weeks.subscribe(object =>
   {
-   const dataDailySalesChart: any = {
-    labels: [],
-    series: []
-   };
-
-   let maxNumDetections = 0;
-   let serie = [];
-   dataDailySalesChart.series.push(serie);
-   for (let detection of detections)
+   let seriesArray=object.series[0];
+   if(seriesArray==null||seriesArray==undefined)
    {
-    let weekdayName = detection.date.getDayName();
-    this.translate.get(weekdayName.toUpperCase()).subscribe((res: string) =>
-    {
-     dataDailySalesChart.labels.push(res.substr(0,1).toUpperCase());
-    });
-    serie.push(detection.numberOfDetections);
-    if (detection.numberOfDetections > maxNumDetections)
-    {
-     maxNumDetections = detection.numberOfDetections;
-    }
+    return;
    }
-   let yesterdayDetection = detections[detections.length - 2];
-   let todayDetection = detections[detections.length - 1];
+   let yesterdayDetection =seriesArray[seriesArray.length - 2];
+   let todayDetection = seriesArray[seriesArray.length - 1];
 
    this.detectionPercentage = todayDetection.numberOfDetections * 100;
    if (yesterdayDetection.numberOfDetections != 0)
@@ -139,14 +126,17 @@ export class DashboardComponent implements OnInit
      tension: 0
     }),
     low: 0,
-    high: maxNumDetections + 2, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+    high: object.max + 2, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
     chartPadding: {top: 0, right: 0, bottom: 0, left: 0}
    };
 
-   let dailySalesChart = new Chartist.Line('#dailySalesChart', dataDailySalesChart, optionsDailySalesChart);
+   let dailySalesChart = new Chartist.Line('#dailySalesChart', object, optionsDailySalesChart);
 
    this.startAnimationForLineChart(dailySalesChart);
   });
+  this.dashboardService.initDetectionChartLast7Weeks();
+  /* ----------==========     Daily Sales Chart initialization For Documentation    ==========---------- */
+
   /* ----------==========     Completed Tasks Chart initialization    ==========---------- */
 
   const dataCompletedTasksChart: any = {
@@ -203,6 +193,11 @@ export class DashboardComponent implements OnInit
 
   //start animation for the Emails Subscription Chart
   this.startAnimationForBarChart(emailsSubscriptionChart);
+ }
+
+ ngOnDestroy()
+ {
+  //this.detectionChartLast7Weeks.unsubscribe();
  }
 
 }
