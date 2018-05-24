@@ -1,10 +1,13 @@
 import * as bcrypt from 'bcrypt';
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
-import * as session from 'express-session';
+import * as passport from "passport";
+import {BasicStrategy} from 'passport-http';
+import {Strategy} from 'passport-http-bearer';
 import * as path from 'path';
 import {getConnection} from "typeorm";
 import {ErrorObject} from "../class/ErrorObject";
+import {User} from '../entity/User';
 import {MotionSettingsError} from "../exception/MotionSettingsError";
 import {DetectionRepository} from '../repository/DetectionRepository';
 import {UserRepository} from "../repository/UserRepository";
@@ -20,54 +23,109 @@ export class WebServerHelper
   const API_URL = '/api/';
 
   const app = express();
-  app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({extended: false, type: 'application/json'}));
-  app.use(express.static(__dirname + '/../angular/dist/'));
-  app.use(session({secret: config.expressSecret, resave: true, saveUninitialized: true}));
 
-
-  app.post(API_URL + 'login', async (req: any, res, next) =>
+  passport.use(new BasicStrategy((username: string, password: string, done: any) =>
+  {
+   if (username == undefined || username.trim().length == 0)
    {
-
-    let receivedUsername = req.body.username;
-    let receivedPassword = req.body.password;
-
-    if (receivedUsername == undefined || receivedUsername.trim().length == 0)
-    {
-     res.status(400);
-     res.send(new ErrorObject(ErrorObject.EMPTY_USERNAME));
-     return next();
-    }
-
-    if (receivedPassword == undefined || receivedPassword.trim().length == 0)
-    {
-     res.status(400);
-     res.send(new ErrorObject(ErrorObject.EMPTY_USERNAME));
-     return next();
-    }
-
-    let user = await getConnection().getCustomRepository(UserRepository).findByUsername(receivedUsername);
-
-    if (user == undefined)
-    {
-     res.status(400);
-     res.send(new ErrorObject(ErrorObject.INVALID_USERNAME_OR_PASSWORD));
-     return next();
-    }
-
-    let matches = await bcrypt.compare(receivedPassword, user.password);
-    if (!matches)
-    {
-     res.status(400);
-     res.send(new ErrorObject(ErrorObject.INVALID_USERNAME_OR_PASSWORD));
-     return next();
-    }
-    req.session.userId = user.id;
-    req.session.groupId = user.group.id;
-    res.status(200);
-    res.send({});
+    done(new ErrorObject(ErrorObject.EMPTY_USERNAME));
+    return;
    }
-  );
+
+   if (password == undefined || password.trim().length == 0)
+   {
+    done(new ErrorObject(ErrorObject.EMPTY_PASSWORD));
+    return;
+   }
+
+   let user = null;
+   getConnection().getCustomRepository(UserRepository).findByUsername(username)
+    .then(user =>
+    {
+     if (user == null || user == undefined)
+     {
+      done(new ErrorObject(ErrorObject.INVALID_USERNAME_OR_PASSWORD));
+      return;
+     }
+
+     bcrypt.compare(password, user.password)
+      .then(matches =>
+      {
+       if (!matches)
+       {
+        done(new ErrorObject(ErrorObject.INVALID_USERNAME_OR_PASSWORD));
+        return;
+       }
+       done(null, user);
+      });
+    })
+    .catch(reason =>
+    {
+     done(reason);
+    });
+  }));
+
+  passport.use(new Strategy((token: string, done: any) =>
+  {
+   if (token == 'test')
+   {
+    done(null, "test");
+   }
+   done(null, false);
+   console.log('teste');
+  }));
+
+  passport.serializeUser((user: User, done) =>
+  {
+   if (user == null || user == undefined)
+   {
+    done(new ErrorObject(ErrorObject.INVALID_USERNAME_OR_PASSWORD));
+    return;
+   }
+
+   if (user.id == null || user.id == undefined)
+   {
+    done(new ErrorObject(ErrorObject.INVALID_USERNAME_OR_PASSWORD));
+    return;
+   }
+
+   done(null, user.id);
+  });
+
+  passport.deserializeUser((id, done) =>
+  {
+   if (id == null || id == undefined)
+   {
+    done(new ErrorObject(ErrorObject.EMPTY_USER_ID));
+    return;
+   }
+
+   getConnection().getCustomRepository(UserRepository).findOne(id)
+    .then((user) =>
+    {
+     if (user == null || user == undefined)
+     {
+      done(new ErrorObject(ErrorObject.INVALID_USERNAME_OR_PASSWORD));
+      return;
+     }
+     done(null, user);
+    });
+  });
+
+  //app.use(express.static('public'));
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({extended: true, type: 'application/json'}));
+  app.use(express.static(__dirname + '/../angular/dist/'));
+  app.use(passport.initialize());
+
+  app.post(API_URL + 'login', passport.authenticate('basic', {
+   session: false,
+   failureFlash: false
+  }), (req, res) =>
+  {
+   res.sendStatus(200).send();
+   return;
+  });
 
   app.get(API_URL + 'motion/settings', async (req: any, res, next) =>
   {
@@ -100,17 +158,13 @@ export class WebServerHelper
   });
 
 
-  app.get(API_URL + 'login/check', async (req: any, res, next) =>
+  app.get(API_URL + 'login/check', passport.authenticate('bearer', {
+   session: false,
+   failureFlash: false
+  }), async (req: any, res, next) =>
   {
    res.status(200);
-   if (req.session.userId)
-   {
-    res.send({isLoggedIn: true});
-   }
-   else
-   {
-    res.send({isLoggedIn: false});
-   }
+   res.send({isLoggedIn: true});
   });
 
   app.get(API_URL + 'detection', async (req: any, res, next) =>
@@ -141,8 +195,8 @@ export class WebServerHelper
    {
     endDate = new Date(req.query.endDate);
    }
-   let detections = await getConnection().getCustomRepository(DetectionRepository).getStats(startDate,endDate);
-   if(detections==null)
+   let detections = await getConnection().getCustomRepository(DetectionRepository).getStats(startDate, endDate);
+   if (detections == null)
    {
     res.status(204).send();
    }
