@@ -38,7 +38,6 @@ export class WebServerHelper
     return;
    }
 
-   let user = null;
    getConnection().getCustomRepository(UserRepository).findByUsername(username)
     .then(user =>
     {
@@ -53,6 +52,7 @@ export class WebServerHelper
       {
        if (!matches)
        {
+        //getConnection().getCustomRepository(UserRepository).update()
         done(new ErrorObject(ErrorObject.INVALID_USERNAME_OR_PASSWORD));
         return;
        }
