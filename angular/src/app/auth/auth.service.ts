@@ -2,6 +2,10 @@ import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
+import {Http} from "@angular/http";
+import {Observable} from "rxjs/Observable";
+import {reject} from "q";
+import {Socket} from 'ngx-socket-io';
 
 
 @Injectable()
@@ -12,13 +16,14 @@ export class AuthService {
         return this.loggedIn.asObservable();
     }
 
-    constructor(private router: Router, private http: HttpClient) {
+    constructor(private router: Router, private http: HttpClient, private socket: Socket) {
     }
 
     login(username: string, password: string) {
         return new Promise((resolve, reject) => {
             this.http.post('api/login', {username: username, password: password}).subscribe(() => {
                 this.loggedIn.next(true);
+                this.socket.emit('authenticate', {username: username, password: password});
                 resolve();
             }, (errorResponse: HttpErrorResponse) => {
                 reject(errorResponse);
@@ -27,13 +32,9 @@ export class AuthService {
     }
 
 
-    async logout() {
-        this.http.get('api/logout').subscribe(() => {
-            this.loggedIn.next(false);
-            return true;
-        }, (errorResponse: HttpErrorResponse) => {
-            throw new Error(errorResponse.message);
-        });
+    logout() {
+        this.loggedIn.next(false);
+        this.router.navigate(['/login']);
     }
 
     checkLogin() {
@@ -43,6 +44,7 @@ export class AuthService {
                 resolve(response.isLoggedIn);
             }, (error: HttpErrorResponse) => {
                 this.loggedIn.next(false);
+                this.socket.emit('authenticate');
                 resolve(false);
             });
         })

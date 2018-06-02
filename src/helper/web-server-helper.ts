@@ -10,6 +10,7 @@ import {ErrorObject} from "../class/ErrorObject";
 import {MotionHelper} from "./motion-helper";
 import {ConfigObject} from "../class/ConfigObject";
 import {MotionSettingsError} from "../exception/MotionSettingsError";
+import {DetectionRepository} from "../repository/DetectionRepository";
 
 let config = require('../../config.json');
 
@@ -42,8 +43,7 @@ export class WebServerHelper {
                     return next();
                 }
 
-                let user = await getConnection().getCustomRepository(UserRepository)
-                    .findByUsername(receivedUsername);
+                let user = await getConnection().getCustomRepository(UserRepository).findByUsername(receivedUsername);
 
                 if (user == undefined) {
                     res.status(400);
@@ -104,6 +104,42 @@ export class WebServerHelper {
             }else {
                 res.status(401);
             }
+        });
+
+        app.get(API_URL + 'detection', async (req: any, res, next) =>
+        {
+            let startDate = null;
+            let endDate = null;
+            if (req.query.startDate !== undefined && req.query.startDate !== null)
+            {
+                startDate = new Date(req.query.startDate);
+            }
+            if (req.query.endDate !== undefined && req.query.endDate !== null)
+            {
+                endDate = new Date(req.query.endDate);
+            }
+            let detections = await getConnection().getCustomRepository(DetectionRepository).get(startDate, endDate);
+            res.status(200).send(detections);
+        });
+
+        app.get(API_URL + 'stats/detection', async (req: any, res, next) =>
+        {
+            let startDate = null;
+            let endDate = null;
+            if (req.query.startDate !== undefined && req.query.startDate !== null)
+            {
+                startDate = new Date(req.query.startDate);
+            }
+            if (req.query.endDate !== undefined && req.query.endDate !== null)
+            {
+                endDate = new Date(req.query.endDate);
+            }
+            let detections = await getConnection().getCustomRepository(DetectionRepository).getStats(startDate,endDate);
+            if(detections==null)
+            {
+                res.status(204).send();
+            }
+            res.status(200).send(detections);
         });
 
         app.get('*', function (req, res) {

@@ -4,6 +4,10 @@ import {FormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
 import {RouterModule} from '@angular/router';
 
+import {DashboardService} from 'app/dashboard/dashboard.service';
+import {SocketIoConfig, SocketIoModule} from 'ngx-socket-io';
+import {environment} from './../environments/environment';
+
 import {AppRoutingModule} from './app.routing';
 import {ComponentsModule} from './components/components.module';
 
@@ -14,6 +18,7 @@ import {UserProfileComponent} from './user-profile/user-profile.component';
 import {TableListComponent} from './table-list/table-list.component';
 import {TypographyComponent} from './typography/typography.component';
 import {IconsComponent} from './icons/icons.component';
+
 import {NotificationsComponent} from './notifications/notifications.component';
 import {UpgradeComponent} from './upgrade/upgrade.component';
 import {LoginComponent} from './login/login.component';
@@ -31,6 +36,8 @@ import {SettingsService} from "./settings/settings.service";
 export function createTranslateLoader(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
+
+const config: SocketIoConfig = {url: environment.socketURL, options: {}};
 
 @NgModule({
     declarations: [
@@ -59,9 +66,10 @@ export function createTranslateLoader(http: HttpClient) {
                 useFactory: createTranslateLoader,
                 deps: [HttpClient]
             }
-        })
+        }),
+        SocketIoModule.forRoot(config)
     ],
-    providers: [AuthService, AuthGuard, TitleService, SettingsService],
+    providers: [AuthService, AuthGuard, TitleService, SettingsService, DashboardService],
     bootstrap: [AppComponent]
 })
 export class AppModule {
