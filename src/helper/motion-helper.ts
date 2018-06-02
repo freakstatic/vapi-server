@@ -46,7 +46,7 @@ export class MotionHelper {
 
     }
 
-    private editConfig(settings, config: ConfigObject) {
+    private static editConfig(settings, config: ConfigObject) {
         if (settings[config.name] == undefined) {
             throw new Error('[MotionHelper] Config not found!');
         }
@@ -56,7 +56,7 @@ export class MotionHelper {
     async editSettings(settings: ConfigObject[]) {
         if (await this.validSettings(settings)) {
             for (let config of settings) {
-                this.editConfig(this._settings, config);
+                MotionHelper.editConfig(this._settings, config);
             }
             await this.saveSettings(this._settings);
             if (this.motion) {
@@ -93,7 +93,7 @@ export class MotionHelper {
     async validSettings(newSettings: ConfigObject[]) {
         let allSettings = clone(this._settings);
         for (let config of newSettings) {
-            this.editConfig(allSettings, config);
+            MotionHelper.editConfig(allSettings, config);
         }
 
         let filePath = 'motion/temp.conf';

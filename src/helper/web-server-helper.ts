@@ -42,7 +42,8 @@ export class WebServerHelper {
                     return next();
                 }
 
-                let user = await getConnection().getCustomRepository(UserRepository).findByUsername(receivedUsername);
+                let user = await getConnection().getCustomRepository(UserRepository)
+                    .findByUsername(receivedUsername);
 
                 if (user == undefined) {
                     res.status(400);
@@ -92,6 +93,16 @@ export class WebServerHelper {
                 res.send({isLoggedIn: true});
             } else {
                 res.send({isLoggedIn: false});
+            }
+        });
+
+        app.get(API_URL + 'logout', async (req: any, res, next) => {
+            if (req.session.userId) {
+                req.logout();
+                res.status(200);
+                res.send();
+            }else {
+                res.status(401);
             }
         });
 

@@ -2,9 +2,6 @@ import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
-import {Http} from "@angular/http";
-import {Observable} from "rxjs/Observable";
-import {reject} from "q";
 
 
 @Injectable()
@@ -30,9 +27,13 @@ export class AuthService {
     }
 
 
-    logout() {
-        this.loggedIn.next(false);
-        this.router.navigate(['/login']);
+    async logout() {
+        this.http.get('api/logout').subscribe(() => {
+            this.loggedIn.next(false);
+            return true;
+        }, (errorResponse: HttpErrorResponse) => {
+            throw new Error(errorResponse.message);
+        });
     }
 
     checkLogin() {
