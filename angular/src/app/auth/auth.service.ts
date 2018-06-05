@@ -59,7 +59,7 @@ export class AuthService
    return false;
   }
 
-  let login: Login = JSON.parse(atob(token));
+  let login: Login = JSON.parse(token);
   checkLoggedIn = login.token != null && login.token != undefined && login.token.trim().length < 1;
   if (!checkLoggedIn)
   {
