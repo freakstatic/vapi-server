@@ -1,4 +1,4 @@
-import {HttpClient, HttpErrorResponse} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
 import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
 import {Socket} from 'ngx-socket-io';
@@ -22,7 +22,10 @@ export class AuthService
  {
   return new Promise((resolve, reject) =>
   {
-   this.http.post('api/login', {username: username, password: password}).subscribe(() =>
+   let headers=new HttpHeaders();
+   headers.append('Authorization','Basic '+btoa(username+':'+password));
+   // headers.append('Content-Type','application/json');
+   this.http.post('api/login',null,{headers:headers}).subscribe(() =>
    {
     this.loggedIn.next(true);
     this.socket.emit('authenticate', {username: username, password: password});
@@ -41,24 +44,15 @@ export class AuthService
   this.router.navigate(['/login']);
  }
 
- checkLogin()
+ checkLogin():boolean
  {
-  return new Promise((resolve, reject) =>
+  let token=localStorage.getItem('token');
+  let checkLoggedIn=token!=null&&token!=undefined&&token.trim().length<1;
+  if(this.loggedIn.getValue()!=checkLoggedIn)
   {
-   this.http.get('api/login/check').subscribe((response: any) =>
-   {
-    this.loggedIn.next(response.isLoggedIn);
-    if (!response.isLoggedIn)
-    {
-     this.socket.emit('authenticate');
-    }
-    resolve(response.isLoggedIn);
-   }, (error: HttpErrorResponse) =>
-   {
-    this.loggedIn.next(false);
-    this.socket.emit('authenticate');
-    resolve(false);
-   });
-  })
+   this.loggedIn.next(checkLoggedIn);
+  }
+
+  return checkLoggedIn;
  }
 }
