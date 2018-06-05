@@ -3,6 +3,7 @@ import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
 import {Socket} from 'ngx-socket-io';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {Login} from '../objects/login';
 
 @Injectable()
 export class AuthService
@@ -22,10 +23,10 @@ export class AuthService
  {
   return new Promise((resolve, reject) =>
   {
-   let headers=new HttpHeaders();
-   headers.append('Authorization','Basic '+btoa(username+':'+password));
+   let headers = new HttpHeaders();
+   headers.append('Authorization', 'Basic ' + btoa(username + ':' + password));
    // headers.append('Content-Type','application/json');
-   this.http.post('api/login',null,{headers:headers}).subscribe(() =>
+   this.http.post('api/login', null, {headers: headers}).subscribe(() =>
    {
     this.loggedIn.next(true);
     this.socket.emit('authenticate', {username: username, password: password});
@@ -40,19 +41,40 @@ export class AuthService
 
  logout()
  {
+  localStorage.setItem('token',undefined);
   this.loggedIn.next(false);
   this.router.navigate(['/login']);
  }
 
- checkLogin():boolean
+ checkLogin(): boolean
  {
-  let token=localStorage.getItem('token');
-  let checkLoggedIn=token!=null&&token!=undefined&&token.trim().length<1;
-  if(this.loggedIn.getValue()!=checkLoggedIn)
+  let token = localStorage.getItem('token');
+  let checkLoggedIn = token != null && token != undefined && token.trim().length < 1;
+  if (!checkLoggedIn)
+  {
+   if(checkLoggedIn!=this.loggedIn.getValue())
+   {
+    this.loggedIn.next(false);
+   }
+   return false;
+  }
+
+  let login: Login = JSON.parse(atob(token));
+  checkLoggedIn = login.token != null && login.token != undefined && login.token.trim().length < 1;
+  if (!checkLoggedIn)
+  {
+   if(checkLoggedIn!=this.loggedIn.getValue())
+   {
+    this.loggedIn.next(false);
+   }
+   return false;
+  }
+  let date = new Date();
+  checkLoggedIn = login.timestamp.getTime() > date.getTime();
+  if(checkLoggedIn!=this.loggedIn.getValue())
   {
    this.loggedIn.next(checkLoggedIn);
   }
-
   return checkLoggedIn;
  }
 }
