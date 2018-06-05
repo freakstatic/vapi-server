@@ -1,4 +1,4 @@
-import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
 import {Socket} from 'ngx-socket-io';
@@ -23,13 +23,11 @@ export class AuthService
  {
   return new Promise((resolve, reject) =>
   {
-   let headers = new HttpHeaders();
-   headers.append('Authorization', 'Basic ' + btoa(username + ':' + password));
-   // headers.append('Content-Type','application/json');
-   this.http.post('api/login', null, {headers: headers}).subscribe(() =>
+   this.http.post('api/login',null).subscribe(() =>
    {
     this.loggedIn.next(true);
     this.socket.emit('authenticate', {username: username, password: password});
+    //localStorage.setItem('token',JSON.stringify(new Login()))
     resolve();
    }, (errorResponse: HttpErrorResponse) =>
    {
