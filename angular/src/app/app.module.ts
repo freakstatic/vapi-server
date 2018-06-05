@@ -1,4 +1,4 @@
-import {HttpClient, HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/http";
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
@@ -31,6 +31,7 @@ import {TitleService} from "./title.service";
 import {TypographyComponent} from './typography/typography.component';
 import {UpgradeComponent} from './upgrade/upgrade.component';
 import {UserProfileComponent} from './user-profile/user-profile.component';
+import {VapiInterceptor} from './vapi.interceptor';
 
 export function createTranslateLoader(http: HttpClient)
 {
@@ -70,7 +71,11 @@ const config: SocketIoConfig = {url: environment.socketURL, options: {}};
   }),
   SocketIoModule.forRoot(config)
  ],
- providers: [AuthService, AuthGuard, TitleService, SettingsService, DashboardService],
+ providers: [AuthService, AuthGuard, TitleService, SettingsService, DashboardService, {
+  provide: HTTP_INTERCEPTORS,
+  useClass: VapiInterceptor,
+  multi: true
+ }],
  bootstrap: [AppComponent]
 })
 export class AppModule
