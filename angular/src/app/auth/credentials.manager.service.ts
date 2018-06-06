@@ -28,7 +28,7 @@ export class CredentialsManagerService
    return;
   }
   this.login=login;
-  localStorage.setItem('token', JSON.stringify(login));
+  localStorage.setItem('token', token);
   this.loggedIn.next(true);
  }
 
@@ -49,7 +49,7 @@ export class CredentialsManagerService
    return false;
   }
 
-  let login: Login = JSON.parse(token);
+  let login = new Login(token);
   checkLoggedIn = login.isValid();
   if (checkLoggedIn != this.loggedIn.getValue())
   {

@@ -10,13 +10,15 @@ import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 
 import {DashboardService} from 'app/dashboard/dashboard.service';
 import {SocketIoConfig, SocketIoModule} from 'ngx-socket-io';
-import {environment} from './../environments/environment';
+import {environment} from '../environments/environment';
 
 import {AppComponent} from './app.component';
 
 import {AppRoutingModule} from './app.routing';
+import {AuthInterceptor} from './auth.interceptor';
 import {AuthGuard} from './auth/auth.guard';
 import {AuthService} from './auth/auth.service';
+import {CredentialsManagerService} from './auth/credentials.manager.service';
 import {ComponentsModule} from './components/components.module';
 
 import {DashboardComponent} from './dashboard/dashboard.component';
@@ -31,7 +33,6 @@ import {TitleService} from "./title.service";
 import {TypographyComponent} from './typography/typography.component';
 import {UpgradeComponent} from './upgrade/upgrade.component';
 import {UserProfileComponent} from './user-profile/user-profile.component';
-import {VapiInterceptor} from './vapi.interceptor';
 
 export function createTranslateLoader(http: HttpClient)
 {
@@ -71,9 +72,9 @@ const config: SocketIoConfig = {url: environment.socketURL, options: {}};
   }),
   SocketIoModule.forRoot(config)
  ],
- providers: [AuthService, AuthGuard, TitleService, SettingsService, DashboardService, {
+ providers: [AuthService, AuthGuard, TitleService, SettingsService, DashboardService, CredentialsManagerService,{
   provide: HTTP_INTERCEPTORS,
-  useClass: VapiInterceptor,
+  useClass: AuthInterceptor,
   multi: true
  }],
  bootstrap: [AppComponent]

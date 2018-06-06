@@ -30,6 +30,10 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "email", void 0);
 __decorate([
+    typeorm_1.Column(),
+    __metadata("design:type", String)
+], User.prototype, "token", void 0);
+__decorate([
     typeorm_1.OneToOne(type => UserGroup_1.UserGroup),
     typeorm_1.JoinColumn(),
     __metadata("design:type", UserGroup_1.UserGroup)

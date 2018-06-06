@@ -25,6 +25,14 @@ let UserRepository = class UserRepository extends typeorm_1.Repository {
                 .getOne();
         });
     }
+    findByToken(token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.createQueryBuilder("user")
+                .where("user.token = :token", { token })
+                .leftJoinAndSelect("user.group", "userGroup")
+                .getOne();
+        });
+    }
 };
 UserRepository = __decorate([
     typeorm_1.EntityRepository(User_1.User)

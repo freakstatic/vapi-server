@@ -20,7 +20,7 @@ export class Login
   this.timestamp=new Date(obj.timestamp);
  }
 
- isValid():boolean
+ public isValid():boolean
  {
   if(this.token==null||this.token==undefined||this.token.trim().length<1)
   {
