@@ -21,11 +21,10 @@ export class AuthService
  {
   return new Promise((resolve, reject) =>
   {
-   this.http.post('api/login',{username:username,password:password}).subscribe(() =>
+   this.http.post('api/login',{username:username,password:password}).subscribe((data:any) =>
    {
-    this.credentialManager.token="";
-    this.socket.emit('authenticate', JSON.stringify({username: username, password: password}));
-    //localStorage.setItem('token',JSON.stringify(new Login()))
+    this.credentialManager.token=data.token;
+    this.socket.emit('authenticate', data.token);
     resolve();
    }, (errorResponse: HttpErrorResponse) =>
    {
