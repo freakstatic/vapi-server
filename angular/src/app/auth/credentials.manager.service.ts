@@ -34,7 +34,13 @@ export class CredentialsManagerService
 
  public checkLogin(): boolean
  {
-  return this.isValidToken(localStorage.getItem('token'));
+  let token=localStorage.getItem('token')
+  let valid=this.isValidToken(token);
+  if (valid&&this.login==null)
+  {
+   this.login=new Login(token);
+  }
+  return valid;
  }
 
  public isValidToken(token: string): boolean
