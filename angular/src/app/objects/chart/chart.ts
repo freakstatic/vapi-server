@@ -1,7 +1,9 @@
-export class ChartObject<T>
+import {IChartistData} from 'chartist';
+
+export class ChartObject<T> implements IChartistData
 {
- public labels: String[];
- public series: Array<number>[];
+ public labels: Array<string>;
+ public series: Array<Array<number>>;
  public max: number;
  public sourceObjects: T[];
 
