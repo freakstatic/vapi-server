@@ -6,6 +6,7 @@ import {ChartObject} from 'app/objects/chart/chart';
 import {Detection} from 'app/objects/detections/detection';
 import {Socket} from 'ngx-socket-io';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {Observable} from 'rxjs/Observable';
 import './../../utils/date.extensions';
 
 @Injectable()
@@ -39,7 +40,7 @@ export class DashboardService
     object.sourceObjects.shift();
     object.labels.shift();
     object.series[0].shift();
-    index=object.sourceObjects.length-1;
+    index = object.sourceObjects.length - 1;
    }
    object.series[0][index] += detection.numberOfDetections;
    if (object.series[0][index] > object.max)
@@ -52,9 +53,9 @@ export class DashboardService
 
  private _detectionChartLast7Weeks = new BehaviorSubject<ChartObject<Detection>>(new ChartObject());
 
- get detectionChartLast7Weeks(): BehaviorSubject<any>
+ get detectionChartLast7Weeks(): Observable<ChartObject<Detection>>
  {
-  return this._detectionChartLast7Weeks;
+  return this._detectionChartLast7Weeks.asObservable();
  }
 
  public async initDetectionChartLast7Weeks()
