@@ -26,6 +26,22 @@ export class Login
   {
    return false;
   }
+  if(this.timestamp==null||this.timestamp==undefined)
+  {
+   return false;
+  }
+  if(this.userID==null||this.userID==undefined)
+  {
+   return false;
+  }
+  if(this.groupID==null||this.groupID==undefined)
+  {
+   return false;
+  }
+  if(this.username==null||this.username==undefined)
+  {
+   return false;
+  }
   let date = new Date();
   return this.timestamp.getTime() > date.getTime();
  }
