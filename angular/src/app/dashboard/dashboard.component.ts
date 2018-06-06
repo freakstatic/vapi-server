@@ -1,7 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {DashboardService} from 'app/dashboard/dashboard.service';
 import * as Chartist from 'chartist';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {Observable} from 'rxjs/Observable';
+import {ChartObject} from '../objects/chart/chart';
+import {Detection} from '../objects/detections/detection';
 import './../../utils/date.extensions';
 
 @Component({
@@ -13,10 +15,11 @@ export class DashboardComponent implements OnInit
 {
  detectionPercentage: number;
  detectionUpDownClass = "fa ";
- private detectionChartLast7Weeks: BehaviorSubject<any>;
+ private detectionChartLast7Weeks: Observable<ChartObject<Detection>>;
 
  constructor(private dashboardService: DashboardService)
  {
+  this.detectionPercentage=0;
   this.detectionChartLast7Weeks = this.dashboardService.detectionChartLast7Weeks;
  }
 
@@ -95,8 +98,8 @@ export class DashboardComponent implements OnInit
    {
     return;
    }
-   let yesterdayDetection =seriesArray[seriesArray.length - 2];
-   let todayDetection = seriesArray[seriesArray.length - 1];
+   let yesterdayDetection = object.sourceObjects[object.sourceObjects.length - 2];
+   let todayDetection = object.sourceObjects[object.sourceObjects.length - 1];
 
    this.detectionPercentage = todayDetection.numberOfDetections * 100;
    if (yesterdayDetection.numberOfDetections != 0)
