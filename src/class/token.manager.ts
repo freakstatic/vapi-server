@@ -2,11 +2,11 @@ import {User} from '../entity/User';
 
 export class TokenManager
 {
- public computeFromUser(user: User): string
+ public computeFromUser(user: User): boolean
  {
   if (this.validateToken(user, user.token))
   {
-   return user.token;
+   return true;
   }
   let obj = {};
   let date = new Date();
@@ -15,14 +15,14 @@ export class TokenManager
   obj['username'] = user.username;
   obj['groupID'] = user.group.id;
   obj['timestamp'] = date.toUTCString();
-  let token = Buffer.from(JSON.stringify(obj)).toString('base64');
+  user.token = Buffer.from(JSON.stringify(obj)).toString('base64');
 
-  if(!this.validateToken(user,token))
+  if(!this.validateToken(user,user.token))
   {
-   return null;
+   user.token=null;
+   return false;
   }
-
-  return token;
+  return true;
  }
 
  public dataFromToken(token:string):any
