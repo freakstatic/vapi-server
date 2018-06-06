@@ -25,13 +25,22 @@ export class TokenManager
   return token;
  }
 
- public validateToken(user: User, token: string): boolean
+ public dataFromToken(token:string):any
  {
   if (token == null || token == undefined || token.trim().length < 1)
   {
+   return null;
+  }
+  return JSON.parse(Buffer.from(token, 'base64').toString('utf8'));
+ }
+
+ public validateToken(user: User, token: string): boolean
+ {
+  let obj = this.dataFromToken(token);
+  if (obj == null || obj == undefined)
+  {
    return false;
   }
-  let obj = JSON.parse(Buffer.from(token, 'base64').toString('utf8'));
   let timestamp = new Date(obj.timestamp);
   let currentTime = new Date();
   if (currentTime.getTime() >= timestamp.getTime())
