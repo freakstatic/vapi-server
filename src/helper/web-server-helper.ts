@@ -202,7 +202,7 @@ export class WebServerHelper
    }
   });
 
-  app.get(API_URL + 'detection', async (req: any, res, next) =>
+  app.get(API_URL + 'detection', passport.authenticate('bearer', bearTokenOptions),async (req: any, res, next) =>
   {
    let startDate = null;
    let endDate = null;
@@ -218,7 +218,7 @@ export class WebServerHelper
    res.status(200).send(detections);
   });
 
-  app.get(API_URL + 'stats/detection', async (req: any, res, next) =>
+  app.get(API_URL + 'stats/detection', passport.authenticate('bearer', bearTokenOptions), async (req: any, res, next) =>
   {
    let startDate = null;
    let endDate = null;
