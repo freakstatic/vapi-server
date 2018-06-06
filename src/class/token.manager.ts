@@ -59,6 +59,10 @@ export class TokenManager
   {
    return false;
   }
+  if (user.token != obj.token)
+  {
+   return false;
+  }
   return true;
  }
 }
