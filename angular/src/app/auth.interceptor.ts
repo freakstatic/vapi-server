@@ -16,21 +16,22 @@ export class AuthInterceptor implements HttpInterceptor
    return next.handle(req);
   }
   let authReq = req;
-  if (req.url.match("api/login"))
+  if (req.url.match("api/login") && !this.credentialsManager.checkLogin())
   {
-   if (!this.credentialsManager.checkLogin())
-   {
-    authReq = req.clone({
-     setHeaders: {
-      Authorization: "Basic " + btoa(req.body.username + ':' + req.body.password)
-     },
-     body:null
-    })
-   }
+   authReq = req.clone({
+    setHeaders: {
+     Authorization: "Basic " + btoa(req.body.username + ':' + req.body.password)
+    },
+    body: null
+   });
   }
   else
   {
-
+   authReq = req.clone({
+    setHeaders: {
+     Authorization: "Bearer " + this.credentialsManager.getLogin.token
+    }
+   });
   }
   return next.handle(authReq);
  }
