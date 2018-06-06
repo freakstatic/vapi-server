@@ -9,7 +9,7 @@ import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 
 import {DashboardService} from 'app/dashboard/dashboard.service';
-import {SocketIoConfig, SocketIoModule} from 'ngx-socket-io';
+import {Socket, SocketIoConfig, SocketIoModule} from 'ngx-socket-io';
 import {environment} from '../environments/environment';
 
 import {AppComponent} from './app.component';
@@ -39,7 +39,12 @@ export function createTranslateLoader(http: HttpClient)
  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 
-const config: SocketIoConfig = {url: environment.socketURL, options: {}};
+const config: SocketIoConfig = {
+ url: environment.socketURL, options: {
+  reconnection: true,
+  reconnectionAttempts: 3
+ }
+};
 
 @NgModule({
  declarations: [
@@ -72,7 +77,7 @@ const config: SocketIoConfig = {url: environment.socketURL, options: {}};
   }),
   SocketIoModule.forRoot(config)
  ],
- providers: [AuthService, AuthGuard, TitleService, SettingsService, DashboardService, CredentialsManagerService,{
+ providers: [AuthService, AuthGuard, TitleService, SettingsService, DashboardService, CredentialsManagerService, {
   provide: HTTP_INTERCEPTORS,
   useClass: AuthInterceptor,
   multi: true
@@ -81,4 +86,14 @@ const config: SocketIoConfig = {url: environment.socketURL, options: {}};
 })
 export class AppModule
 {
+ constructor(private socket: Socket, private credentialsManager: CredentialsManagerService)
+ {
+  this.socket.on('connect', () =>
+  {
+   if (this.credentialsManager.checkLogin())
+   {
+    this.socket.emit('authenticate', this.credentialsManager.getLogin.token);
+   }
+  });
+ }
 }
