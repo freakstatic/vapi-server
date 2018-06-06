@@ -1,7 +1,7 @@
-import * as bcrypt from 'bcrypt';
 import * as express from 'express';
 import * as http from 'http';
 import {getConnection} from "typeorm";
+import {TokenManager} from '../class/token.manager';
 import {DetectableObject} from "../entity/DetectableObject";
 import {Detection} from "../entity/Detection";
 import {DetectionObject} from "../entity/DetectionObject";
@@ -14,6 +14,7 @@ import moment = require("moment");
 let config = require('../../config.json');
 const YOLO_GROUP_NAME = 'yolo';
 const USER_ROOM = 'user';
+const tokenManager = new TokenManager();
 
 export class SocketHelper
 {
@@ -24,27 +25,27 @@ export class SocketHelper
   const io = require('socket.io')(server);
   io.on('connection', client =>
   {
-   let socketLoggedIn=false;
+   let socketLoggedIn = false;
+   let user: User = null;
    console.log('connected');
 
-   client.on('authenticate', async userCredentials =>
+   client.on('authenticate', async token =>
    {
-    if(userCredentials==null||userCredentials==undefined)
+    if (socketLoggedIn && user != null && tokenManager.validateToken(user, token))
     {
      return;
     }
-    let user = await this.checkUserCredentials(userCredentials.username, userCredentials.password);
-    if (user == null || user == undefined)
+    let temp_user = await this.checkUserCredentials(token);
+    if (temp_user == null || temp_user == undefined || !tokenManager.validateToken(temp_user, token))
     {
-     socketLoggedIn=false;
+     socketLoggedIn = false;
+     user = null;
      client.disconnect(true);
      return;
     }
-    if(socketLoggedIn)
-    {
-     return;
-    }
-    socketLoggedIn=true;
+
+    socketLoggedIn = true;
+    user = temp_user;
     console.log('authenticated');
     if (user.group.name === YOLO_GROUP_NAME)
     {
@@ -66,7 +67,7 @@ export class SocketHelper
     }
     else
     {
-     client.join('user');
+     client.join(USER_ROOM);
     }
    });
 
@@ -79,30 +80,14 @@ export class SocketHelper
   server.listen(config.socketPort);
  }
 
- async checkUserCredentials(username: string, password: string): Promise<User>
+ async checkUserCredentials(token: string): Promise<User>
  {
-  if (username == undefined || username.trim().length == 0)
+  if (token == null || token == undefined || token.trim().length < 1)
   {
    return null;
   }
 
-  if (password == undefined || password.trim().length == 0)
-  {
-   return null;
-  }
-
-  let user = await getConnection().getCustomRepository(UserRepository).findByUsername(username);
-  if (user == undefined)
-  {
-   return null;
-  }
-
-  let matches = await bcrypt.compare(password, user.password);
-  if (!matches)
-  {
-   return null;
-  }
-  return user;
+  return await getConnection().getCustomRepository(UserRepository).findByToken(token);
  }
 
  async handleNewDetections(detectionsArray)
