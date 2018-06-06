@@ -9,6 +9,10 @@ export class Login
  constructor(token: string)
  {
   this.token = token;
+  if(this.token==null||this.token==undefined||this.token.trim().length<1)
+  {
+   return;
+  }
   let obj=JSON.parse(atob(token));
   this.userID=obj.userID;
   this.groupID=obj.groupID;
@@ -18,6 +22,10 @@ export class Login
 
  isValid():boolean
  {
+  if(this.token==null||this.token==undefined||this.token.trim().length<1)
+  {
+   return false;
+  }
   let date = new Date();
   return this.timestamp.getTime() > date.getTime();
  }
