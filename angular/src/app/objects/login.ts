@@ -15,4 +15,10 @@ export class Login
   this.username=obj.username;
   this.timestamp=new Date(obj.timestamp);
  }
+
+ isValid():boolean
+ {
+  let date = new Date();
+  return this.timestamp.getTime() > date.getTime();
+ }
 }
