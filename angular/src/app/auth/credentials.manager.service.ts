@@ -34,7 +34,7 @@ export class CredentialsManagerService
 
  public checkLogin(): boolean
  {
-  let token=localStorage.getItem('token')
+  let token=localStorage.getItem('token');
   let valid=this.isValidToken(token);
   if (valid&&this.login==null)
   {
