@@ -149,7 +149,11 @@ export class WebServerHelper
   }), async (req: Request, res) =>
   {
    let user = req.user as User;
-   user.token = tokenManager.computeFromUser(user);
+   if(!tokenManager.computeFromUser(user))
+   {
+    res.sendStatus(401);
+    return;
+   }
    let updated = await getConnection().getCustomRepository(UserRepository).update(user.id, {token: user.token});
    if (updated.raw.affectedRows != 1)
    {
@@ -160,6 +164,12 @@ export class WebServerHelper
     res.status(200).send({token:user.token});
    }
    return;
+  });
+
+  app.post(API_URL + 'login/refresh', passport.authenticate('bearer', bearTokenOptions), async (req: any, res) =>
+  {
+   res.status(200);
+   res.send({isLoggedIn: true});
   });
 
   app.get(API_URL + 'motion/settings', async (req: any, res, next) =>
@@ -190,12 +200,6 @@ export class WebServerHelper
      res.send({});
     }
    }
-  });
-
-  app.get(API_URL + 'login/check', passport.authenticate('bearer', bearTokenOptions), async (req: any, res) =>
-  {
-   res.status(200);
-   res.send({isLoggedIn: true});
   });
 
   app.get(API_URL + 'detection', async (req: any, res, next) =>
