@@ -36,13 +36,13 @@ export class WebServerHelper
   {
    if (username == undefined || username.trim().length == 0)
    {
-    done(new ErrorObject(ErrorObject.EMPTY_USERNAME));
+    done(null,false,new ErrorObject(ErrorObject.EMPTY_USERNAME));
     return;
    }
 
    if (password == undefined || password.trim().length == 0)
    {
-    done(new ErrorObject(ErrorObject.EMPTY_PASSWORD));
+    done(null,false,new ErrorObject(ErrorObject.EMPTY_PASSWORD));
     return;
    }
 
@@ -51,7 +51,7 @@ export class WebServerHelper
     {
      if (user == null || user == undefined)
      {
-      done(new ErrorObject(ErrorObject.INVALID_USERNAME_OR_PASSWORD));
+      done(null,false,new ErrorObject(ErrorObject.INVALID_USERNAME_OR_PASSWORD));
       return;
      }
 
@@ -60,7 +60,7 @@ export class WebServerHelper
       {
        if (!matches)
        {
-        done(new ErrorObject(ErrorObject.INVALID_USERNAME_OR_PASSWORD));
+        done(null,false,new ErrorObject(ErrorObject.INVALID_USERNAME_OR_PASSWORD));
         return;
        }
        done(null, user);
@@ -68,7 +68,7 @@ export class WebServerHelper
     })
     .catch(reason =>
     {
-     done(reason);
+     done(null,false,reason);
     });
   }));
 
@@ -76,14 +76,14 @@ export class WebServerHelper
   {
    if (token == null || token == undefined || token.trim().length < 1)
    {
-    done(new ErrorObject(ErrorObject.EMPTY_TOKEN));
+    done(null,false,new ErrorObject(ErrorObject.EMPTY_TOKEN));
     return;
    }
    getConnection().getCustomRepository(UserRepository).findByToken(token).then(user =>
     {
      if (user == null || user == undefined)
      {
-      done(new ErrorObject(ErrorObject.INVALID_TOKEN));
+      done(null,false,new ErrorObject(ErrorObject.INVALID_TOKEN));
       return;
      }
 
@@ -96,7 +96,7 @@ export class WebServerHelper
     })
     .catch(ex =>
     {
-     done(ex, false);
+     done(null,false,ex);
     });
   }));
 
