@@ -59,7 +59,7 @@ export class TokenManager
   {
    return false;
   }
-  if (user.token != obj.token)
+  if (user.token != token)
   {
    return false;
   }
