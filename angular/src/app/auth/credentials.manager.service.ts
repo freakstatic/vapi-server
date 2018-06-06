@@ -1,0 +1,66 @@
+import {Injectable} from '@angular/core';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {Login} from '../objects/login';
+
+@Injectable()
+export class CredentialsManagerService
+{
+ private loggedIn = new BehaviorSubject<boolean>(false);
+ private login: Login = null;
+
+ constructor() { }
+
+ get isLoggedIn()
+ {
+  return this.loggedIn;
+ }
+
+ get getLogin(): Login
+ {
+  return this.login;
+ }
+
+ set token(token: string)
+ {
+  let login = new Login(token);
+  if (!login.isValid())
+  {
+   return;
+  }
+  this.login=login;
+  localStorage.setItem('token', token);
+  this.loggedIn.next(true);
+ }
+
+ public checkLogin(): boolean
+ {
+  return this.isValidToken(localStorage.getItem('token'));
+ }
+
+ public isValidToken(token: string): boolean
+ {
+  let checkLoggedIn = token != null && token != undefined && token.trim().length < 1;
+  if (!checkLoggedIn)
+  {
+   if (checkLoggedIn != this.loggedIn.getValue())
+   {
+    this.loggedIn.next(false);
+   }
+   return false;
+  }
+
+  let login: Login = JSON.parse(token);
+  checkLoggedIn = login.isValid();
+  if (checkLoggedIn != this.loggedIn.getValue())
+  {
+   this.loggedIn.next(checkLoggedIn);
+  }
+  return checkLoggedIn;
+ }
+
+ public cleanToken()
+ {
+  localStorage.setItem('token', undefined);
+  this.isLoggedIn.next(false);
+ }
+}
