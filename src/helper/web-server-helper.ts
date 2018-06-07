@@ -6,7 +6,6 @@ import * as passport from "passport";
 import {BasicStrategy} from 'passport-http';
 import {Strategy} from 'passport-http-bearer';
 import * as path from 'path';
-import {DbHelper} from "./db-helper";
 import {getConnection} from "typeorm";
 import {ErrorObject} from "../class/ErrorObject";
 import {TokenManager} from '../class/token.manager';
@@ -15,9 +14,6 @@ import {MotionSettingsError} from "../exception/MotionSettingsError";
 import {DetectionRepository} from '../repository/DetectionRepository';
 import {UserRepository} from "../repository/UserRepository";
 import {MotionHelper} from "./motion-helper";
-import {ConfigObject} from "../class/ConfigObject";
-import {MotionSettingsError} from "../exception/MotionSettingsError";
-import {DetectionRepository} from "../repository/DetectionRepository";
 import {TimelapseHelper} from "./TimelapseHelper";
 
 const config = require('../../config.json');
