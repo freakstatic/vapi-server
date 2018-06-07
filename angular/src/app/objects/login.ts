@@ -20,7 +20,7 @@ export class Login
   this.timestamp=new Date(obj.timestamp);
  }
 
- public isValid():boolean
+ public isValid(checkDate=true):boolean
  {
   if(this.token==null||this.token==undefined||this.token.trim().length<1)
   {
@@ -43,6 +43,10 @@ export class Login
    return false;
   }
   let date = new Date();
-  return this.timestamp.getTime() > date.getTime();
+  if(checkDate)
+  {
+   return this.timestamp.getTime() > date.getTime();
+  }
+  return true;
  }
 }
