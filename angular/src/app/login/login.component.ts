@@ -2,8 +2,8 @@ import {HttpClient} from '@angular/common/http';
 import {Component, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
 import {TranslateService} from '@ngx-translate/core';
-import {AppComponent} from "../app.component";
 import {AuthService} from '../auth/auth.service';
+import {NavbarComponent} from '../components/navbar/navbar.component';
 
 declare var $: any;
 
@@ -21,7 +21,7 @@ export class LoginComponent implements OnInit
  usernameEmpty: boolean = false;
  passwordEmpty: boolean = false;
 
- constructor(private appComponent: AppComponent, private http: HttpClient,
+ constructor(private http: HttpClient,
              private authService: AuthService,
              private translateService: TranslateService, private router: Router)
  {
@@ -85,7 +85,7 @@ export class LoginComponent implements OnInit
    }
    this.translateService.get(messageKey).subscribe((res: string) =>
    {
-    this.appComponent.showErrorMessage(res);
+    NavbarComponent.showErrorMessage(res);
    });
 
   })
