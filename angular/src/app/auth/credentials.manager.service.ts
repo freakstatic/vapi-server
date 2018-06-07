@@ -5,10 +5,31 @@ import {Login} from '../objects/login';
 @Injectable()
 export class CredentialsManagerService
 {
+ private tokenBecomeInvalid = new BehaviorSubject<boolean>(true);
  private loggedIn = new BehaviorSubject<boolean>(false);
  private login: Login = null;
 
- constructor() { }
+ constructor()
+ {
+  if(!this.hasToken())
+  {
+   return;
+  }
+  this.setToken(localStorage.getItem('token'),false);
+  if (this.checkLogin())
+  {
+   this.loggedIn.next(true);
+  }
+  else if(this.checkLogin(false))
+  {
+   this.tokenBecomeInvalid.next(true);
+  }
+ }
+
+ get isTokenBecomeInvalid()
+ {
+  return this.tokenBecomeInvalid.asObservable();
+ }
 
  get isLoggedIn()
  {
@@ -22,52 +43,57 @@ export class CredentialsManagerService
 
  set token(token: string)
  {
-  let login = new Login(token);
-  if (!login.isValid())
+  if(!this.setToken(token))
   {
    return;
   }
-  this.login=login;
-  localStorage.setItem('token', token);
   this.loggedIn.next(true);
+  this.tokenBecomeInvalid.next(false);
  }
 
- public checkLogin(): boolean
+ public checkLogin(checkDate=true): boolean
+ {
+  let token = localStorage.getItem('token');
+  return this.isValidToken(token,checkDate);
+ }
+
+ public hasToken():boolean
  {
   let token=localStorage.getItem('token');
-  let valid=this.isValidToken(token);
-  if (valid&&this.login==null)
-  {
-   this.login=new Login(token);
-  }
-  return valid;
+  return token != null && token != undefined && token.trim().length > 0;
  }
 
- public isValidToken(token: string): boolean
+ public isValidToken(token: string,checkDate=true): boolean
  {
   let checkLoggedIn = token != null && token != undefined && token.trim().length > 0;
   if (!checkLoggedIn)
   {
-   if (checkLoggedIn != this.loggedIn.getValue())
-   {
-    this.loggedIn.next(false);
-   }
    return false;
   }
 
   let login = new Login(token);
-  checkLoggedIn = login.isValid();
-  if (checkLoggedIn != this.loggedIn.getValue())
-  {
-   this.loggedIn.next(checkLoggedIn);
-  }
+  checkLoggedIn = login.isValid(checkDate);
   return checkLoggedIn;
  }
 
  public cleanToken()
  {
-  localStorage.setItem('token', undefined);
+  localStorage.removeItem('token');
   this.isLoggedIn.next(false);
-  this.login=null;
+  this.login = null;
+  this.tokenBecomeInvalid.next(false);
+ }
+
+ private setToken(token:string,checkDate=true):boolean
+ {
+  let login = new Login(token);
+  let valid=login.isValid(checkDate);
+  if (!valid)
+  {
+   return false;
+  }
+  this.login = login;
+  localStorage.setItem('token', token);
+  return true;
  }
 }
