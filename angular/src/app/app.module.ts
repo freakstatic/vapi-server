@@ -7,8 +7,11 @@ import {RouterModule} from '@angular/router';
 
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
+import {AngularDateTimePickerModule} from 'angular2-datetimepicker';
 
 import {DashboardService} from 'app/dashboard/dashboard.service';
+import {Ng2CompleterModule} from 'ng2-completer';
+import {IonRangeSliderModule} from 'ng2-ion-range-slider';
 import {Socket, SocketIoConfig, SocketIoModule} from 'ngx-socket-io';
 import {environment} from '../environments/environment';
 
@@ -28,10 +31,12 @@ import {NotificationsComponent} from './notifications/notifications.component';
 import {SettingsComponent} from './settings/settings.component';
 import {SettingsService} from "./settings/settings.service";
 import {TableListComponent} from './table-list/table-list.component';
+import {TimelapsesComponent} from './timelapses/timelapses.component';
 import {TimelapsesService} from './timelapses/timelapses.service';
 import {TitleService} from "./title.service";
 import {TypographyComponent} from './typography/typography.component';
 import {UpgradeComponent} from './upgrade/upgrade.component';
+import {UserListComponent} from './user-list/user-list.component';
 import {UserProfileComponent} from './user-profile/user-profile.component';
 
 export function createTranslateLoader(http: HttpClient)
@@ -57,7 +62,9 @@ const config: SocketIoConfig = {
   NotificationsComponent,
   UpgradeComponent,
   LoginComponent,
-  SettingsComponent
+  SettingsComponent,
+  TimelapsesComponent,
+  UserListComponent
  ],
  imports: [
   BrowserModule,
@@ -67,6 +74,9 @@ const config: SocketIoConfig = {
   RouterModule,
   AppRoutingModule,
   HttpClientModule,
+  Ng2CompleterModule,
+  AngularDateTimePickerModule,
+  IonRangeSliderModule,
   TranslateModule.forRoot({
    loader: {
     provide: TranslateLoader,
