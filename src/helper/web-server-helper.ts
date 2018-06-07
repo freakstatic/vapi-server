@@ -166,10 +166,53 @@ export class WebServerHelper
    return;
   });
 
-  app.post(API_URL + 'login/refresh', passport.authenticate('bearer', bearTokenOptions), async (req: any, res) =>
+  app.post(API_URL + 'login/refresh', (req: Request, res) =>
   {
-   res.status(200);
-   res.send({isLoggedIn: true});
+   let authorization=req.headers.authorization;
+   if(authorization==undefined||authorization==null||authorization.trim().length<1)
+   {
+    res.sendStatus(401);
+    return;
+   }
+   let authorizationArray=authorization.split(' ');
+   if(authorizationArray==undefined||authorizationArray==null||authorizationArray.length!=2)
+   {
+    res.sendStatus(401);
+    return;
+   }
+   if(authorizationArray[0]!='Bearer')
+   {
+    res.sendStatus(401);
+    return;
+   }
+   if(authorizationArray[1]==undefined||authorizationArray[1]==null||authorizationArray[1].trim().length<1)
+   {
+    res.sendStatus(401);
+    return;
+   }
+   getConnection().getCustomRepository(UserRepository).findByToken(authorizationArray[1]).then(async user =>
+   {
+    if (user == null || user == undefined)
+    {
+     res.sendStatus(401);
+     return;
+    }
+    if(!tokenManager.computeFromUser(user))
+    {
+     res.sendStatus(401);
+     return;
+    }
+    let updated = await getConnection().getCustomRepository(UserRepository).update(user.id, {token: user.token});
+    if (updated.raw.affectedRows != 1)
+    {
+     res.status(500).send(new ErrorObject(ErrorObject.CANNOT_UPDATE_USER_TOKEN));
+    }
+    else
+    {
+     res.status(200).send({token:user.token});
+    }
+    return;
+   });
   });
 
   app.get(API_URL + 'motion/settings', async (req: any, res, next) =>
