@@ -1,52 +1,65 @@
+import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {HttpClient, HttpErrorResponse} from "@angular/common/http";
-import {Http} from "@angular/http";
-import {Observable} from "rxjs/Observable";
-import {reject} from "q";
 import {Socket} from 'ngx-socket-io';
-
+import {CredentialsManagerService} from './credentials.manager.service';
 
 @Injectable()
-export class AuthService {
-    private loggedIn = new BehaviorSubject<boolean>(true);
+export class AuthService
+{
+ private refreshingToken: boolean;
 
-    get isLoggedIn() {
-        return this.loggedIn.asObservable();
-    }
+ constructor(private router: Router, private credentialManager: CredentialsManagerService, private http: HttpClient, private socket: Socket)
+ {
+  this.refreshingToken = false;
+  this.credentialManager.isTokenBecomeInvalid.subscribe((data: boolean) =>
+  {
+   if (data && this.credentialManager.hasToken() && !this.refreshingToken)
+   {
+    this.refreshingToken = true;
+    this.http.post('api/login/refresh', null).subscribe((data: any) =>
+    {
+     this.credentialManager.token = data.token;
+     this.refreshingToken = false;
+    }, () =>
+    {
+     this.refreshingToken = false;
+     this.logout();
+    })
+   }
+  });
+ }
 
-    constructor(private router: Router, private http: HttpClient, private socket: Socket) {
-    }
+ get isLoggedIn()
+ {
+  return this.credentialManager.isLoggedIn.asObservable();
+ }
 
-    login(username: string, password: string) {
-        return new Promise((resolve, reject) => {
-            this.http.post('api/login', {username: username, password: password}).subscribe(() => {
-                this.loggedIn.next(true);
-                this.socket.emit('authenticate', {username: username, password: password});
-                resolve();
-            }, (errorResponse: HttpErrorResponse) => {
-                reject(errorResponse);
-            });
-        })
-    }
+ login(username: string, password: string)
+ {
+  return new Promise((resolve, reject) =>
+  {
+   this.http.post('api/login', {username: username, password: password}).subscribe((data: any) =>
+   {
+    this.credentialManager.token = data.token;
+    this.socket.emit('authenticate', data.token);
+    resolve();
+   }, (errorResponse: HttpErrorResponse) =>
+   {
+    reject(errorResponse);
+   });
+  })
+ }
 
 
-    logout() {
-        this.loggedIn.next(false);
-        this.router.navigate(['/login']);
-    }
+ logout()
+ {
+  this.credentialManager.cleanToken();
+  this.router.navigate(['/login']);
+ }
 
-    checkLogin() {
-        return new Promise((resolve, reject) => {
-            this.http.get('api/login/check').subscribe((response: any) => {
-                this.loggedIn.next(response.isLoggedIn);
-                resolve(response.isLoggedIn);
-            }, (error: HttpErrorResponse) => {
-                this.loggedIn.next(false);
-                this.socket.emit('authenticate');
-                resolve(false);
-            });
-        })
-    }
+ checkLogin(): boolean
+ {
+  return this.credentialManager.checkLogin();
+ }
 }
