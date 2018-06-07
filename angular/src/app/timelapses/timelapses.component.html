@@ -1,0 +1,93 @@
+<div class="main-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-6 col-md-12">
+                <div class="card">
+                    <div class="card-header" data-background-color="red">
+                        <h4 class="title">{{ 'TIMELAPSES_TITLE' | translate:param }}</h4>
+                        <p class="category">{{ 'TIMELAPSES_SECOND_TITLE' | translate:param }}</p>
+                    </div>
+                    <div class="card-content table-responsive">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group label-floating is-empty">
+                                    <label class="control-label">{{ 'TIMELAPSES_CODEC' | translate:param }}</label>
+                                    <ng2-completer class="completer-limit"
+                                                   [(ngModel)]="selectedCodecDescription"
+                                                   [datasource]="codecsDescription"
+                                                   [minSearchLength]="0"
+                                                   [maxChars]="4"
+                                                   [inputClass]="'form-control'"
+                                                   [matchClass]="'match'"
+                                                   [textSearching]="false">
+                                    </ng2-completer>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group label-floating is-empty">
+                                    <label class="control-label">{{ 'TIMELAPSES_FORMAT' | translate:param }} </label>
+                                <ng2-completer class="completer-limit"
+                                               [(ngModel)]="selectedFormat"
+                                               [datasource]="formats"
+                                               [minSearchLength]="0"
+                                               [maxChars]="4"
+                                               [inputClass]="'form-control'"
+                                               [matchClass]="'match'"
+                                               [textSearching]="false">
+                                </ng2-completer>
+
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-12">
+                                <ion-range-slider min="0" max="144" [from]="fps"
+                                                  (onChange)="sliderOnChange($event)"
+                                ></ion-range-slider>
+                            </div>
+
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>De:</label>
+                                <angular2-date-picker [(ngModel)]="startDate"
+                                                      [settings]="settings"></angular2-date-picker>
+                            </div>
+                            <div class="col-md-6">
+                                <label>Até:</label>
+                                <angular2-date-picker [(ngModel)]="endDate"
+                                                      [settings]="settings"></angular2-date-picker>
+                            </div>
+                            <div class="col-md-12">
+                                <br/>
+                                <div class="progress" [hidden]="!processing">
+                                    <div class="progress-bar progress-bar-success" role="progressbar"
+                                         aria-valuemin="0" aria-valuemax="100"
+                                         [ngStyle]="{'width': progress}">
+                                    </div>
+                                </div>
+                                <p class="text-danger">{{ errorMessage }}</p>
+                                <button [disabled]="processing" class="btn btn-success" (click)="createTimelapse()">{{
+                                    'TIMELAPSES_BTN' |
+                                    translate:param }}
+                                </button>
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-12">
+
+                            <br/><br/><br/><br/><br/><br/>
+                            <br/><br/><br/><br/><br/><br/>
+                            <br/><br/><br/><br/><br/><br/>
+
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

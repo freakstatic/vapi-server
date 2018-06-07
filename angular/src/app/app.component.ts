@@ -118,33 +118,5 @@ export class AppComponent implements OnInit {
     }
 
 
-    showErrorMessage(message: string){
-        $.notify({
-            icon: 'material-icons',
-            message:  message
-        },{
-            type: 'danger',
-            timer: 2000,
-        });
-    }
 
-    showWarningMessage(message: string){
-        $.notify({
-            icon: 'material-icons',
-            message:  message
-        },{
-            type: 'warning',
-            timer: 2000,
-        });
-    }
-
-    showMessage(message: string){
-        $.notify({
-            icon: 'material-icons',
-            message:  message
-        },{
-            type: 'success',
-            timer: 2000,
-        });
-    }
 }

@@ -1,5 +1,5 @@
 export class ErrorObject {
-    private code: string;
+    public code: string;
     private readonly message: string;
 
     static errorMessages = {
@@ -14,6 +14,8 @@ export class ErrorObject {
     static readonly INVALID_USERNAME_OR_PASSWORD = 'INVALID_USERNAME_OR_PASSWORD';
     static readonly MOTION_INVALID_SETTINGS = 'MOTION_INVALID_SETTINGS';
 
+    static readonly TIMELAPSE_NO_DETECTIONS = 'TIMELAPSE_NO_DETECTIONS';
+
     constructor(code: string) {
         this.message = ErrorObject.errorMessages[code];
         if (!this.message){
@@ -21,4 +23,6 @@ export class ErrorObject {
         }
         this.code = code;
     }
+
+
 }

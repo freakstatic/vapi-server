@@ -25,7 +25,7 @@ class SocketHelper {
         io.on('connection', client => {
             console.log('connected');
             client.on('detection', (arrayOfDetections) => __awaiter(this, void 0, void 0, function* () {
-                this.handleNewDetections(arrayOfDetections).catch((error) => {
+                this.handleNewDetection(arrayOfDetections).catch((error) => {
                     console.error('[socket-helper] [detection] ' + error);
                 });
             }));

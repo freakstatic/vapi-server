@@ -11,6 +11,7 @@ import {MotionHelper} from "./motion-helper";
 import {ConfigObject} from "../class/ConfigObject";
 import {MotionSettingsError} from "../exception/MotionSettingsError";
 import {DetectionRepository} from "../repository/DetectionRepository";
+import {TimelapseHelper} from "./TimelapseHelper";
 
 let config = require('../../config.json');
 
@@ -73,13 +74,13 @@ export class WebServerHelper {
             let settings = req.body;
             try {
                 await motionHelper.editSettings(settings);
-               // res.status(200);
+                // res.status(200);
                 res.send({});
-            }catch (e) {
-                if (e instanceof MotionSettingsError){
+            } catch (e) {
+                if (e instanceof MotionSettingsError) {
                     res.status(400);
                     res.send(new ErrorObject(ErrorObject.MOTION_INVALID_SETTINGS));
-                }else {
+                } else {
                     res.status(500);
                     res.send({});
                 }
@@ -101,46 +102,51 @@ export class WebServerHelper {
                 req.logout();
                 res.status(200);
                 res.send();
-            }else {
+            } else {
                 res.status(401);
             }
         });
 
-        app.get(API_URL + 'detection', async (req: any, res, next) =>
-        {
+        app.get(API_URL + 'detection', async (req: any, res, next) => {
             let startDate = null;
             let endDate = null;
-            if (req.query.startDate !== undefined && req.query.startDate !== null)
-            {
+            if (req.query.startDate !== undefined && req.query.startDate !== null) {
                 startDate = new Date(req.query.startDate);
             }
-            if (req.query.endDate !== undefined && req.query.endDate !== null)
-            {
+            if (req.query.endDate !== undefined && req.query.endDate !== null) {
                 endDate = new Date(req.query.endDate);
             }
             let detections = await getConnection().getCustomRepository(DetectionRepository).get(startDate, endDate);
             res.status(200).send(detections);
         });
 
-        app.get(API_URL + 'stats/detection', async (req: any, res, next) =>
-        {
+        app.get(API_URL + 'stats/detection', async (req: any, res, next) => {
             let startDate = null;
             let endDate = null;
-            if (req.query.startDate !== undefined && req.query.startDate !== null)
-            {
+            if (req.query.startDate !== undefined && req.query.startDate !== null) {
                 startDate = new Date(req.query.startDate);
             }
-            if (req.query.endDate !== undefined && req.query.endDate !== null)
-            {
+            if (req.query.endDate !== undefined && req.query.endDate !== null) {
                 endDate = new Date(req.query.endDate);
             }
-            let detections = await getConnection().getCustomRepository(DetectionRepository).getStats(startDate,endDate);
-            if(detections==null)
-            {
+            let detections = await getConnection().getCustomRepository(DetectionRepository).getStats(startDate, endDate);
+            if (detections == null) {
                 res.status(204).send();
             }
             res.status(200).send(detections);
         });
+
+
+        app.get(API_URL + 'timelapse/codecs', async (req: any, res, next) => {
+            let codecs = await TimelapseHelper.getCodecs();
+            res.status(200).send(codecs);
+        });
+
+        app.get(API_URL + 'timelapse/formats', async (req: any, res, next) => {
+            let formats = await TimelapseHelper.getFormats();
+            res.status(200).send(formats);
+        });
+
 
         app.get('*', function (req, res) {
             res.status(200)

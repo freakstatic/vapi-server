@@ -13,23 +13,29 @@
     "clone": "^2.1.1",
     "express": "^4.16.3",
     "express-session": "^1.15.6",
+    "ffmpeg-on-progress": "^1.0.0",
+    "fluent-ffmpeg": "^2.1.2",
+    "fs-promisify": "^0.2.0",
     "moment": "^2.22.1",
     "mysql2": "^1.5.3",
     "path": "^0.12.7",
     "properties": "^1.2.1",
     "reflect-metadata": "^0.1.10",
+    "rmdir": "^1.2.0",
     "socket.io": "^2.1.1",
     "superchild": "^0.1.10",
     "tslint": "^5.9.1",
     "typeorm": "0.2.3",
-    "typescript": "^2.8.1"
+    "typescript": "^2.8.1",
+    "videoshow": "^0.1.11"
   },
   "devDependencies": {
-    "@types/moment": "^2.13.0",
     "@types/bcrypt": "^1.0.0",
     "@types/express": "^4.11.1",
+    "@types/moment": "^2.13.0",
     "@types/node": "^9.6.6",
     "@types/socket.io": "^1.4.33",
-    "ts-node": "3.3.0"
+    "ts-node": "3.3.0",
+    "webpack": "^4.10.2"
   }
 }
