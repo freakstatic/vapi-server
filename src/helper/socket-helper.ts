@@ -1,14 +1,17 @@
 import * as express from 'express';
 import * as http from 'http';
 import {getConnection} from "typeorm";
+import {ErrorObject} from '../class/ErrorObject';
 import {TokenManager} from '../class/token.manager';
 import {DetectableObject} from "../entity/DetectableObject";
 import {Detection} from "../entity/Detection";
 import {DetectionObject} from "../entity/DetectionObject";
 import {User} from '../entity/User';
 import {DetectableObjectRepository} from "../repository/DetectableObjectRepository";
+import {DetectionRepository} from '../repository/DetectionRepository';
 import {UserRepository} from '../repository/UserRepository';
 import {DbHelper} from "./db-helper";
+import {TimelapseHelper} from './TimelapseHelper';
 import moment = require("moment");
 
 let config = require('../../config.json');
@@ -69,17 +72,22 @@ export class SocketHelper
     {
      client.join(USER_ROOM);
 
-     client.on('timelapse/create', async (data) => {
+     client.on('timelapse/create', async (data) =>
+     {
 
       let detections = await getConnection()
        .getCustomRepository(DetectionRepository).get(data.startDate, data.endDate);
-      if (detections) {
-       let images = detections.map((detection) => {
+      if (detections)
+      {
+       let images = detections.map((detection) =>
+       {
         return detection.imgUrl;
        });
 
        TimelapseHelper.create(images, data.codec, data.format, data.fps, client);
-      } else {
+      }
+      else
+      {
        client.emit('error', new ErrorObject(ErrorObject.TIMELAPSE_NO_DETECTIONS))
       }
 
@@ -96,7 +104,7 @@ export class SocketHelper
   server.listen(config.socketPort);
  }
 
- async checkUserCredentials(token: string): Promise<User>
+ private async checkUserCredentials(token: string): Promise<User>
  {
   if (token == null || token == undefined || token.trim().length < 1)
   {
@@ -106,7 +114,7 @@ export class SocketHelper
   return await getConnection().getCustomRepository(UserRepository).findByToken(token);
  }
 
- async handleNewDetections(detectionsArray)
+ private async handleNewDetections(detectionsArray)
  {
   try
   {
