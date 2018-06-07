@@ -7,9 +7,27 @@ import {CredentialsManagerService} from './credentials.manager.service';
 @Injectable()
 export class AuthService
 {
- constructor(private router: Router, private credentialManager:CredentialsManagerService,private http: HttpClient, private socket: Socket)
- {
+ private refreshingToken: boolean;
 
+ constructor(private router: Router, private credentialManager: CredentialsManagerService, private http: HttpClient, private socket: Socket)
+ {
+  this.refreshingToken = false;
+  this.credentialManager.isTokenBecomeInvalid.subscribe((data: boolean) =>
+  {
+   if (data && this.credentialManager.hasToken() && !this.refreshingToken)
+   {
+    this.refreshingToken = true;
+    this.http.post('api/login/refresh', null).subscribe((data: any) =>
+    {
+     this.credentialManager.token = data.token;
+     this.refreshingToken = false;
+    }, () =>
+    {
+     this.refreshingToken = false;
+     this.logout();
+    })
+   }
+  });
  }
 
  get isLoggedIn()
@@ -21,9 +39,9 @@ export class AuthService
  {
   return new Promise((resolve, reject) =>
   {
-   this.http.post('api/login',{username:username,password:password}).subscribe((data:any) =>
+   this.http.post('api/login', {username: username, password: password}).subscribe((data: any) =>
    {
-    this.credentialManager.token=data.token;
+    this.credentialManager.token = data.token;
     this.socket.emit('authenticate', data.token);
     resolve();
    }, (errorResponse: HttpErrorResponse) =>
