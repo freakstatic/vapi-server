@@ -31,7 +31,12 @@ import {HttpClient, HttpClientModule} from "@angular/common/http";
 import {TitleService} from "./title.service";
 import { SettingsComponent } from './settings/settings.component';
 import {SettingsService} from "./settings/settings.service";
-
+import { UserListComponent } from './user-list/user-list.component';
+import { TimelapsesComponent } from './timelapses/timelapses.component';
+import { TimelapsesService } from './timelapses/timelapses.service';
+import { Ng2CompleterModule } from "ng2-completer";
+import {AngularDateTimePickerModule} from "angular2-datetimepicker";
+import { IonRangeSliderModule } from "ng2-ion-range-slider";
 
 export function createTranslateLoader(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -50,7 +55,9 @@ const config: SocketIoConfig = {url: environment.socketURL, options: {}};
         NotificationsComponent,
         UpgradeComponent,
         LoginComponent,
-        SettingsComponent
+        SettingsComponent,
+        UserListComponent,
+        TimelapsesComponent
     ],
     imports: [
         BrowserModule,
@@ -60,6 +67,9 @@ const config: SocketIoConfig = {url: environment.socketURL, options: {}};
         RouterModule,
         AppRoutingModule,
         HttpClientModule,
+        Ng2CompleterModule,
+        AngularDateTimePickerModule,
+        IonRangeSliderModule,
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,
@@ -69,7 +79,7 @@ const config: SocketIoConfig = {url: environment.socketURL, options: {}};
         }),
         SocketIoModule.forRoot(config)
     ],
-    providers: [AuthService, AuthGuard, TitleService, SettingsService, DashboardService],
+    providers: [AuthService, AuthGuard, TitleService, SettingsService, DashboardService, TimelapsesService],
     bootstrap: [AppComponent]
 })
 export class AppModule {

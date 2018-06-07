@@ -6,5 +6,5 @@
 export const environment = {
  production: false,
  apiEndpoint: 'api/',
- socketURL:'http://127.0.0.1:3000'
+ socketURL:'http://localhost:3000'
 };

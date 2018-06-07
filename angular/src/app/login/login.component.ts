@@ -6,6 +6,7 @@ import {AuthService} from '../auth/auth.service';
 import {TranslateService} from '@ngx-translate/core';
 import {Router} from "@angular/router";
 import {AppComponent} from "../app.component";
+import {NavbarComponent} from "../components/navbar/navbar.component";
 declare var $: any;
 
 @Component({
@@ -21,7 +22,7 @@ export class LoginComponent implements OnInit {
     usernameEmpty : boolean = false;
     passwordEmpty: boolean = false;
 
-    constructor(private appComponent: AppComponent, private http: HttpClient,
+    constructor(private http: HttpClient,
                 private authService: AuthService,
                 private translateService: TranslateService, private router: Router) {
         this.showNav = true;
@@ -73,7 +74,7 @@ export class LoginComponent implements OnInit {
                 messageKey = 'ERROR_NO_CONNECTION';
             }
             this.translateService.get(messageKey).subscribe((res: string) => {
-                this.appComponent.showErrorMessage(res);
+                NavbarComponent.showErrorMessage(res);
             });
 
         })

@@ -3,6 +3,13 @@ import { ROUTES } from '../sidebar/sidebar.component';
 import {Location, LocationStrategy, PathLocationStrategy} from '@angular/common';
 import {AuthService} from "../../auth/auth.service";
 import {Router} from "@angular/router";
+import {Socket} from 'ngx-socket-io';
+import {errorObject} from "rxjs/util/errorObject";
+import {ErrorObject} from "../../../../../src/class/ErrorObject";
+import {TranslateService} from "@ngx-translate/core";
+import {AppComponent} from "../../app.component";
+
+declare const $: any;
 
 @Component({
   selector: 'app-navbar',
@@ -15,7 +22,12 @@ export class NavbarComponent implements OnInit {
     private toggleButton: any;
     private sidebarVisible: boolean;
 
-    constructor(location: Location,  private element: ElementRef, private authService: AuthService, private router: Router) {
+    constructor(location: Location,  private element: ElementRef,
+                private authService: AuthService, private router: Router,
+                private socket: Socket,
+                private translateService: TranslateService
+
+    ) {
       this.location = location;
           this.sidebarVisible = false;
     }
@@ -24,6 +36,12 @@ export class NavbarComponent implements OnInit {
       this.listTitles = ROUTES.filter(listTitle => listTitle);
       const navbar: HTMLElement = this.element.nativeElement;
       this.toggleButton = navbar.getElementsByClassName('navbar-toggle')[0];
+
+      this.socket.on('error', (errorObject: ErrorObject) => {
+          this.translateService.get(errorObject.code).subscribe((res: string) => {
+             // this.appComponent.showErrorMessage(res);
+          });
+      })
     }
 
     sidebarOpen() {
@@ -70,5 +88,35 @@ export class NavbarComponent implements OnInit {
     async logout(){
         await this.authService.logout();
         this.router.navigate(['/login']);
+    }
+
+    static showErrorMessage(message: string){
+        $.notify({
+            icon: 'material-icons',
+            message:  message
+        },{
+            type: 'danger',
+            timer: 2000,
+        });
+    }
+
+    static showWarningMessage(message: string){
+        $.notify({
+            icon: 'material-icons',
+            message:  message
+        },{
+            type: 'warning',
+            timer: 2000,
+        });
+    }
+
+    static showMessage(message: string){
+        $.notify({
+            icon: 'material-icons',
+            message:  message
+        },{
+            type: 'success',
+            timer: 2000,
+        });
     }
 }

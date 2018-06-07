@@ -13,19 +13,17 @@ import {UpgradeComponent} from './upgrade/upgrade.component';
 import {LoginComponent} from "./login/login.component";
 import {AuthGuard} from "./auth/auth.guard";
 import {SettingsComponent} from "./settings/settings.component";
+import {UserListComponent} from "./user-list/user-list.component";
+import {TimelapsesComponent} from "./timelapses/timelapses.component";
 
 const routes: Routes = [
     {path: 'login', component: LoginComponent, data: {title: 'Login'}},
     {path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard], data: {title: 'Dashboard'}},
-    {path: 'user-manager', component: UserProfileComponent},
+    {path: 'timelapses', component: TimelapsesComponent},
+    {path: 'user-list', component: UserListComponent},
     {path: 'settings', component: SettingsComponent},
 
-    {path: 'user-profile', component: UserProfileComponent},
-    {path: 'table-list', component: TableListComponent},
-    {path: 'typography', component: TypographyComponent},
-    {path: 'icons', component: IconsComponent},
-    {path: 'notifications', component: NotificationsComponent},
-    {path: 'upgrade', component: UpgradeComponent},
+
     {path: '', redirectTo: 'dashboard', pathMatch: 'full'}
 ];
 
