@@ -11,12 +11,12 @@ export class AuthInterceptor implements HttpInterceptor
 
  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>
  {
-  if (req.url.match("./assets/i18n/([^][^].json)"))
+  if (req.url.match("\.\/assets\/i18n\/([^]{2}.json)"))
   {
    return next.handle(req);
   }
   let authReq = req;
-  if (req.url.match("api/login") && !this.credentialsManager.checkLogin())
+  if ((req.url=='api/login') && !this.credentialsManager.checkLogin())
   {
    authReq = req.clone({
     setHeaders: {
