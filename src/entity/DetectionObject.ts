@@ -29,4 +29,5 @@ export class DetectionObject{
 
     @ManyToOne(type => DetectableObject)
     object: DetectableObject;
+
 }

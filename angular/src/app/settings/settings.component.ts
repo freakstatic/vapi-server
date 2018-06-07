@@ -3,6 +3,7 @@ import {SettingsService} from "./settings.service";
 import {ConfigObject} from "../../../../src/class/ConfigObject";
 import {AppComponent} from "../app.component";
 import {TranslateService} from "@ngx-translate/core";
+import {NavbarComponent} from "../components/navbar/navbar.component";
 
 @Component({
     selector: 'app-settings',
@@ -11,7 +12,9 @@ import {TranslateService} from "@ngx-translate/core";
 })
 export class SettingsComponent implements OnInit {
 
-    constructor(private translateService: TranslateService, private appComponent: AppComponent, private settingsService: SettingsService) {
+    constructor(private translateService: TranslateService,
+                private navbarComponent: NavbarComponent,
+                private settingsService: SettingsService) {
     }
 
     @Input()
@@ -49,14 +52,14 @@ export class SettingsComponent implements OnInit {
             this.waitingResponse = true;
             this.settingsService.sendMotionSettings(changes).then(() => {
                 this.translateService.get("SETTINGS_UPDATED").subscribe((res: string) => {
-                    this.appComponent.showMessage(res);
+                    NavbarComponent.showMessage(res);
                 });
                 this.copySettings();
                 this.waitingResponse = false;
             }).catch((error) => {
                 if (error.code){
                     this.translateService.get('ERROR-' + error.code).subscribe((res: string) => {
-                        this.appComponent.showErrorMessage(res);
+                        NavbarComponent.showErrorMessage(res);
                     });
                 }
                 console.error(error);
@@ -64,7 +67,7 @@ export class SettingsComponent implements OnInit {
             })
         }else {
             this.translateService.get("SETTINGS_NOTHING_TO_UPDATE").subscribe((res: string) => {
-                this.appComponent.showWarningMessage(res);
+                NavbarComponent.showWarningMessage(res);
             });
 
         }
