@@ -5,6 +5,7 @@ import * as moment from 'moment';
 import {NavbarComponent} from "../components/navbar/navbar.component";
 import {TranslateService} from "@ngx-translate/core";
 import {IonRangeSliderCallback} from "ng2-ion-range-slider";
+import {ErrorObject} from "../../../../src/class/ErrorObject";
 
 
 @Component({
@@ -16,10 +17,10 @@ export class TimelapsesComponent implements OnInit {
 
     private receivedCodecs = [];
     public codecsDescription = [];
-    public selectedCodecDescription: string = '';
+    public selectedCodecDescription: string = 'libx264 H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10 (codec h264)';
 
     public formats = [];
-    public selectedFormat: string = '';
+    public selectedFormat: string = 'avi';
     public errorMessage: string;
 
     public progress: string = '0%';
@@ -35,6 +36,7 @@ export class TimelapsesComponent implements OnInit {
     };
     public someRange: number[] = [3, 7];
     fps: number = 50;
+    fpsSelected: number = this.fps;
 
     constructor(private translateService: TranslateService,
                 private timeLapsesService: TimelapsesService, private socket: Socket) {
@@ -72,12 +74,22 @@ export class TimelapsesComponent implements OnInit {
             }, 1000);
         });
 
-        this.socket.on('timelapse/error', (error) => {
-            this.translateService.get('ERROR-TIMELAPSE_UNKNOWN').subscribe((res: string) => {
-                this.errorMessage = res + '\n' + error;
-            });
+        this.socket.on('timelapse/error', (error: {}) => {
+            let errorObject = new ErrorObject();
+            Object.assign(errorObject, error);
+            console.log(errorObject.code);
+            if (errorObject.code) {
+                this.translateService.get('ERROR-' + errorObject.code).subscribe((res: string) => {
+                    NavbarComponent.showErrorMessage(res);
+                });
+
+            } else {
+                this.translateService.get('ERROR-TIMELAPSE_UNKNOWN').subscribe((res: string) => {
+                    this.errorMessage = res + '\n' + errorObject.message;
+                });
+            }
             this.reset();
-        })
+        });
     }
 
     reset() {
@@ -126,18 +138,24 @@ export class TimelapsesComponent implements OnInit {
         }
 
         this.processing = true;
+        console.log('[TimelapseComponent] createTimelapse');
         this.socket.emit('timelapse/create', {
             'startDate': momentStartDate.format(format),
             'endDate': momentEndDate.format(format),
             'codec': selectedCodec.name,
-            'fps': this.fps,
+            'fps': this.fpsSelected,
             'format': this.selectedFormat
         });
     }
 
 
-    sliderOnChange($event: IonRangeSliderCallback) {
-       this.fps = $event.from;
+    sliderOnUpdate($event: IonRangeSliderCallback) {
+        this.fpsSelected = $event.from;
         //this.fps = $event.to();
+    }
+
+    stopTimelapse() {
+        this.socket.emit('timelapse/stop');
+        this.reset()
     }
 }

@@ -12,6 +12,7 @@ let dbHelper = new DbHelper();
     let socketHelper = new SocketHelper(dbHelper);
     let motionHelper = new MotionHelper();
     let webSocketHelper = new WebServerHelper(motionHelper);
+    TimelapseHelper.createFolders();
 })();
 
 

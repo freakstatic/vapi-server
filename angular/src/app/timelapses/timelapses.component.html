@@ -10,7 +10,7 @@
                     <div class="card-content table-responsive">
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group label-floating is-empty">
+                                <div class="form-group label-floating ">
                                     <label class="control-label">{{ 'TIMELAPSES_CODEC' | translate:param }}</label>
                                     <ng2-completer class="completer-limit"
                                                    [(ngModel)]="selectedCodecDescription"
@@ -24,7 +24,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group label-floating is-empty">
+                                <div class="form-group label-floating">
                                     <label class="control-label">{{ 'TIMELAPSES_FORMAT' | translate:param }} </label>
                                 <ng2-completer class="completer-limit"
                                                [(ngModel)]="selectedFormat"
@@ -41,8 +41,9 @@
 
 
                             <div class="col-md-12">
+                                <label class="control-label">{{ 'TIMELAPSES_FPS' | translate:param }} </label>
                                 <ion-range-slider min="0" max="144" [from]="fps"
-                                                  (onChange)="sliderOnChange($event)"
+                                                  (onChange)="sliderOnUpdate($event)"
                                 ></ion-range-slider>
                             </div>
 
@@ -69,7 +70,11 @@
                                 </div>
                                 <p class="text-danger">{{ errorMessage }}</p>
                                 <button [disabled]="processing" class="btn btn-success" (click)="createTimelapse()">{{
-                                    'TIMELAPSES_BTN' |
+                                    'TIMELAPSES_BTN_CREATE' |
+                                    translate:param }}
+                                </button>
+                                <button *ngIf="processing" class="btn btn-danger" (click)="stopTimelapse()">{{
+                                    'TIMELAPSES_BTN_CANCEL' |
                                     translate:param }}
                                 </button>
                             </div>

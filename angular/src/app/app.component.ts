@@ -9,6 +9,8 @@ import {Subscription} from 'rxjs/Subscription';
 import {AuthService} from "./auth/auth.service";
 import {NavbarComponent} from './components/navbar/navbar.component';
 import {TitleService} from "./title.service";
+import {Socket} from "socket.io";
+import {ErrorObject} from "../../../src/class/ErrorObject";
 
 declare const $: any;
 
@@ -112,6 +114,7 @@ export class AppComponent implements OnInit {
         }
         return bool;
     }
+
 
 
 
