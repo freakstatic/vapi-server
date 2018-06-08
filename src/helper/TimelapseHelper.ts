@@ -1,6 +1,7 @@
 import * as util from "util";
 import {Socket} from "socket.io";
 import {ErrorObject} from "../class/ErrorObject";
+import {unlink} from "fs";
 
 
 const ffmpeg = require('fluent-ffmpeg');
@@ -85,6 +86,11 @@ export class TimelapseHelper {
             let stopFunction = () => {
                 command.kill();
                 TimelapseHelper.clean(newFolderName);
+                unlink(filename, (err)=> {
+                    if (err){
+                        console.error('[TimelapseHelper] [create] Unable to clean file');
+                    }
+                });
                 socket.removeListener('timelapse/stop', stopFunction);
             };
 
@@ -186,6 +192,7 @@ export class TimelapseHelper {
         rmdir(folderName, (err => {
             if (err) {
                 console.error('[TimelapseHelper] [clean] Unable to delete folder ' + folderName);
+                console.error(err);
             }
         }))
     }
