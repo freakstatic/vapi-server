@@ -1,4 +1,3 @@
-import {create} from "domain";
 import * as util from "util";
 import {Socket} from "socket.io";
 import {ErrorObject} from "../class/ErrorObject";
@@ -122,16 +121,15 @@ export class TimelapseHelper {
             }
 
             if (++index < max) {
-                return new Promise((resolve) => {
-                    setImmediate(async () => {
-                        resolve(await copyFileLoop(index, max));
-                    });
+                return new Promise(async (resolve) => {
+                    resolve(await copyFileLoop(index, max));
                 });
 
             }
             return true;
         };
         await copyFileLoop(0, imageUrls.length);
+        socket.removeListener('timelapse/stop', stopFunction);
         return !stopped
     }
 
