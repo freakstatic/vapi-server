@@ -2,6 +2,13 @@ import * as util from "util";
 import {Socket} from "socket.io";
 import {ErrorObject} from "../class/ErrorObject";
 import {unlink} from "fs";
+import {DetectionImage} from "../entity/DetectionImage";
+import {Detection} from "../entity/Detection";
+import {Timelapse} from "../entity/Timelapse";
+import {getConnection} from "typeorm";
+import moment = require("moment");
+import {User} from "../entity/User";
+
 
 
 const ffmpeg = require('fluent-ffmpeg');
@@ -22,39 +29,47 @@ export class TimelapseHelper {
 
     private static readonly TIMELAPSES_FOLDER: string = 'timelapses';
     private static readonly TMP_FOLDER: string = TimelapseHelper.TIMELAPSES_FOLDER + '/tmp';
+    private static readonly VIDEOS_FOLDER = TimelapseHelper.TIMELAPSES_FOLDER + '/videos';
+    private static readonly THUMBNAILS_FOLDER = TimelapseHelper.TIMELAPSES_FOLDER + '/thumbnails';
+
 
     static readonly NR_OF_LEADING_ZEROS = 5;
 
 
-    static async create(imageUrls: string[], codec: string, format: string, fps: number, socket: Socket) {
+    static async create(detections: Detection[], codec: string, format: string, fps: number, socket: Socket, user: User) {
+
+        let imagesPath = [];
+        for (let detection of detections) {
+            imagesPath.push(detection.image.path);
+        }
+
 
         let nrOfFoldersInTmp = await TimelapseHelper.getNrOfFiles(TimelapseHelper.TMP_FOLDER);
 
-        let newFolderName = TimelapseHelper.TMP_FOLDER + '/' + nrOfFoldersInTmp;
+        let tmpFolderName = TimelapseHelper.TMP_FOLDER + '/' + nrOfFoldersInTmp;
         try {
-            await mkdir(newFolderName);
+            await mkdir(tmpFolderName);
         } catch (e) {
             throw new Error('[TimelapseHelper] [create] Trying to create an existing tmp folder');
         }
 
-        if (imageUrls.length) {
-
-
-            let running = await this.copyFilesToTmp(imageUrls, newFolderName, socket);
+        if (imagesPath.length) {
+            let running = await this.copyFilesToTmp(imagesPath, tmpFolderName, socket);
             if (!running) {
-                TimelapseHelper.clean(newFolderName);
+                TimelapseHelper.clean(tmpFolderName);
                 return false;
             }
 
-            let nrOfTimelapses = await TimelapseHelper.getNrOfFiles(TimelapseHelper.TIMELAPSES_FOLDER);
+            let nrOfTimelapses = await TimelapseHelper.getNrOfFiles(TimelapseHelper.VIDEOS_FOLDER);
 
-            const durationEstimate = (imageUrls.length / fps) * 1000;
+            const durationEstimate = (imagesPath.length / fps) * 1000;
 
-            let filename = TimelapseHelper.TIMELAPSES_FOLDER + '/' + nrOfTimelapses + '.' + format;
+            let filename = nrOfTimelapses + '.' + format;
+            let filePath = TimelapseHelper.VIDEOS_FOLDER + '/' +  filename;
             let command = new ffmpeg();
             command
 
-                .input(newFolderName + '/%0' + TimelapseHelper.NR_OF_LEADING_ZEROS + 'd.jpg')
+                .input(tmpFolderName + '/%0' + TimelapseHelper.NR_OF_LEADING_ZEROS + 'd.jpg')
                 .withFpsInput(fps)
                 .videoCodec(codec)
                 .format(format)
@@ -76,16 +91,19 @@ export class TimelapseHelper {
                     socket.emit('timelapse/progress', data);
                     console.log('progress', progressFixed)
                 }, durationEstimate))
-                .on('end', function () {
+                .on('end',  async () => {
                     console.log('Timelapse finished!');
-                    TimelapseHelper.clean(newFolderName);
-                    socket.emit('timelapse/finish', filename);
+                    let timelapse = await this.insertInDb(detections, imagesPath[0], filename, codec, user);
+
+
+                    TimelapseHelper.clean(tmpFolderName);
+                    socket.emit('timelapse/finish', timelapse);
                 })
-                .save(filename);
+                .save(filePath);
 
             let stopFunction = () => {
                 command.kill();
-                TimelapseHelper.clean(newFolderName);
+                TimelapseHelper.clean(tmpFolderName);
                 unlink(filename, (err)=> {
                     if (err){
                         console.error('[TimelapseHelper] [create] Unable to clean file');
@@ -96,7 +114,20 @@ export class TimelapseHelper {
 
             socket.on('timelapse/stop', stopFunction);
         }
-        // });
+    }
+
+    private static async insertInDb(detections: Detection[],
+                                    filename:string, codec: string,
+                                    thumbnailFile: string,
+                                    user: User) : Promise<Timelapse>{
+        let timelapse = new Timelapse();
+        timelapse.detections = detections;
+        timelapse.dateCreated = new Date();
+        timelapse.codec = codec;
+        timelapse.filename = filename;
+        timelapse.user = user;
+
+        return await getConnection().getRepository(Timelapse).save(timelapse);
     }
 
     static async copyFilesToTmp(imageUrls: string[], newFolderName: string, socket: Socket) {
@@ -110,7 +141,6 @@ export class TimelapseHelper {
         };
 
         socket.on('timelapse/stop', stopFunction);
-
 
         let copyFileLoop = async (index, max) => {
             if (stopped) {
@@ -210,6 +240,8 @@ export class TimelapseHelper {
         try {
             await this.createFolderIfNotExist(TimelapseHelper.TIMELAPSES_FOLDER);
             await this.createFolderIfNotExist(TimelapseHelper.TMP_FOLDER);
+            await this.createFolderIfNotExist(this.VIDEOS_FOLDER);
+            await this.createFolderIfNotExist(this.THUMBNAILS_FOLDER);
         } catch (e) {
             console.log('[TimelapseHelper] [createFolders] Unable to create folder ' + e);
         }

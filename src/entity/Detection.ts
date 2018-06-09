@@ -1,5 +1,7 @@
-import {Column, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm";
 import {DetectionObject} from "./DetectionObject";
+import {DetectionImage} from "./DetectionImage";
+import {DetectionEvent} from "./DetectionEvent";
 
 @Entity()
 export class Detection {
@@ -19,6 +21,13 @@ export class Detection {
     @Column()
     numberOfDetections: number;
 
-    @Column()
-    imgUrl: string;
+    @OneToOne(type => DetectionImage, {
+        cascade: ['insert']
+    })
+    @JoinColumn()
+    image: DetectionImage;
+
+    @ManyToOne(type => DetectionEvent, detectionEvent => detectionEvent.detections)
+    @JoinColumn()
+    event: DetectionEvent;
 }
