@@ -157,10 +157,10 @@ export class DashboardComponent implements OnInit,OnDestroy
    this.startAnimationForLineChart(dailySalesChart);
   });
   this.dashboardService.initDetectionChartLast7Weeks();
-  this.detectableObjects=this.dashboardService.initTop5();
-  /* ----------==========     Daily Sales Chart initialization For Documentation    ==========---------- */
-
-  /* ----------==========     Completed Tasks Chart initialization    ==========---------- */
+  this.dashboardService.initTop5().then((data)=>
+  {
+   this.detectableObjects=data;
+  });
 
   const dataCompletedTasksChart: any = {
    labels: ['12am', '3pm', '6pm', '9pm', '12pm', '3am', '6am', '9am'],
