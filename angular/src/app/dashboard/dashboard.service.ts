@@ -7,11 +7,14 @@ import {Detection} from 'app/objects/detections/detection';
 import {Socket} from 'ngx-socket-io';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Observable';
+import {DetectableStat} from '../objects/chart/detectable.stat';
 import './../../utils/date.extensions';
 
 @Injectable()
 export class DashboardService
 {
+ private _detectionChartLast7Weeks = new BehaviorSubject<ChartObject<Detection>>(new ChartObject<Detection>());
+
  constructor(private router: Router, private http: HttpClient, private socket: Socket, private translate: TranslateService)
  {
   this.socket.on('detection', data =>
@@ -49,8 +52,7 @@ export class DashboardService
   });
  }
 
- private _detectionChartLast7Weeks = new BehaviorSubject<ChartObject<Detection>>(new ChartObject<Detection>());
-
+ //Detection Stuff|||||||||
  get detectionChartLast7Weeks(): Observable<ChartObject<Detection>>
  {
   return this._detectionChartLast7Weeks.asObservable();
@@ -118,5 +120,27 @@ export class DashboardService
      reject(errorResponse);
     });
   })
+ }
+
+ //Top5Detectable|||||||||||
+ public initTop5(): Promise<DetectableStat[]>
+ {
+  return new Promise<DetectableStat[]>((resolve, reject) =>
+  {
+   this.http.get('api/stats/detectable/top5')
+    .subscribe((data) =>
+    {
+     if (data == undefined || data == null)
+     {
+      reject();
+     }
+     let detectables: DetectableStat[] = [];
+     for (let obj in data)
+     {
+      detectables.push(DetectableStat.IntanceFromWebService(obj));
+     }
+     resolve(detectables);
+    });
+  });
  }
 }
