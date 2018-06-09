@@ -20,8 +20,8 @@ export class DashboardComponent implements OnInit,OnDestroy
  public detectionPercentage: number;
  public detectionUpDownClass: string;
  public detectableObjects: DetectableStat[];
- private interval;
 
+ private interval;
  private detectionChartLast7Weeks: Observable<ChartObject<Detection>>;
 
  constructor(private dashboardService: DashboardService)
@@ -157,6 +157,7 @@ export class DashboardComponent implements OnInit,OnDestroy
    this.startAnimationForLineChart(dailySalesChart);
   });
   this.dashboardService.initDetectionChartLast7Weeks();
+  this.detectableObjects=this.dashboardService.initTop5();
   /* ----------==========     Daily Sales Chart initialization For Documentation    ==========---------- */
 
   /* ----------==========     Completed Tasks Chart initialization    ==========---------- */
