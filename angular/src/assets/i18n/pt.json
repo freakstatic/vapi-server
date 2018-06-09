@@ -4,7 +4,9 @@
   "DASHBOARD_DETECTION_STATS_LASTEST_DETECTION":"Últimas Deteções",
   "DASHBOARD_DETECTION_STATS_PERCENTAGE_MESSAGE":" face ao dia anterior",
   "DASHBOARD_TOP5_STATS_DETECTABLE_OBJECTS": "Top5 Objetos Detetados",
-  "DASHBOARD_TOP5_STATS_DETECTABLE_OBJECT_MESSAGE": "Os 5 objectos mais detetados.",
+  "DASHBOARD_TOP5_STATS_MESSAGE": "Os 5 objectos mais detetados.",
+  "DASHBOARD_TOP5_STATS_OBJECT": "Objecto",
+  "DASHBOARD_TOP5_STATS_OCCURRENCES_NUMBER": "Número de ocorrencias",
 
   "MONDAY":"segunda-feira",
   "TUESDAY":"terça-feira",
@@ -12,5 +14,7 @@
   "THURSDAY":"quinta-feira",
   "FRIDAY":"sexta-feira",
   "SATURDAY":"sábado",
-  "SUNDAY":"domingo"
+  "SUNDAY":"domingo",
+
+  "PERSON":"person"
 }
