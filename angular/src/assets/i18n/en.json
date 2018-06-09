@@ -31,6 +31,9 @@
   "DASHBOARD_TOP5_STATS_OBJECT": "Object",
   "DASHBOARD_TOP5_STATS_OCCURRENCES_NUMBER": "Occurrences number",
 
+  "UPDATED":"updated",
+  "SECONDS_AGO":"seconds ago",
+
  "MONDAY":"Monday",
  "TUESDAY":"Tuesday",
  "WEDNESDAY":"Wednesday",
