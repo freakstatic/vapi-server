@@ -4,6 +4,7 @@
   "DASHBOARD_DETECTION_STATS_LASTEST_DETECTION":"Últimas Deteções",
   "DASHBOARD_DETECTION_STATS_PERCENTAGE_MESSAGE":" face ao dia anterior",
   "DASHBOARD_TOP5_STATS_DETECTABLE_OBJECTS": "Top5 Objetos Detetados",
+  "DASHBOARD_TOP5_STATS_DETECTABLE_OBJECT_MESSAGE": "Os 5 objectos mais detetados.",
 
   "MONDAY":"segunda-feira",
   "TUESDAY":"terça-feira",
