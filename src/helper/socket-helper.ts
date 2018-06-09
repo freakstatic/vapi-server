@@ -12,7 +12,9 @@ import {DetectionRepository} from '../repository/DetectionRepository';
 import {UserRepository} from '../repository/UserRepository';
 import {DbHelper} from "./db-helper";
 import {TimelapseHelper} from './TimelapseHelper';
-import moment = require("moment");
+
+import {DetectionImage} from "../entity/DetectionImage";
+import {DetectionHelper} from "./DetectionHelper";
 
 let config = require('../../config.json');
 const YOLO_GROUP_NAME = 'yolo';
@@ -20,7 +22,7 @@ const USER_ROOM = 'user';
 const tokenManager = new TokenManager();
 
 export class SocketHelper {
-    constructor(dbHelper: DbHelper) {
+    constructor(detectionHelper: DetectionHelper) {
         const socketApp = express();
         const server = http.createServer(socketApp);
         const io = require('socket.io')(server);
@@ -48,13 +50,13 @@ export class SocketHelper {
                     client.join('yolo');
                     client.on('detection', async detection => {
                         try {
-                            this.handleNewDetection(detection).then(detection => {
-                                client.broadcast.to(USER_ROOM).emit('detection', detection);
-                            });
+                            detection = await detectionHelper.handleDetectionReceived(detection);
+                            client.broadcast.to(USER_ROOM).emit('detection', detection);
                         }
                         catch (error) {
                             console.error('[socket-helper] [detection] ' + error);
-                        }6
+                        }
+
                     });
                 }
                 else {
@@ -65,11 +67,7 @@ export class SocketHelper {
                         let detections = await getConnection()
                             .getCustomRepository(DetectionRepository).get(data.startDate, data.endDate);
                         if (detections.length) {
-                            let images = detections.map((detection) => {
-                                return detection.imgUrl;
-                            });
-
-                            TimelapseHelper.create(images, data.codec, data.format, data.fps, client);
+                            TimelapseHelper.create(detections, data.codec, data.format, data.fps, client, user);
                         }
                         else {
                             client.emit('timelapse/error', new ErrorObject(ErrorObject.TIMELAPSE_NO_DETECTIONS))
@@ -95,48 +93,5 @@ export class SocketHelper {
         return await getConnection().getCustomRepository(UserRepository).findByToken(token);
     }
 
-    async handleNewDetection(detectionReceived) {
-        try {
-            let detection = new Detection();
-            detection.date = moment().toDate();
-            let detectableObjectRepository = getConnection()
-                .getCustomRepository(DetectableObjectRepository);
 
-            detection.imgUrl = detectionReceived.imgUrl;
-            detection.numberOfDetections = detectionReceived.objects.length;
-            await getConnection().getRepository(Detection).save(detection);
-
-            await <Promise<DetectionObject>[]> detectionReceived.objects.map(
-                async (detectionObjectReceived): Promise<DetectionObject> => {
-
-                    let detectionObject = new DetectionObject();
-
-                    detectionObject.object = await detectableObjectRepository
-                        .findByName(detectionObjectReceived.className);
-
-                    if (detectionObject.object == undefined) {
-                        detectionObject.object = new DetectableObject();
-                        detectionObject.object.name = detectionObjectReceived.className;
-                        detectionObject.object = await detectableObjectRepository.save(detectionObject.object);
-                    }
-
-                    detectionObject.probability = detectionObjectReceived.probability;
-                    let box = detectionObjectReceived.box;
-                    detectionObject.x = box.x;
-                    detectionObject.y = box.y;
-                    detectionObject.width = box.w;
-                    detectionObject.height = box.h;
-                    detectionObject.id = null;
-                    detectionObject.detection = detection;
-
-                    detectionObject = await getConnection().getRepository(DetectionObject).save(detectionObject);
-                    return detectionObject;
-                });
-            return detection;
-        }
-        catch (e) {
-            console.error(e);
-        }
-
-    }
 }

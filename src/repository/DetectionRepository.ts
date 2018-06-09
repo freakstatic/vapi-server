@@ -1,8 +1,11 @@
-import {Between, EntityRepository, LessThan, MoreThan, Repository} from "typeorm";
+import {Between, EntityRepository, getConnection, LessThan, MoreThan, Repository} from "typeorm";
 import {Detection} from "../entity/Detection";
+
 
 @EntityRepository(Detection)
 export class DetectionRepository extends Repository<Detection> {
+
+
     public async get(startDate: Date, endDate: Date): Promise<Detection[]> {
         let options = this.populateOptionDate(startDate, endDate);
         return await this.find(options);
@@ -58,6 +61,8 @@ export class DetectionRepository extends Repository<Detection> {
         else if (hasEndDate) {
             options['date'] = LessThan(endDate);
         }
+
+        options['relations'] = ['image'];
         return options;
     }
 
@@ -99,4 +104,6 @@ export class DetectionRepository extends Repository<Detection> {
         }
         return dates;
     }
+
+
 }
