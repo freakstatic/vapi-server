@@ -1,13 +1,11 @@
-import {Component, OnInit, ElementRef} from '@angular/core';
-import {ROUTES} from '../sidebar/sidebar.component';
-import {Location, LocationStrategy, PathLocationStrategy} from '@angular/common';
-import {AuthService} from "../../auth/auth.service";
+import {Location} from '@angular/common';
+import {Component, ElementRef, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
-import {Socket} from 'ngx-socket-io';
-import {errorObject} from "rxjs/util/errorObject";
-import {ErrorObject} from "../../../../../src/class/ErrorObject";
 import {TranslateService} from "@ngx-translate/core";
-import {AppComponent} from "../../app.component";
+import {Socket} from 'ngx-socket-io';
+import {ErrorObject} from "../../../../../src/class/ErrorObject";
+import {AuthService} from "../../auth/auth.service";
+import {ROUTES} from '../sidebar/sidebar.component';
 
 declare const $: any;
 
@@ -84,9 +82,8 @@ export class NavbarComponent implements OnInit {
         return 'Dashboard';
     }
 
-    async logout() {
-        await this.authService.logout();
-        this.router.navigate(['/login']);
+     logout() {
+        this.authService.logout();
     }
 
     static showErrorMessage(message: string) {
