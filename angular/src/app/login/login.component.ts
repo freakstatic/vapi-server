@@ -34,7 +34,7 @@ export class LoginComponent implements OnInit
  {
   if (this.authService.checkLogin())
   {
-   this.router.navigate(['/']);
+   this.router.navigate(['/dashboard']);
    this.translateService.get('WELCOME_BACK').subscribe((res: string) =>
    {
     $.notify({
@@ -71,7 +71,7 @@ export class LoginComponent implements OnInit
 
   this.authService.login(this.username, this.password).then(() =>
   {
-   this.router.navigate(['/']);
+   this.router.navigate(['/dashboard']);
   }).catch((error) =>
   {
    let messageKey;
