@@ -140,6 +140,9 @@ export class DashboardService
       detectables.push(DetectableStat.IntanceFromWebService(obj));
      }
      resolve(detectables);
+    },(error)=>
+    {
+     reject(error);
     });
   });
  }
