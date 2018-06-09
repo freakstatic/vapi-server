@@ -55,7 +55,7 @@ export class AuthService
  logout()
  {
   this.credentialManager.cleanToken();
-  this.router.navigate(['/login']);
+  this.router.navigate(['/']);
  }
 
  checkLogin(): boolean

@@ -26,6 +26,7 @@
 
   "DASHBOARD_DETECTION_STATS_LASTEST_DETECTION":"Latest detection",
   "DASHBOARD_DETECTION_STATS_PERCENTAGE_MESSAGE":" from the previous day",
+  "DASHBOARD_TOP5_STATS_DETECTABLE_OBJECTS": "Top5 detectable objects",
 
  "MONDAY":"Monday",
  "TUESDAY":"Tuesday",
