@@ -6,10 +6,14 @@ export class DetectableStat extends DetectableObject
 
  public static IntanceFromWebService(data:any):DetectableStat
  {
+  if(!(data.hasOwnProperty('detectable_name')&&data.hasOwnProperty('detectable_id')&&data.hasOwnProperty('numberoccurrences')))
+  {
+   return null;
+  }
   let detectable=new DetectableStat();
-  detectable.name=data.name;
-  detectable.numberOccurrences=data.numberOccurrences;
-  detectable.id=data.id;
+  detectable.name=data.detectable_name;
+  detectable.numberOccurrences=data.numberoccurrences;
+  detectable.id=data.detectable_id;
   return detectable;
  }
 }
