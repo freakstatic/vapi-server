@@ -43,7 +43,7 @@ export class DetectionHelper {
     async handleDetectionReceived(detectionReceived) {
         try {
 
-            let currentDate = moment().toDate();
+            let currentDate = new Date();
             let detectionEventRepository = getConnection().getRepository(DetectionEvent);
             let detectionObjectRepository = getConnection().getRepository(DetectionObject);
             let detectableObjectRepository = getConnection().getCustomRepository(DetectableObjectRepository);
@@ -59,10 +59,14 @@ export class DetectionHelper {
             }
 
             if (detectionReceived.objects.length === 0) {
-                this.lastDetectionEvent.endDate = currentDate;
-                await detectionEventRepository.save(this.lastDetectionEvent);
-                this.lastDetection = null;
-                this.lastDetectionEvent = null;
+                let milisecondsPassed = currentDate.getTime() - this.lastDetection.date.getTime();
+
+                if (milisecondsPassed > 2000){
+                    this.lastDetectionEvent.endDate = currentDate;
+                    await detectionEventRepository.save(this.lastDetectionEvent);
+                    this.lastDetection = null;
+                    this.lastDetectionEvent = null;
+                }
                 return null;
             }
 
@@ -83,9 +87,10 @@ export class DetectionHelper {
             detection.image = new DetectionImage();
             detection.image.path = detectionReceived.imgUrl;
             detection.image.dateCreated = currentDate;
+            await getConnection().getRepository(DetectionImage).insert(detection.image);
 
             detection.numberOfDetections = detectionReceived.objects.length;
-            await getConnection().getRepository(Detection).save(detection);
+            await getConnection().getRepository(Detection).insert(detection);
 
             await <Promise<DetectionObject>[]> detectionReceived.objects.map(
                 async (detectionObjectReceived): Promise<DetectionObject> => {

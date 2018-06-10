@@ -62,7 +62,7 @@ export class DetectionRepository extends Repository<Detection> {
             options['date'] = LessThan(endDate);
         }
 
-        options['relations'] = ['image'];
+        options['relations'] = ['image', 'event'];
         return options;
     }
 

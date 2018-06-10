@@ -18,6 +18,9 @@ export class Timelapse {
     @Column()
     filename: string;
 
+    @Column()
+    thumbnail: string;
+
     @Column({
         precision: 4
     })
