@@ -13,12 +13,15 @@ const web_server_helper_1 = require("./helper/web-server-helper");
 const db_helper_1 = require("./helper/db-helper");
 const motion_helper_1 = require("./helper/motion-helper");
 const TimelapseHelper_1 = require("./helper/TimelapseHelper");
+const DetectionHelper_1 = require("./helper/DetectionHelper");
 let dbHelper = new db_helper_1.DbHelper();
 (() => __awaiter(this, void 0, void 0, function* () {
     yield dbHelper.connect();
-    let socketHelper = new socket_helper_1.SocketHelper(dbHelper);
+    let detectionHelper = new DetectionHelper_1.DetectionHelper();
+    yield detectionHelper.fixUnfishedEvents();
+    let socketHelper = new socket_helper_1.SocketHelper(detectionHelper);
     let motionHelper = new motion_helper_1.MotionHelper();
+    yield TimelapseHelper_1.TimelapseHelper.createFolders();
     let webSocketHelper = new web_server_helper_1.WebServerHelper(motionHelper);
-    TimelapseHelper_1.TimelapseHelper.createFolders();
 }))();
 //# sourceMappingURL=index.js.map
