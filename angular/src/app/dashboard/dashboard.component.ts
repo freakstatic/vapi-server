@@ -1,8 +1,9 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {DashboardService} from 'app/dashboard/dashboard.service';
 import * as Chartist from 'chartist';
 import {Observable} from 'rxjs/Observable';
 import {ChartObject} from '../objects/chart/chart';
+import {DetectableStat} from '../objects/chart/detectable.stat';
 import {Detection} from '../objects/detections/detection';
 import './../../utils/date.extensions';
 
@@ -11,16 +12,30 @@ import './../../utils/date.extensions';
  templateUrl: './dashboard.component.html',
  styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements OnInit
+
+//FIXME check why on subscribe called not update things
+export class DashboardComponent implements OnInit,OnDestroy
 {
- detectionPercentage: number;
- detectionUpDownClass = "fa ";
+ public lastUpdatedDetectionStats: number;
+ public detectionPercentage: number;
+ public detectionUpDownClass: string;
+ public detectableObjects: DetectableStat[];
+
+ private interval;
  private detectionChartLast7Weeks: Observable<ChartObject<Detection>>;
 
  constructor(private dashboardService: DashboardService)
  {
-  this.detectionPercentage=0;
+  this.lastUpdatedDetectionStats = 0;
+  this.detectionUpDownClass = "";
+  this.detectableObjects = [];
+  this.detectionPercentage = 0;
   this.detectionChartLast7Weeks = this.dashboardService.detectionChartLast7Weeks;
+
+  this.interval=setInterval(() =>
+  {
+   this.lastUpdatedDetectionStats++;
+  }, 1000);
  }
 
  startAnimationForLineChart(chart)
@@ -93,35 +108,39 @@ export class DashboardComponent implements OnInit
  {
   this.detectionChartLast7Weeks.subscribe(object =>
   {
-   let seriesArray=object.series[0];
-   if(seriesArray==null||seriesArray==undefined)
+   let seriesArray = object.series[0];
+   if (seriesArray == null || seriesArray == undefined)
    {
     return;
    }
    let yesterdayDetection = object.sourceObjects[object.sourceObjects.length - 2];
    let todayDetection = object.sourceObjects[object.sourceObjects.length - 1];
 
-   this.detectionPercentage = todayDetection.numberOfDetections * 100;
    if (yesterdayDetection.numberOfDetections != 0)
    {
-    this.detectionPercentage /= yesterdayDetection.numberOfDetections;
-   }
-   if (this.detectionPercentage != 0)
-   {
-    this.detectionPercentage -= 100;
-   }
-
-   if (this.detectionPercentage > 0)
-   {
-    this.detectionUpDownClass += 'fa-long-arrow-up';
-   }
-   else if (this.detectionPercentage < 0)
-   {
-    this.detectionUpDownClass += 'fa-long-arrow-down';
+    this.detectionPercentage = todayDetection.numberOfDetections - yesterdayDetection.numberOfDetections;
+    if (todayDetection.numberOfDetections != 0)
+    {
+     this.detectionPercentage /= todayDetection.numberOfDetections;
+    }
    }
    else
    {
-    this.detectionUpDownClass += 'fa-equals';
+    this.detectionPercentage = todayDetection.numberOfDetections;
+   }
+   this.detectionPercentage *= 100;
+
+   if (this.detectionPercentage > 0)
+   {
+    this.detectionUpDownClass = 'fa fa-long-arrow-up';
+   }
+   else if (this.detectionPercentage < 0)
+   {
+    this.detectionUpDownClass = 'fa fa-long-arrow-down';
+   }
+   else
+   {
+    this.detectionUpDownClass = '';
    }
 
    const optionsDailySalesChart: any = {
@@ -138,9 +157,10 @@ export class DashboardComponent implements OnInit
    this.startAnimationForLineChart(dailySalesChart);
   });
   this.dashboardService.initDetectionChartLast7Weeks();
-  /* ----------==========     Daily Sales Chart initialization For Documentation    ==========---------- */
-
-  /* ----------==========     Completed Tasks Chart initialization    ==========---------- */
+  this.dashboardService.initTop5().then((data)=>
+  {
+   this.detectableObjects=data;
+  });
 
   const dataCompletedTasksChart: any = {
    labels: ['12am', '3pm', '6pm', '9pm', '12pm', '3am', '6am', '9am'],
@@ -198,9 +218,9 @@ export class DashboardComponent implements OnInit
   this.startAnimationForBarChart(emailsSubscriptionChart);
  }
 
+
  ngOnDestroy()
  {
-  //this.detectionChartLast7Weeks.unsubscribe();
+  clearInterval(this.interval);
  }
-
 }

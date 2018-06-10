@@ -27,6 +27,12 @@
   "DASHBOARD_DETECTION_STATS_LASTEST_DETECTION":"Latest detection",
   "DASHBOARD_DETECTION_STATS_PERCENTAGE_MESSAGE":" from the previous day",
   "DASHBOARD_TOP5_STATS_DETECTABLE_OBJECTS": "Top5 detectable objects",
+  "DASHBOARD_TOP5_STATS_MESSAGE": "The 5 objects must detected.",
+  "DASHBOARD_TOP5_STATS_OBJECT": "Object",
+  "DASHBOARD_TOP5_STATS_OCCURRENCES_NUMBER": "Occurrences number",
+
+  "UPDATED":"updated",
+  "SECONDS_AGO":"seconds ago",
 
  "MONDAY":"Monday",
  "TUESDAY":"Tuesday",
@@ -34,5 +40,7 @@
  "THURSDAY":"Thursday",
  "FRIDAY":"Friday",
  "SATURDAY":"Saturday",
- "SUNDAY":"Sunday"
+ "SUNDAY":"Sunday",
+
+ "PERSON":"person"
 }

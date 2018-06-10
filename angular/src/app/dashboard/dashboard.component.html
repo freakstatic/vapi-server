@@ -77,11 +77,11 @@
                     </div>
                     <div class="card-content">
                         <h4 class="title">{{ 'DASHBOARD_DETECTION_STATS_LASTEST_DETECTION' | translate:param }}</h4>
-                        <p class="category"><span class="text-success"><i [class]="detectionUpDownClass"></i> {{detectionPercentage}}% </span> {{ 'DASHBOARD_DETECTION_STATS_PERCENTAGE_MESSAGE' | translate:param }}</p>
+                        <p class="category"><span class="text-success"><i [class]="detectionUpDownClass"></i> {{ detectionPercentage.toFixed(2) }}% </span> {{ 'DASHBOARD_DETECTION_STATS_PERCENTAGE_MESSAGE' | translate:param }}</p>
                     </div>
                     <div class="card-footer">
                         <div class="stats">
-                            <i class="material-icons">access_time</i> updated 4 minutes ago
+                            <i class="material-icons">access_time</i> {{ 'UPDATED' | translate:param }} {{lastUpdatedDetectionStats}} {{ 'SECONDS_AGO' | translate:param }}
                         </div>
                     </div>
                 </div>
@@ -347,43 +347,21 @@
             <div class="col-lg-6 col-md-12">
                 <div class="card" >
                     <div class="card-header" data-background-color="orange">
-                        <h4 class="title">Employees Stats</h4>
-                        <p class="category">New employees on 15th September, 2016</p>
+                        <h4 class="title">{{ 'DASHBOARD_TOP5_STATS_DETECTABLE_OBJECTS' | translate:param }}</h4>
+                        <p class="category">{{ 'DASHBOARD_TOP5_STATS_MESSAGE' | translate:param }}</p>
                     </div>
                     <div class="card-content table-responsive">
                         <table class="table table-hover">
                             <thead class="text-warning">
                             <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Salary</th>
-                                <th>Country</th>
+                                <th>{{ 'DASHBOARD_TOP5_STATS_OBJECT' | translate:param }}</th>
+                                <th>{{ 'DASHBOARD_TOP5_STATS_OCCURRENCES_NUMBER' | translate:param }}</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Dakota Rice</td>
-                                <td>$36,738</td>
-                                <td>Niger</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Minerva Hooper</td>
-                                <td>$23,789</td>
-                                <td>Curaçao</td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Sage Rodriguez</td>
-                                <td>$56,142</td>
-                                <td>Netherlands</td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                                <td>Philip Chaney</td>
-                                <td>$38,735</td>
-                                <td>Korea, South</td>
+                            <tr *ngFor="let detectableObject of detectableObjects">
+                                <td>{{ detectableObject.name.toUpperCase() | translate:param }}</td>
+                                <td>{{ detectableObject.numberOccurrences }}</td>
                             </tr>
                             </tbody>
                         </table>
