@@ -1,29 +1,30 @@
 import * as util from "util";
 import {Socket} from "socket.io";
 import {ErrorObject} from "../class/ErrorObject";
-import {unlink} from "fs";
 import {DetectionImage} from "../entity/DetectionImage";
 import {Detection} from "../entity/Detection";
 import {Timelapse} from "../entity/Timelapse";
 import {getConnection} from "typeorm";
-import moment = require("moment");
 import {User} from "../entity/User";
-
-
 
 const ffmpeg = require('fluent-ffmpeg');
 const ffmpegOnProgress = require('ffmpeg-on-progress');
-
 
 const fs = require('fs');
 const mkdir = util.promisify(fs.mkdir);
 const copyFile = util.promisify(fs.copyFile);
 const readdir = util.promisify(fs.readdir);
-
+const unlink = util.promisify(fs.unlink);
+const rename = util.promisify(fs.rename);
 
 const path = require('path');
 const rmdir = require('rmdir');
 
+const sharp = require('sharp');
+
+import {spawn} from 'child_process';
+
+import {format} from 'date-fns'
 
 export class TimelapseHelper {
 
@@ -31,7 +32,10 @@ export class TimelapseHelper {
     private static readonly TMP_FOLDER: string = TimelapseHelper.TIMELAPSES_FOLDER + '/tmp';
     private static readonly VIDEOS_FOLDER = TimelapseHelper.TIMELAPSES_FOLDER + '/videos';
     private static readonly THUMBNAILS_FOLDER = TimelapseHelper.TIMELAPSES_FOLDER + '/thumbnails';
+    private static readonly THUMBNAILS_WIDTH = 1920;
+    private static readonly THUMBNAILS_HEIGHT = 1080;
 
+    private static readonly FORMATS_THAT_SUPPORT_CHAPTERS = ['mp4', 'ogg', 'mov'];
 
     static readonly NR_OF_LEADING_ZEROS = 5;
 
@@ -65,7 +69,7 @@ export class TimelapseHelper {
             const durationEstimate = (imagesPath.length / fps) * 1000;
 
             let filename = nrOfTimelapses + '.' + format;
-            let filePath = TimelapseHelper.VIDEOS_FOLDER + '/' +  filename;
+            let filePath = TimelapseHelper.VIDEOS_FOLDER + '/' + filename;
             let command = new ffmpeg();
             command
 
@@ -91,10 +95,13 @@ export class TimelapseHelper {
                     socket.emit('timelapse/progress', data);
                     console.log('progress', progressFixed)
                 }, durationEstimate))
-                .on('end',  async () => {
+                .on('end', async () => {
                     console.log('Timelapse finished!');
-                    let timelapse = await this.insertInDb(detections, imagesPath[0], filename, codec, user);
+                    let timelapse = await this.insertInDb(detections, filename, codec, imagesPath[0], user);
 
+                    if (this.FORMATS_THAT_SUPPORT_CHAPTERS.includes(format)) {
+                       this.addChapters(filename, format, fps, detections);
+                    }
 
                     TimelapseHelper.clean(tmpFolderName);
                     socket.emit('timelapse/finish', timelapse);
@@ -104,8 +111,8 @@ export class TimelapseHelper {
             let stopFunction = () => {
                 command.kill();
                 TimelapseHelper.clean(tmpFolderName);
-                unlink(filename, (err)=> {
-                    if (err){
+                unlink(filename, (err) => {
+                    if (err) {
                         console.error('[TimelapseHelper] [create] Unable to clean file');
                     }
                 });
@@ -116,15 +123,85 @@ export class TimelapseHelper {
         }
     }
 
+    private static async addChapters(filename: string, fileExtension: string, fps: number, detections: Detection[]) {
+
+        let events = [];
+        for (let detection of detections) {
+            if (!events[detection.event.id]) {
+                events[detection.event.id] = [];
+            }
+            events[detection.event.id].push(detection);
+        }
+        let metadata: string = ';FFMETADATA1\n';
+
+        let picturePerSecond = (detections.length / fps) / detections.length;
+        let secondsPassed = 0;
+        for (let index in events) {
+            let event = events[index];
+            metadata += '[CHAPTER]\nTIMEBASE=1/1\n';
+            metadata += 'START=' + Math.round(secondsPassed) + '\n';
+            secondsPassed += event.length * picturePerSecond;
+            metadata += 'END=' + Math.round(secondsPassed) + '\n';
+            let startDate = format(event[0].date, 'YYYY/MM/DD HH:mm');
+            let endDate = format(event[event.length - 1].date, 'YYYY/MM/DD HH:mm');
+            metadata += 'title=' + event.length + ' detections from: ' + startDate + ' to ' + endDate + '\n';
+        }
+
+        let filenameWithoutExtension = path.parse(filename).name;
+        let txtFullFilename = this.VIDEOS_FOLDER + '/' + filenameWithoutExtension + '.txt';
+        fs.writeFile(txtFullFilename, metadata, err => {
+            if (err) {
+                return console.log(err);
+            }
+        });
+
+        let fullFilename = this.VIDEOS_FOLDER + '/' + filename;
+        let tmpFullFilename = this.VIDEOS_FOLDER + '/' + filenameWithoutExtension + '_new.' + fileExtension;
+        let ffmpeg = spawn('ffmpeg', ['-y', '-i',
+            fullFilename, '-i', txtFullFilename, '-map_metadata', '1', '-codec', 'copy',
+            tmpFullFilename]);
+
+
+        ffmpeg.on('exit', async (code) => {
+            let err = await unlink(txtFullFilename);
+            if (err) {
+                console.error('[TimelapseHelper] [addChapters] Unable to delete txt chapters file');
+            }
+
+            if (code != 0) {
+                console.error('[TimelapseHelper] [addChapters] Unable to write chapters to timelapse');
+                return;
+            }
+
+            err = await unlink(fullFilename);
+            if (err) {
+                console.error('[TimelapseHelper] [addChapters] Unable to delete chapters old timelapse file');
+            }
+
+            err = await rename(tmpFullFilename, fullFilename);
+            if (err) {
+                console.error('[TimelapseHelper] [addChapters] Unable to rename timelapse with chapters file');
+            }
+        });
+    }
+
     private static async insertInDb(detections: Detection[],
-                                    filename:string, codec: string,
+                                    filename: string, codec: string,
                                     thumbnailFile: string,
-                                    user: User) : Promise<Timelapse>{
+                                    user: User): Promise<Timelapse> {
+
+        let thumbnailName = path.parse(filename).name + '.jpg';
+
+        await sharp(thumbnailFile)
+            .resize(this.THUMBNAILS_WIDTH, this.THUMBNAILS_HEIGHT)
+            .toFile(this.THUMBNAILS_FOLDER + '/' + thumbnailName);
+
         let timelapse = new Timelapse();
         timelapse.detections = detections;
         timelapse.dateCreated = new Date();
         timelapse.codec = codec;
         timelapse.filename = filename;
+        timelapse.thumbnail = thumbnailName;
         timelapse.user = user;
 
         return await getConnection().getRepository(Timelapse).save(timelapse);

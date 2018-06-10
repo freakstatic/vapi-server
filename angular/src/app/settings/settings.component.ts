@@ -13,7 +13,6 @@ import {NavbarComponent} from "../components/navbar/navbar.component";
 export class SettingsComponent implements OnInit {
 
     constructor(private translateService: TranslateService,
-                private navbarComponent: NavbarComponent,
                 private settingsService: SettingsService) {
     }
 

@@ -11,6 +11,7 @@
   "dependencies": {
     "bcrypt": "^2.0.1",
     "clone": "^2.1.1",
+    "date-fns": "^1.29.0",
     "express": "^4.16.3",
     "ffmpeg-on-progress": "^1.0.0",
     "fluent-ffmpeg": "^2.1.2",
@@ -24,6 +25,7 @@
     "properties": "^1.2.1",
     "reflect-metadata": "^0.1.10",
     "rmdir": "^1.2.0",
+    "sharp": "^0.20.3",
     "socket.io": "^2.1.1",
     "superchild": "^0.1.10",
     "tslint": "^5.9.1",
@@ -39,6 +41,7 @@
     "@types/passport-http": "^0.3.6",
     "@types/passport-http-bearer": "^1.0.33",
     "@types/socket.io": "^1.4.33",
+    "@types/sharp": "^0.17.8",
     "ts-node": "3.3.0",
     "tslint": "^5.9.1",
     "webpack": "^4.10.2"
