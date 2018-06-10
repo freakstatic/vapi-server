@@ -12,7 +12,7 @@ export class DetectableObjectRepository extends Repository<DetectableObject>
   });
  }
 
- public async getTop5(): Promise<DetectableObject[]>
+ public async getTop5(): Promise<any[]>
  {
   let dbObjs = null;
 
@@ -29,7 +29,7 @@ export class DetectableObjectRepository extends Repository<DetectableObject>
     }, 'detection_object', 'detection_object.object_id=detectable.id')
     .orderBy('detection_object.numberoccurrences', 'DESC')
     .limit(5)
-    .getMany();
+    .getRawMany();
   }
   catch (e)
   {}
