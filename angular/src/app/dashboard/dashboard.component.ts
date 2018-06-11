@@ -1,226 +1,227 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import * as Chartist from 'chartist';
-import {DetectableStat} from "../objects/chart/detectable.stat";
-import {Observable} from "rxjs/Observable";
-import {ChartObject} from "../objects/chart/chart";
-import {Detection} from "../objects/detections/detection";
-import {DashboardService} from "./dashboard.service";
+import {DetectableStat} from '../objects/chart/detectable.stat';
+import {Observable} from 'rxjs/Observable';
+import {ChartObject} from '../objects/chart/chart';
+import {Detection} from '../objects/detections/detection';
+import {DashboardService} from './dashboard.service';
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+ selector: 'app-dashboard',
+ templateUrl: './dashboard.component.html',
+ styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements OnInit, OnDestroy {
-    public lastUpdatedDetectionStats: number;
-    public detectionPercentage: number;
-    public detectionUpDownClass: string;
-    public detectableObjects: DetectableStat[];
+export class DashboardComponent implements OnInit, OnDestroy
+{
+ public lastUpdatedDetectionStats: number;
+ public detectionPercentage: number;
+ public detectionUpDownClass: string;
+ public detectableObjects: DetectableStat[];
 
-    private interval;
-    private detectionChartLast7Weeks: Observable<ChartObject<Detection>>;
+ private readonly interval;
+ private detectionChartLast7Weeks: Observable<ChartObject<Detection>>;
 
 
-    constructor(private dashboardService: DashboardService) {
-        this.lastUpdatedDetectionStats = 0;
-        this.detectionUpDownClass = "";
-        this.detectableObjects = [];
-        this.detectionPercentage = 0;
-        this.detectionChartLast7Weeks = this.dashboardService.detectionChartLast7Weeks;
+ constructor(private dashboardService: DashboardService)
+ {
+  this.lastUpdatedDetectionStats = 0;
+  this.detectionUpDownClass = '';
+  this.detectableObjects = [];
+  this.detectionPercentage = 0;
+  this.detectionChartLast7Weeks = this.dashboardService.detectionChartLast7Weeks;
 
-        this.interval = setInterval(() => {
-            this.lastUpdatedDetectionStats++;
-        }, 1000);
+  this.interval = setInterval(() =>
+  {
+   this.lastUpdatedDetectionStats++;
+  }, 1000);
+ }
+
+ startAnimationForLineChart(chart)
+ {
+  let seq: any, delays: any, durations: any;
+  seq = 0;
+  delays = 80;
+  durations = 500;
+
+  chart.on('draw', function (data)
+  {
+   if (data.type === 'line' || data.type === 'area')
+   {
+    data.element.animate({
+     d: {
+      begin: 600,
+      dur: 700,
+      from: data.path.clone().scale(1, 0).translate(0, data.chartRect.height()).stringify(),
+      to: data.path.clone().stringify(),
+      easing: Chartist.Svg.Easing.easeOutQuint
+     }
+    });
+   }
+   else if (data.type === 'point')
+   {
+    seq++;
+    data.element.animate({
+     opacity: {
+      begin: seq * delays,
+      dur: durations,
+      from: 0,
+      to: 1,
+      easing: 'ease'
+     }
+    });
+   }
+  });
+
+  seq = 0;
+ };
+
+ startAnimationForBarChart(chart)
+ {
+  let seq2: any, delays2: any, durations2: any;
+
+  seq2 = 0;
+  delays2 = 80;
+  durations2 = 500;
+  chart.on('draw', function (data)
+  {
+   if (data.type === 'bar')
+   {
+    seq2++;
+    data.element.animate({
+     opacity: {
+      begin: seq2 * delays2,
+      dur: durations2,
+      from: 0,
+      to: 1,
+      easing: 'ease'
+     }
+    });
+   }
+  });
+
+  seq2 = 0;
+ };
+
+ ngOnInit()
+ {
+  this.detectionChartLast7Weeks.subscribe(object =>
+  {
+   const seriesArray = object.series[0];
+   if (seriesArray == null || seriesArray === undefined)
+   {
+    return;
+   }
+   const yesterdayDetection = object.sourceObjects[object.sourceObjects.length - 2];
+   const todayDetection = object.sourceObjects[object.sourceObjects.length - 1];
+
+   if (yesterdayDetection.numberOfDetections >= todayDetection.numberOfDetections)
+   {
+    this.detectionPercentage = todayDetection.numberOfDetections - yesterdayDetection.numberOfDetections;
+    if (todayDetection.numberOfDetections !== 0)
+    {
+     this.detectionPercentage /= todayDetection.numberOfDetections;
     }
-  startAnimationForLineChart(chart){
-      let seq: any, delays: any, durations: any;
-      seq = 0;
-      delays = 80;
-      durations = 500;
+   }
+   else
+   {
+    this.detectionPercentage = todayDetection.numberOfDetections/yesterdayDetection.numberOfDetections;
+   }
+   this.detectionPercentage *= 100;
 
-      chart.on('draw', function(data) {
-        if(data.type === 'line' || data.type === 'area') {
-          data.element.animate({
-            d: {
-              begin: 600,
-              dur: 700,
-              from: data.path.clone().scale(1, 0).translate(0, data.chartRect.height()).stringify(),
-              to: data.path.clone().stringify(),
-              easing: Chartist.Svg.Easing.easeOutQuint
-            }
-          });
-        } else if(data.type === 'point') {
-              seq++;
-              data.element.animate({
-                opacity: {
-                  begin: seq * delays,
-                  dur: durations,
-                  from: 0,
-                  to: 1,
-                  easing: 'ease'
-                }
-              });
-          }
-      });
+   if (this.detectionPercentage > 0)
+   {
+    this.detectionUpDownClass = 'fa fa-long-arrow-up';
+   }
+   else if (this.detectionPercentage < 0)
+   {
+    this.detectionUpDownClass = 'fa fa-long-arrow-down';
+   }
+   else
+   {
+    this.detectionUpDownClass = '';
+   }
 
-      seq = 0;
+   const optionsDailySalesChart: any = {
+    lineSmooth: Chartist.Interpolation.cardinal({
+     tension: 0
+    }),
+    low: 0,
+    high: object.max + 2, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+    chartPadding: {top: 0, right: 0, bottom: 0, left: 0}
+   };
+   const dailySalesChart = new Chartist.Line('#dailySalesChart', object, optionsDailySalesChart);
+
+   this.startAnimationForLineChart(dailySalesChart);
+   this.lastUpdatedDetectionStats = 0;
+  });
+  this.dashboardService.initDetectionChartLast7Weeks();
+  this.dashboardService.initTop5().then((data) =>
+  {
+   this.detectableObjects = data;
+  });
+
+
+  /* ----------==========     Completed Tasks Chart initialization    ==========---------- */
+
+  const dataCompletedTasksChart: any = {
+   labels: ['12p', '3p', '6p', '9p', '12p', '3a', '6a', '9a'],
+   series: [
+    [230, 750, 450, 300, 280, 240, 200, 190]
+   ]
   };
-  startAnimationForBarChart(chart){
-      let seq2: any, delays2: any, durations2: any;
 
-      seq2 = 0;
-      delays2 = 80;
-      durations2 = 500;
-      chart.on('draw', function(data) {
-        if(data.type === 'bar'){
-            seq2++;
-            data.element.animate({
-              opacity: {
-                begin: seq2 * delays2,
-                dur: durations2,
-                from: 0,
-                to: 1,
-                easing: 'ease'
-              }
-            });
-        }
-      });
-
-      seq2 = 0;
+  const optionsCompletedTasksChart: any = {
+   lineSmooth: Chartist.Interpolation.cardinal({
+    tension: 0
+   }),
+   low: 0,
+   high: 1000, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+   chartPadding: {top: 0, right: 0, bottom: 0, left: 0}
   };
-  ngOnInit() {
-      /* ----------==========     Daily Sales Chart initialization For Documentation    ==========---------- */
 
-     //  const dataDailySalesChart: any = {
-     //      labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
-     //      series: [
-     //          [12, 17, 7, 17, 23, 18, 38]
-     //      ]
-     //  };
-     //
-     // const optionsDailySalesChart: any = {
-     //      lineSmooth: Chartist.Interpolation.cardinal({
-     //          tension: 0
-     //      }),
-     //      low: 0,
-     //      high: 50, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
-     //      chartPadding: { top: 0, right: 0, bottom: 0, left: 0},
-     //  }
-     //
-     //  var dailySalesChart = new Chartist.Line('#dailySalesChart', dataDailySalesChart, optionsDailySalesChart);
-     //
-     //  this.startAnimationForLineChart(dailySalesChart);
+  const completedTasksChart = new Chartist.Line('#completedTasksChart', dataCompletedTasksChart, optionsCompletedTasksChart);
+
+  // start animation for the Completed Tasks Chart - Line Chart
+  this.startAnimationForLineChart(completedTasksChart);
 
 
+  /* ----------==========     Emails Subscription Chart initialization    ==========---------- */
 
-      this.detectionChartLast7Weeks.subscribe(object => {
-          let seriesArray = object.series[0];
-          if (seriesArray == null || seriesArray == undefined) {
-              return;
-          }
-          let yesterdayDetection = object.sourceObjects[object.sourceObjects.length - 2];
-          let todayDetection = object.sourceObjects[object.sourceObjects.length - 1];
+  const datawebsiteViewsChart = {
+   labels: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+   series: [
+    [542, 443, 320, 780, 553, 453, 326, 434, 568, 610, 756, 895]
 
-          if (yesterdayDetection.numberOfDetections != 0) {
-              this.detectionPercentage = todayDetection.numberOfDetections - yesterdayDetection.numberOfDetections;
-              if (todayDetection.numberOfDetections != 0) {
-                  this.detectionPercentage /= todayDetection.numberOfDetections;
-              }
-          }
-          else {
-              this.detectionPercentage = todayDetection.numberOfDetections;
-          }
-          this.detectionPercentage *= 100;
-
-          if (this.detectionPercentage > 0) {
-              this.detectionUpDownClass = 'fa fa-long-arrow-up';
-          }
-          else if (this.detectionPercentage < 0) {
-              this.detectionUpDownClass = 'fa fa-long-arrow-down';
-          }
-          else {
-              this.detectionUpDownClass = '';
-          }
-
-          const optionsDailySalesChart: any = {
-              lineSmooth: Chartist.Interpolation.cardinal({
-                  tension: 0
-              }),
-              low: 0,
-              high: object.max + 2, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
-              chartPadding: {top: 0, right: 0, bottom: 0, left: 0}
-          };
-
-          let dailySalesChart = new Chartist.Line('#dailySalesChart', object, optionsDailySalesChart);
-
-          this.startAnimationForLineChart(dailySalesChart);
-      });
-      this.dashboardService.initDetectionChartLast7Weeks();
-      this.dashboardService.initTop5().then((data) => {
-          this.detectableObjects = data;
-      });
-
-
-      /* ----------==========     Completed Tasks Chart initialization    ==========---------- */
-
-      const dataCompletedTasksChart: any = {
-          labels: ['12p', '3p', '6p', '9p', '12p', '3a', '6a', '9a'],
-          series: [
-              [230, 750, 450, 300, 280, 240, 200, 190]
-          ]
-      };
-
-     const optionsCompletedTasksChart: any = {
-          lineSmooth: Chartist.Interpolation.cardinal({
-              tension: 0
-          }),
-          low: 0,
-          high: 1000, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
-          chartPadding: { top: 0, right: 0, bottom: 0, left: 0}
-      }
-
-      var completedTasksChart = new Chartist.Line('#completedTasksChart', dataCompletedTasksChart, optionsCompletedTasksChart);
-
-      // start animation for the Completed Tasks Chart - Line Chart
-      this.startAnimationForLineChart(completedTasksChart);
-
-
-
-      /* ----------==========     Emails Subscription Chart initialization    ==========---------- */
-
-      var datawebsiteViewsChart = {
-        labels: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
-        series: [
-          [542, 443, 320, 780, 553, 453, 326, 434, 568, 610, 756, 895]
-
-        ]
-      };
-      var optionswebsiteViewsChart = {
-          axisX: {
-              showGrid: false
-          },
-          low: 0,
-          high: 1000,
-          chartPadding: { top: 0, right: 5, bottom: 0, left: 0}
-      };
-      var responsiveOptions: any[] = [
-        ['screen and (max-width: 640px)', {
-          seriesBarDistance: 5,
-          axisX: {
-            labelInterpolationFnc: function (value) {
-              return value[0];
-            }
-          }
-        }]
-      ];
-      var websiteViewsChart = new Chartist.Bar('#websiteViewsChart', datawebsiteViewsChart, optionswebsiteViewsChart, responsiveOptions);
-
-      //start animation for the Emails Subscription Chart
-      this.startAnimationForBarChart(websiteViewsChart);
-  }
-
-    ngOnDestroy() {
-        clearInterval(this.interval);
+   ]
+  };
+  const optionswebsiteViewsChart = {
+   axisX: {
+    showGrid: false
+   },
+   low: 0,
+   high: 1000,
+   chartPadding: {top: 0, right: 5, bottom: 0, left: 0}
+  };
+  const responsiveOptions: any[] = [
+   ['screen and (max-width: 640px)', {
+    seriesBarDistance: 5,
+    axisX: {
+     labelInterpolationFnc: function (value)
+     {
+      return value[0];
+     }
     }
+   }]
+  ];
+  const websiteViewsChart = new Chartist.Bar('#websiteViewsChart', datawebsiteViewsChart, optionswebsiteViewsChart, responsiveOptions);
+
+  // start animation for the Emails Subscription Chart
+  this.startAnimationForBarChart(websiteViewsChart);
+ }
+
+ ngOnDestroy()
+ {
+  clearInterval(this.interval);
+ }
 
 }
