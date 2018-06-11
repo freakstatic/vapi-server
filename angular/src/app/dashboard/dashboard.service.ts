@@ -23,8 +23,8 @@ export class DashboardService
    {
     return;
    }
-   let detection = Detection.NewInstanceFromDetectionSocket(data);
-   let object = this._detectionChartLast7Weeks.getValue();
+   const detection = Detection.NewInstanceFromDetectionSocket(data);
+   const object = this._detectionChartLast7Weeks.getValue();
    let index = object.sourceObjects.findIndex(element =>
    {
     return element.date.toDateISOString() === detection.date.toDateISOString();
@@ -43,6 +43,7 @@ export class DashboardService
     object.series[0].shift();
     index = object.sourceObjects.length - 1;
    }
+   object.sourceObjects[index].numberOfDetections += detection.numberOfDetections;
    object.series[0][index] += detection.numberOfDetections;
    if (object.series[0][index] > object.max)
    {
@@ -60,13 +61,13 @@ export class DashboardService
 
  public async initDetectionChartLast7Weeks()
  {
-  let detections = await this.getDetectionStatsLastWeek();
-  let serie = [];
-  let object = this._detectionChartLast7Weeks.getValue();
+  const detections = await this.getDetectionStatsLastWeek();
+  const serie = [];
+  const object = this._detectionChartLast7Weeks.getValue();
   object.series.push(serie);
-  for (let detection of detections)
+  for (const detection of detections)
   {
-   let weekdayName = detection.date.getDayName();
+   const weekdayName = detection.date.getDayName();
    this.translate.get(weekdayName.toUpperCase()).subscribe((res: string) =>
    {
     object.labels.push(res.substr(0, 1).toUpperCase());
@@ -84,10 +85,10 @@ export class DashboardService
 
  public async getDetectionStatsLastWeek(): Promise<Detection[]>
  {
-  let startDate = new Date();
+  const startDate = new Date();
   startDate.setDate(startDate.getDate() - 6);
   startDate.setHours(0, 0, 0, 0);
-  let endDate = new Date();
+  const endDate = new Date();
   endDate.setHours(24, 0, 0, 0);
   return this.getDetectionStats(startDate, endDate);
  }
@@ -99,15 +100,15 @@ export class DashboardService
    this.http.get('api/stats/detection?startDate=' + startDate.toISOString() + '&endDate=' + endDate.toISOString())
     .subscribe((response: any) =>
     {
-     let detections: Detection[] = [];
+     const detections: Detection[] = [];
 
-     for (let dateString in response)
+     for (const dateString in response)
      {
       if (!response.hasOwnProperty(dateString))
       {
        continue;
       }
-      let detection = new Detection();
+      const detection = new Detection();
       detection.numberOfDetections = response[dateString];
       detection.detectionObjects = null;
       detection.id = null;
@@ -128,23 +129,23 @@ export class DashboardService
   return new Promise<DetectableStat[]>((resolve, reject) =>
   {
    this.http.get('api/stats/detectable/top5')
-    .subscribe((data:Array<any>) =>
+    .subscribe((data: Array<any>) =>
     {
      if (data == undefined || data == null)
      {
       reject();
      }
-     let detectables: DetectableStat[] = [];
-     for (let obj of data)
+     const detectables: DetectableStat[] = [];
+     for (const obj of data)
      {
-      let detectable=DetectableStat.IntanceFromWebService(obj);
-      if(detectable!=undefined&&detectable!=null)
+      const detectable = DetectableStat.IntanceFromWebService(obj);
+      if (detectable != undefined && detectable != null)
       {
        detectables.push(detectable);
       }
      }
      resolve(detectables);
-    },(error)=>
+    }, (error) =>
     {
      reject(error);
     });
