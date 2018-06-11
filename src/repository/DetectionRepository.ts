@@ -61,7 +61,7 @@ export class DetectionRepository extends Repository<Detection>
   try
   {
    dbObjs=await this.createQueryBuilder()
-    .select(['COUNT(id) AS numberOccurrences','DATE_FORMAT(date,\'%H:00\') AS time'])
+    .select(['COUNT(id) AS numberOccurrences','DATE_FORMAT(date,\'%H\') AS time'])
     .groupBy('DATE_FORMAT(date,\'%H\')')
     .getRawMany();
   }
