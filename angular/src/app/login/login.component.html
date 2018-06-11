@@ -3,14 +3,14 @@
     <div >
         <div class="row">
             <div class="col-md-5 col-lg-4 col-centered">
-                <div style="display: flex">
+                <div id="login-container" style="display: flex">
                     <img id="img-camera" class="hidden-xs" src="../../assets/img/security-camera.svg"/>
                     <div class="card">
-                        <div class="card-header" data-background-color="purple">
+                        <div class="card-header card-header-primary">
                             <h4 class="title">Login</h4>
-                            <p class="category">{{ 'WELCOME' | translate:param }}</p>
+                            <p class="card-category">{{ 'WELCOME' | translate:param }}</p>
                         </div>
-                        <div class="card-content">
+                        <div class="card-body">
                             <form>
                                 <div class="row">
                                     <div class="col-md-12">
@@ -32,8 +32,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn pull-right" data-background-color="purple" (click)="login()">Login
-                                </button>
+
+                                <button mat-raised-button type="submit" class="btn btn-primary pull-right" (click)="login()">Login</button>
                                 <div class="clearfix"></div>
                             </form>
                         </div>

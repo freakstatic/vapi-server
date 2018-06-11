@@ -1,22 +1,25 @@
-import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
+import {CommonModule,} from '@angular/common';
 import {BrowserModule} from '@angular/platform-browser';
-import {RouterModule, Routes} from '@angular/router';
-import {AuthGuard} from "./auth/auth.guard";
+import {Routes, RouterModule} from '@angular/router';
 
-import {DashboardComponent} from './dashboard/dashboard.component';
+import {AdminLayoutComponent} from './layouts/admin-layout/admin-layout.component';
 import {LoginComponent} from "./login/login.component";
-import {SettingsComponent} from "./settings/settings.component";
-import {TimelapsesComponent} from './timelapses/timelapses.component';
-import {UserListComponent} from './user-list/user-list.component';
 
 const routes: Routes = [
- {path: 'login', component: LoginComponent, data: {title: 'Login'}},
- {path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard], data: {title: 'Dashboard'}},
- {path: 'timelapses', component: TimelapsesComponent},
- {path: 'user-list', component: UserListComponent},
- {path: 'settings', component: SettingsComponent},
- {path: '', redirectTo: 'login', pathMatch: 'full'}
+    {
+        path: '', component: LoginComponent, data: {title: 'Login'},
+        pathMatch: 'full',
+    },
+    {
+        path: '',
+        component: AdminLayoutComponent,
+        children: [
+            {
+                path: '',
+                loadChildren: './layouts/admin-layout/admin-layout.module#AdminLayoutModule'
+            }]
+    }
 ];
 
 @NgModule({

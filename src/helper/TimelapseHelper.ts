@@ -7,6 +7,8 @@ import {Timelapse} from "../entity/Timelapse";
 import {getConnection} from "typeorm";
 import {User} from "../entity/User";
 
+const config = require('../../config.json');
+
 const ffmpeg = require('fluent-ffmpeg');
 const ffmpegOnProgress = require('ffmpeg-on-progress');
 
@@ -35,9 +37,11 @@ export class TimelapseHelper {
     private static readonly THUMBNAILS_WIDTH = 1920;
     private static readonly THUMBNAILS_HEIGHT = 1080;
 
+    private static readonly MOSAICS_FOLDER = TimelapseHelper.TIMELAPSES_FOLDER + '/mosaics';
+
     private static readonly FORMATS_THAT_SUPPORT_CHAPTERS = ['mp4', 'ogg', 'mov'];
 
-    static readonly NR_OF_LEADING_ZEROS = 5;
+    private static readonly NR_OF_LEADING_ZEROS = 5;
 
 
     static async create(detections: Detection[], codec: string, format: string, fps: number, socket: Socket, user: User) {
@@ -102,6 +106,7 @@ export class TimelapseHelper {
                     if (this.FORMATS_THAT_SUPPORT_CHAPTERS.includes(format)) {
                        this.addChapters(filename, format, fps, detections);
                     }
+                    await this.createMosaic(filename, 640, 4, 3);
 
                     TimelapseHelper.clean(tmpFolderName);
                     socket.emit('timelapse/finish', timelapse);
@@ -181,6 +186,32 @@ export class TimelapseHelper {
             err = await rename(tmpFullFilename, fullFilename);
             if (err) {
                 console.error('[TimelapseHelper] [addChapters] Unable to rename timelapse with chapters file');
+            }
+        });
+    }
+
+    private static async createMosaic(filename : string, widthPerImage: number, rows: number, lines: number){
+        let filenameWithoutExtension = path.parse(filename).name;
+
+        let ffmpeg = spawn('ffmpeg', [
+            '-i', this.VIDEOS_FOLDER + '/' + filename,
+            '-vf', 'select=gt(scene\\,0.1),scale=' + widthPerImage +':-1,tile='+ rows +'x' + lines,
+            '-frames:v', '1',
+            '-qscale:v', '1',
+           this.MOSAICS_FOLDER + '/' + filenameWithoutExtension + '.jpg',
+            '-y'
+        ]);
+
+        ffmpeg.stderr.on('data', (data) => {
+            // if (config.debugMode) {
+            //     console.log('[TimelapseHelper] [createMosaic] ffmpeg stderr: ' + data);
+            // }
+        });
+
+
+        ffmpeg.on('exit', async (code) => {
+            if (code != 0){
+                console.error('[TimelapseHelper] [createMosaic] Unable to create mosaic file');
             }
         });
     }
@@ -319,6 +350,7 @@ export class TimelapseHelper {
             await this.createFolderIfNotExist(TimelapseHelper.TMP_FOLDER);
             await this.createFolderIfNotExist(this.VIDEOS_FOLDER);
             await this.createFolderIfNotExist(this.THUMBNAILS_FOLDER);
+            await this.createFolderIfNotExist(this.MOSAICS_FOLDER);
         } catch (e) {
             console.log('[TimelapseHelper] [createFolders] Unable to create folder ' + e);
         }

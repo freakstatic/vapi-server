@@ -3,38 +3,44 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header" data-background-color="red">
-                        <h4 class="title">{{ 'SETTINGS' | translate:param }}</h4>
-                        <p class="category">{{ 'SETTINGS_SECOND_TITLE' | translate:param }}</p>
+                    <div class="card-header card-header-danger">
+                        <h4 class="card-title">{{ 'SETTINGS' | translate:param }}</h4>
+                        <p class="card-category">{{ 'SETTINGS_SECOND_TITLE' | translate:param }}</p>
                     </div>
-                    <div class="card-content table-responsive">
-                        <table class="table">
-                            <thead class="text-danger">
-                            <tr>
-                                <th>Name</th>
-                                <th>Value</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr *ngFor="let config of motionSettings">
-                                <td>{{config.name}}</td>
-                                <td>
-                                    <input *ngIf="config.value != 'on' && config.value != 'off'; else checkOption" name="[config.name]"
-                                           [(ngModel)]="config.value" class="form-control">
-                                    <ng-template #checkOption>
-                                        <div class="checkbox">
-                                            <label>
-                                                <input type="checkbox" name="{{config.value}}" [checked]="config.value == 'on'"
-                                                       (change)="motionCheckboxClicked($event, config)"
-                                                >
-                                            </label>
-                                        </div>
-                                    </ng-template>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                        <button type="submit" class="btn btn-success pull-right" (click)="updateMotionSettings()" [disabled]="waitingResponse">Save</button>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="text-danger">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Value</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr *ngFor="let config of motionSettings">
+                                    <td>{{config.name}}</td>
+                                    <td>
+                                        <input *ngIf="config.value != 'on' && config.value != 'off'; else checkOption"
+                                               name="[config.name]"
+                                               [(ngModel)]="config.value" class="form-control">
+                                        <ng-template #checkOption>
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" name="{{config.value}}"
+                                                           [checked]="config.value == 'on'"
+                                                           (change)="motionCheckboxClicked($event, config)"
+                                                    >
+                                                </label>
+                                            </div>
+                                        </ng-template>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>aw
+                        <button type="submit" class="btn btn-success pull-right" (click)="updateMotionSettings()"
+                                [disabled]="waitingResponse">Save
+                        </button>
                     </div>
                 </div>
 
