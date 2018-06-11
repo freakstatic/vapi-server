@@ -1,5 +1,5 @@
 import {HttpClient} from '@angular/common/http';
-import {Component, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {TranslateService} from '@ngx-translate/core';
 import {AuthService} from '../auth/auth.service';
@@ -12,7 +12,7 @@ declare var $: any;
  templateUrl: './login.component.html',
  styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnChanges, OnInit
+export class LoginComponent implements OnInit
 {
  showNav: boolean;
  username: string;
@@ -29,19 +29,10 @@ export class LoginComponent implements OnChanges, OnInit
   this.password = '';
  }
  
- ngOnChanges(changes: SimpleChanges): void
- {
-  if (this.authService.checkLogin())
-  {
-   this.router.navigate(['/dashboard']);
-  }
- }
- 
  ngOnInit()
  {
   if (this.authService.checkLogin())
   {
-   //this.router.navigate(['/dashboard']);
    this.translateService.get('WELCOME_BACK').subscribe((res: string) =>
    {
     $.notify({
