@@ -11,16 +11,16 @@ export class AuthInterceptor implements HttpInterceptor
 
  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>
  {
-  if (req.url.match("\.\/assets\/i18n\/([^]{2}.json)"))
+  if (req.url.match('\.\/assets\/i18n\/([^]{2}.json)'))
   {
    return next.handle(req);
   }
   let authReq = req;
-  if ((req.url=='api/login') && !this.credentialsManager.checkLogin())
+  if ((req.url === 'api/login') && !this.credentialsManager.checkLogin())
   {
    authReq = req.clone({
     setHeaders: {
-     Authorization: "Basic " + btoa(req.body.username + ':' + req.body.password)
+     Authorization: 'Basic ' + btoa(req.body.username + ':' + req.body.password)
     },
     body: null
    });
@@ -29,7 +29,7 @@ export class AuthInterceptor implements HttpInterceptor
   {
    authReq = req.clone({
     setHeaders: {
-     Authorization: "Bearer " + this.credentialsManager.getLogin.token
+     Authorization: 'Bearer ' + this.credentialsManager.getLogin.token
     }
    });
   }

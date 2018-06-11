@@ -1,6 +1,6 @@
 import {HttpClient} from '@angular/common/http';
-import {Component, OnInit} from '@angular/core';
-import {Router} from "@angular/router";
+import {Component, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Router} from '@angular/router';
 import {TranslateService} from '@ngx-translate/core';
 import {AuthService} from '../auth/auth.service';
 import {NavbarComponent} from '../components/navbar/navbar.component';
@@ -12,15 +12,14 @@ declare var $: any;
  templateUrl: './login.component.html',
  styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit
+export class LoginComponent implements OnChanges, OnInit
 {
-
  showNav: boolean;
  username: string;
  password: string;
- usernameEmpty: boolean = false;
- passwordEmpty: boolean = false;
-
+ usernameEmpty = false;
+ passwordEmpty = false;
+ 
  constructor(private http: HttpClient,
              private authService: AuthService,
              private translateService: TranslateService, private router: Router)
@@ -29,12 +28,20 @@ export class LoginComponent implements OnInit
   this.username = '';
   this.password = '';
  }
-
- ngOnInit()
+ 
+ ngOnChanges(changes: SimpleChanges): void
  {
   if (this.authService.checkLogin())
   {
    this.router.navigate(['/dashboard']);
+  }
+ }
+ 
+ ngOnInit()
+ {
+  if (this.authService.checkLogin())
+  {
+   //this.router.navigate(['/dashboard']);
    this.translateService.get('WELCOME_BACK').subscribe((res: string) =>
    {
     $.notify({
@@ -47,47 +54,49 @@ export class LoginComponent implements OnInit
    });
   }
  }
-
-
+ 
  login()
  {
   this.usernameEmpty = false;
   this.passwordEmpty = false;
-
-  if (this.username.trim().length == 0)
+  
+  if (this.username.trim().length === 0)
   {
    this.usernameEmpty = true;
   }
-
-  if (this.password.trim().length == 0)
+  
+  if (this.password.trim().length === 0)
   {
    this.passwordEmpty = true;
   }
-
+  
   if (this.usernameEmpty || this.passwordEmpty)
   {
    return;
   }
-
-  this.authService.login(this.username, this.password).then(() =>
-  {
-   this.router.navigate(['/dashboard']);
-  }).catch((error) =>
-  {
-   let messageKey;
-   if (error.code)
+  
+  this.authService.login(this.username, this.password)
+   .then(() =>
    {
-    messageKey = 'ERROR-' + error.code;
-   }
-   else
+    this.router.navigate(['/dashboard']);
+   })
+   .catch((error) =>
    {
-    messageKey = 'ERROR_NO_CONNECTION';
-   }
-   this.translateService.get(messageKey).subscribe((res: string) =>
-   {
-    NavbarComponent.showErrorMessage(res);
+    let messageKey;
+    if (error.code)
+    {
+     messageKey = 'ERROR-' + error.code;
+    }
+    else
+    {
+     messageKey = 'ERROR_NO_CONNECTION';
+    }
+    this.translateService.get(messageKey).subscribe((res: string) =>
+    {
+     NavbarComponent.showErrorMessage(res);
+    });
+    
    });
-
-  })
  }
+ 
 }
