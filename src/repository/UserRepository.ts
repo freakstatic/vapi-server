@@ -4,7 +4,7 @@ import {User} from "../entity/User";
 @EntityRepository(User)
 export class UserRepository extends Repository<User>
 {
- async findByUsername(username: string)
+ async findByUsername(username: string):Promise<User>
  {
   return this.createQueryBuilder("user")
    .where("user.username = :username", {username})
@@ -12,7 +12,7 @@ export class UserRepository extends Repository<User>
    .getOne();
  }
 
- async findByToken(token: string)
+ async findByToken(token: string):Promise<User>
  {
   return this.createQueryBuilder("user")
    .where("user.token = :token", {token})
