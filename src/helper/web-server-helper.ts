@@ -1,7 +1,7 @@
 import * as bcrypt from 'bcrypt';
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
-import {Request} from 'express';
+import {Request, Response} from 'express';
 import * as passport from "passport";
 import {BasicStrategy} from 'passport-http';
 import {Strategy} from 'passport-http-bearer';
@@ -11,6 +11,7 @@ import {ErrorObject} from "../class/ErrorObject";
 import {TokenManager} from '../class/token.manager';
 import {User} from '../entity/User';
 import {MotionSettingsError} from "../exception/MotionSettingsError";
+import {DetectableObjectRepository} from '../repository/DetectableObjectRepository';
 import {DetectionRepository} from '../repository/DetectionRepository';
 import {UserRepository} from "../repository/UserRepository";
 import {MotionHelper} from "./motion-helper";
@@ -29,6 +30,7 @@ export class WebServerHelper
    session: false,
    failureFlash: false
   };
+  const AUTH_STRATEGY = 'bearer';
 
   const app = express();
   const tokenManager = new TokenManager();
@@ -37,13 +39,13 @@ export class WebServerHelper
   {
    if (username == undefined || username.trim().length == 0)
    {
-    done(null,false,new ErrorObject(ErrorObject.EMPTY_USERNAME));
+    done(null, false, new ErrorObject(ErrorObject.EMPTY_USERNAME));
     return;
    }
 
    if (password == undefined || password.trim().length == 0)
    {
-    done(null,false,new ErrorObject(ErrorObject.EMPTY_PASSWORD));
+    done(null, false, new ErrorObject(ErrorObject.EMPTY_PASSWORD));
     return;
    }
 
@@ -52,7 +54,7 @@ export class WebServerHelper
     {
      if (user == null || user == undefined)
      {
-      done(null,false,new ErrorObject(ErrorObject.INVALID_USERNAME_OR_PASSWORD));
+      done(null, false, new ErrorObject(ErrorObject.INVALID_USERNAME_OR_PASSWORD));
       return;
      }
 
@@ -61,7 +63,7 @@ export class WebServerHelper
       {
        if (!matches)
        {
-        done(null,false,new ErrorObject(ErrorObject.INVALID_USERNAME_OR_PASSWORD));
+        done(null, false, new ErrorObject(ErrorObject.INVALID_USERNAME_OR_PASSWORD));
         return;
        }
        done(null, user);
@@ -69,7 +71,7 @@ export class WebServerHelper
     })
     .catch(reason =>
     {
-     done(null,false,reason);
+     done(null, false, reason);
     });
   }));
 
@@ -77,14 +79,14 @@ export class WebServerHelper
   {
    if (token == null || token == undefined || token.trim().length < 1)
    {
-    done(null,false,new ErrorObject(ErrorObject.EMPTY_TOKEN));
+    done(null, false, new ErrorObject(ErrorObject.EMPTY_TOKEN));
     return;
    }
    getConnection().getCustomRepository(UserRepository).findByToken(token).then(user =>
     {
      if (user == null || user == undefined)
      {
-      done(null,false,new ErrorObject(ErrorObject.INVALID_TOKEN));
+      done(null, false, new ErrorObject(ErrorObject.INVALID_TOKEN));
       return;
      }
 
@@ -97,7 +99,7 @@ export class WebServerHelper
     })
     .catch(ex =>
     {
-     done(null,false,ex);
+     done(null, false, ex);
     });
   }));
 
@@ -150,7 +152,7 @@ export class WebServerHelper
   }), async (req: Request, res) =>
   {
    let user = req.user as User;
-   if(!tokenManager.computeFromUser(user))
+   if (!tokenManager.computeFromUser(user))
    {
     res.sendStatus(401);
     return;
@@ -162,31 +164,31 @@ export class WebServerHelper
    }
    else
    {
-    res.status(200).send({token:user.token});
+    res.status(200).send({token: user.token});
    }
    return;
   });
 
   app.post(API_URL + 'login/refresh', (req: Request, res) =>
   {
-   let authorization=req.headers.authorization;
-   if(authorization==undefined||authorization==null||authorization.trim().length<1)
+   let authorization = req.headers.authorization;
+   if (authorization == undefined || authorization == null || authorization.trim().length < 1)
    {
     res.sendStatus(401);
     return;
    }
-   let authorizationArray=authorization.split(' ');
-   if(authorizationArray==undefined||authorizationArray==null||authorizationArray.length!=2)
+   let authorizationArray = authorization.split(' ');
+   if (authorizationArray == undefined || authorizationArray == null || authorizationArray.length != 2)
    {
     res.sendStatus(401);
     return;
    }
-   if(authorizationArray[0]!='Bearer')
+   if (authorizationArray[0] != 'Bearer')
    {
     res.sendStatus(401);
     return;
    }
-   if(authorizationArray[1]==undefined||authorizationArray[1]==null||authorizationArray[1].trim().length<1)
+   if (authorizationArray[1] == undefined || authorizationArray[1] == null || authorizationArray[1].trim().length < 1)
    {
     res.sendStatus(401);
     return;
@@ -198,7 +200,7 @@ export class WebServerHelper
      res.sendStatus(401);
      return;
     }
-    if(!tokenManager.computeFromUser(user))
+    if (!tokenManager.computeFromUser(user))
     {
      res.sendStatus(401);
      return;
@@ -210,35 +212,43 @@ export class WebServerHelper
     }
     else
     {
-     res.status(200).send({token:user.token});
+     res.status(200).send({token: user.token});
     }
     return;
    });
   });
 
-        app.get(API_URL + 'motion/settings', async (req: any, res, next) => {
-            let settings = await motionHelper.settingsArray();
-            res.status(200);
-            res.send(settings);
-        });
-        app.post(API_URL + 'motion/settings/update', async (req: any, res, next) => {
-            let settings = req.body;
-            try {
-                await motionHelper.editSettings(settings);
-                // res.status(200);
-                res.send({});
-            } catch (e) {
-                if (e instanceof MotionSettingsError) {
-                    res.status(400);
-                    res.send(new ErrorObject(ErrorObject.MOTION_INVALID_SETTINGS));
-                } else {
-                    res.status(500);
-                    res.send({});
-                }
-            }
-        });
+  app.get(API_URL + 'motion/settings', async (req: any, res, next) =>
+  {
+   let settings = await motionHelper.settingsArray();
+   res.status(200);
+   res.send(settings);
+  });
+  app.post(API_URL + 'motion/settings/update', async (req: any, res, next) =>
+  {
+   let settings = req.body;
+   try
+   {
+    await motionHelper.editSettings(settings);
+    // res.status(200);
+    res.send({});
+   }
+   catch (e)
+   {
+    if (e instanceof MotionSettingsError)
+    {
+     res.status(400);
+     res.send(new ErrorObject(ErrorObject.MOTION_INVALID_SETTINGS));
+    }
+    else
+    {
+     res.status(500);
+     res.send({});
+    }
+   }
+  });
 
-  app.get(API_URL + 'detection', passport.authenticate('bearer', bearTokenOptions),async (req: any, res, next) =>
+  app.get(API_URL + 'detection', passport.authenticate('bearer', bearTokenOptions), async (req: any, res, next) =>
   {
    let startDate = null;
    let endDate = null;
@@ -274,12 +284,28 @@ export class WebServerHelper
    res.status(200).send(detections);
   });
 
-  app.get(API_URL + 'timelapse/codecs', async (req: any, res, next) => {
+  app.get(API_URL + 'stats/detectable/top5', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: Request, res: Response) =>
+  {
+   let response = await getConnection().getCustomRepository(DetectableObjectRepository).getTop5();
+   if (response == undefined || response == null)
+   {
+    res.sendStatus(204);
+   }
+   else
+   {
+    res.status(200).send(response);
+   }
+   return;
+  });
+
+  app.get(API_URL + 'timelapse/codecs', async (req: any, res, next) =>
+  {
    let codecs = await TimelapseHelper.getCodecs();
    res.status(200).send(codecs);
   });
 
-  app.get(API_URL + 'timelapse/formats', async (req: any, res, next) => {
+  app.get(API_URL + 'timelapse/formats', async (req: any, res, next) =>
+  {
    let formats = await TimelapseHelper.getFormats();
    res.status(200).send(formats);
   });

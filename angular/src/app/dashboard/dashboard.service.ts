@@ -128,16 +128,20 @@ export class DashboardService
   return new Promise<DetectableStat[]>((resolve, reject) =>
   {
    this.http.get('api/stats/detectable/top5')
-    .subscribe((data) =>
+    .subscribe((data:Array<any>) =>
     {
      if (data == undefined || data == null)
      {
       reject();
      }
      let detectables: DetectableStat[] = [];
-     for (let obj in data)
+     for (let obj of data)
      {
-      detectables.push(DetectableStat.IntanceFromWebService(obj));
+      let detectable=DetectableStat.IntanceFromWebService(obj);
+      if(detectable!=undefined&&detectable!=null)
+      {
+       detectables.push(detectable);
+      }
      }
      resolve(detectables);
     },(error)=>

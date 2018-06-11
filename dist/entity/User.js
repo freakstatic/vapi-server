@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const typeorm_1 = require("typeorm");
 const UserGroup_1 = require("./UserGroup");
+const Timelapse_1 = require("./Timelapse");
 let User = class User {
 };
 __decorate([
@@ -38,6 +39,10 @@ __decorate([
     typeorm_1.JoinColumn(),
     __metadata("design:type", UserGroup_1.UserGroup)
 ], User.prototype, "group", void 0);
+__decorate([
+    typeorm_1.OneToMany(type => Timelapse_1.Timelapse, timelapse => timelapse.user),
+    __metadata("design:type", Array)
+], User.prototype, "timelapses", void 0);
 User = __decorate([
     typeorm_1.Entity()
 ], User);
