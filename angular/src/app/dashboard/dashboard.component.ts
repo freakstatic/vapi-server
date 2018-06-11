@@ -5,6 +5,7 @@ import {Observable} from 'rxjs/Observable';
 import {ChartObject} from '../objects/chart/chart';
 import {Detection} from '../objects/detections/detection';
 import {DashboardService} from './dashboard.service';
+import {DetectionTime} from '../objects/chart/detection.time';
 
 @Component({
  selector: 'app-dashboard',
@@ -21,7 +22,8 @@ export class DashboardComponent implements OnInit, OnDestroy
  
  private readonly interval;
  private detectionChartLast7Weeks: Observable<ChartObject<Detection>>;
- private detectionChartTime: Observable<ChartObject<Detection>>;
+ private detectionChartTime: Observable<ChartObject<DetectionTime>>;
+ private detectableStat: Observable<DetectableStat[]>;
  
  constructor(private dashboardService: DashboardService)
  {
@@ -30,8 +32,10 @@ export class DashboardComponent implements OnInit, OnDestroy
   this.detectionUpDownClass = '';
   this.detectableObjects = [];
   this.detectionPercentage = 0;
+  
   this.detectionChartLast7Weeks = this.dashboardService.detectionChartLast7Weeks;
   this.detectionChartTime=this.dashboardService.detectionChartTime;
+  this.detectableStat=this.dashboardService.detectableStat;
   
   this.interval = setInterval(() =>
   {
@@ -158,7 +162,7 @@ export class DashboardComponent implements OnInit, OnDestroy
    this.startAnimationForLineChart(dailySalesChart);
    this.lastUpdatedDetectionStats = 0;
   });
-  this.detectionChartTime.subscribe((object: ChartObject<Detection>) =>
+  this.detectionChartTime.subscribe((object: ChartObject<DetectionTime>) =>
   {
    const optionswebsiteViewsChart = {
     axisX: {
@@ -182,14 +186,18 @@ export class DashboardComponent implements OnInit, OnDestroy
    this.startAnimationForBarChart(statsByTime);
    this.lastUpdatedDetectionStatsTime = 0;
   });
+  this.detectableStat.subscribe((data:DetectableStat[])=>
+  {
+   if(data===undefined||data===null)
+   {
+    return;
+   }
+   this.detectableObjects=data;
+  });
   
   this.dashboardService.initDetectionChartLast7Weeks();
   this.dashboardService.initDetectionChartTime();
-  
-  this.dashboardService.initTop5().then((data) =>
-  {
-   this.detectableObjects = data;
-  });
+  this.dashboardService.initTop5();
  }
  
  ngOnDestroy()
