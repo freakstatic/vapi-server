@@ -2,20 +2,20 @@ import * as bcrypt from 'bcrypt';
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import {Request, Response} from 'express';
-import * as passport from "passport";
+import * as passport from 'passport';
 import {BasicStrategy} from 'passport-http';
 import {Strategy} from 'passport-http-bearer';
 import * as path from 'path';
-import {getConnection} from "typeorm";
-import {ErrorObject} from "../class/ErrorObject";
+import {getConnection} from 'typeorm';
+import {ErrorObject} from '../class/ErrorObject';
 import {TokenManager} from '../class/token.manager';
 import {User} from '../entity/User';
-import {MotionSettingsError} from "../exception/MotionSettingsError";
+import {MotionSettingsError} from '../exception/MotionSettingsError';
 import {DetectableObjectRepository} from '../repository/DetectableObjectRepository';
 import {DetectionRepository} from '../repository/DetectionRepository';
-import {UserRepository} from "../repository/UserRepository";
-import {MotionHelper} from "./motion-helper";
-import {TimelapseHelper} from "./TimelapseHelper";
+import {UserRepository} from '../repository/UserRepository';
+import {MotionHelper} from './motion-helper';
+import {TimelapseHelper} from './TimelapseHelper';
 
 export class WebServerHelper {
     constructor(motionHelper: MotionHelper) {
@@ -232,8 +232,23 @@ export class WebServerHelper {
                 res.status(204).send();
             }
             res.status(200).send(detections);
+            return;
         });
-
+ 
+     app.get(API_URL + 'stats/detection/time', passport.authenticate('bearer', bearTokenOptions), async(req: Request, res: Response) =>
+     {
+      let dbObjs = await getConnection().getCustomRepository(DetectionRepository).getStatsTime();
+      if (dbObjs == null)
+      {
+       res.sendStatus(204);
+      }
+      else
+      {
+       res.status(200).send(dbObjs);
+      }
+      return;
+     });
+        
         app.get(API_URL + 'timelapse/codecs', async (req: any, res, next) => {
             let codecs = await TimelapseHelper.getCodecs();
             res.status(200).send(codecs);
