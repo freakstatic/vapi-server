@@ -204,7 +204,7 @@ export class DashboardService
  {
   return new Promise<number>((resolve, reject) =>
   {
-   this.http.get('api/stats/storage')
+   this.http.get('api/storage')
     .subscribe((data: any) =>
     {
      if(data.hasOwnProperty('usedSpace'))
