@@ -1,5 +1,6 @@
 import {Between, EntityRepository, LessThan, MoreThan, Repository} from 'typeorm';
 import {Detection} from '../entity/Detection';
+import {FindOptionsUtils} from "typeorm/find-options/FindOptionsUtils";
 
 @EntityRepository(Detection)
 export class DetectionRepository extends Repository<Detection>
@@ -9,6 +10,26 @@ export class DetectionRepository extends Repository<Detection>
  {
   let options = this.populateOptionDate(startDate, endDate);
   return await this.find(options);
+ }
+ 
+ public async getByDatesWithRelations(startDate: Date, endDate : Date){
+  
+  return await this.createQueryBuilder('detection')
+   .leftJoinAndSelect("detection.image", "detectionImage")
+   .leftJoinAndSelect("detection.event", "detectionEvent")
+   .where('date BETWEEN :startDate AND :endDate', {startDate, endDate})
+   .getMany();
+  //
+  // options['where'] = {
+  //     id : 1
+  // };
+  //
+  // // let conditions = {
+  // //     relations: ['image', 'event']
+  // // };
+  // options['relations'] = ['image', 'event'];
+  
+  
  }
  
  public async getStats(startDate: Date, endDate: Date): Promise<Object>
@@ -61,7 +82,7 @@ export class DetectionRepository extends Repository<Detection>
   try
   {
    dbObjs=await this.createQueryBuilder()
-    .select(['COUNT(id) AS numberOccurrences','DATE_FORMAT(date,\'%H\') AS time'])
+    .select(['COUNT(id) AS numberOccurrences','DATE_FORMAT(date,\'%H:00\') AS time'])
     .groupBy('DATE_FORMAT(date,\'%H\')')
     .getRawMany();
   }

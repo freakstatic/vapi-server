@@ -26,15 +26,15 @@
                             <div class="col-md-6">
                                 <div class="form-group label-floating">
                                     <label class="control-label">{{ 'TIMELAPSES_FORMAT' | translate:param }} </label>
-                                <ng2-completer class="completer-limit"
-                                               [(ngModel)]="selectedFormat"
-                                               [datasource]="formats"
-                                               [minSearchLength]="0"
-                                               [maxChars]="4"
-                                               [inputClass]="'form-control'"
-                                               [matchClass]="'match'"
-                                               [textSearching]="false">
-                                </ng2-completer>
+                                    <ng2-completer class="completer-limit"
+                                                   [(ngModel)]="selectedFormat"
+                                                   [datasource]="formats"
+                                                   [minSearchLength]="0"
+                                                   [maxChars]="4"
+                                                   [inputClass]="'form-control'"
+                                                   [matchClass]="'match'"
+                                                   [textSearching]="false">
+                                    </ng2-completer>
 
                                 </div>
                             </div>
@@ -51,17 +51,51 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6">
-                                <label>De:</label>
-                                <angular2-date-picker [(ngModel)]="startDate"
-                                                      [settings]="settings"></angular2-date-picker>
+                                <mat-form-field>
+                                    <label class="control-label">{{ 'TIMELAPSES_FROM' | translate:param }} </label>
+                                    <input matInput [matDatepicker]="startDatepicker"  [(ngModel)]="startDate" readonly
+                                           (click)="startDatepicker.open()"
+                                    >
+                                    <mat-datepicker-toggle matSuffix [for]="startDatepicker"
+                                    ></mat-datepicker-toggle>
+                                    <mat-datepicker #startDatepicker></mat-datepicker>
+                                </mat-form-field>
+
+
+                                <mat-form-field class="example-full-width ">
+                                    <input atp-time-picker value="19:00" [(ngModel)]="startTime" matInput type="text"
+                                    >
+                                    <span class="form-control-feedback">
+                                    <i class="material-icons">done</i>
+                                    </span>
+                                </mat-form-field>
                             </div>
                             <div class="col-md-6">
-                                <label>Até:</label>
-                                <angular2-date-picker [(ngModel)]="endDate"
-                                                      [settings]="settings"></angular2-date-picker>
+                                <mat-form-field>
+                                    <label class="control-label">{{ 'TIMELAPSES_FROM' | translate:param }} </label>
+                                    <input matInput [matDatepicker]="endDatePicker"  [(ngModel)]="endDate" readonly
+                                           (click)="endDatePicker.open()"
+                                    >
+                                    <mat-datepicker-toggle matSuffix [for]="endDatePicker"
+                                    ></mat-datepicker-toggle>
+                                    <mat-datepicker #endDatePicker></mat-datepicker>
+                                </mat-form-field>
+
+
+                                <mat-form-field class="example-full-width ">
+                                    <input atp-time-picker value="19:00" [(ngModel)]="endTime" matInput type="text">
+                                    <span class="form-control-feedback">
+                                    <i class="material-icons">done</i>
+                                    </span>
+                                </mat-form-field>
                             </div>
+                        </div>
+
+                        <div class="row">
+
                             <div class="col-md-12">
                                 <br/>
+                                <p class="text-success">{{ filesProgress }}</p>
                                 <div class="progress" [hidden]="!processing">
                                     <div class="progress-bar progress-bar-success" role="progressbar"
                                          aria-valuemin="0" aria-valuemax="100"

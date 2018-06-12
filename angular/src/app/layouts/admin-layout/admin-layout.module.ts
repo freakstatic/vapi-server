@@ -13,10 +13,8 @@ import {NotificationsComponent} from '../../notifications/notifications.componen
 import {UpgradeComponent} from '../../upgrade/upgrade.component';
 
 import {
-    MatButtonModule,
-    MatInputModule,
-    MatRippleModule,
-    MatTooltipModule,
+    MatButtonModule, MatDatepickerModule, MatInputModule, MatRippleModule, MatTooltipModule,
+    MatNativeDateModule
 } from '@angular/material';
 import {LoginComponent} from "../../login/login.component";
 import {TimelapsesComponent} from "../../timelapses/timelapses.component";
@@ -32,6 +30,9 @@ import {CredentialsManagerService} from "../../auth/credentials.manager.service"
 import {Ng2CompleterModule} from "ng2-completer";
 import {IonRangeSliderModule} from "ng2-ion-range-slider";
 import {AngularDateTimePickerModule} from "angular2-datetimepicker";
+import {Angular5TimePickerModule} from "angular5-time-picker";
+import {AmazingTimePickerModule} from "amazing-time-picker";
+
 
 export function createTranslateLoader(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -48,7 +49,11 @@ export function createTranslateLoader(http: HttpClient) {
         MatTooltipModule,
         Ng2CompleterModule,
         AngularDateTimePickerModule,
+        AmazingTimePickerModule,
         IonRangeSliderModule,
+        ReactiveFormsModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,

@@ -65,7 +65,7 @@ export class SocketHelper {
                     client.on('timelapse/create', async (data) => {
                         console.log('[SocketHelper] [timelapse/create]');
                         let detections = await getConnection()
-                            .getCustomRepository(DetectionRepository).get(data.startDate, data.endDate);
+                            .getCustomRepository(DetectionRepository).getByDatesWithRelations(data.startDate, data.endDate);
                         if (detections.length) {
                             TimelapseHelper.create(detections, data.codec, data.format, data.fps, client, user);
                         }

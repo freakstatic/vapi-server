@@ -6,7 +6,11 @@ import {NavbarComponent} from "../components/navbar/navbar.component";
 import {TranslateService} from "@ngx-translate/core";
 import {IonRangeSliderCallback} from "ng2-ion-range-slider";
 import {ErrorObject} from "../../../../src/class/ErrorObject";
+import {FormControl} from "@angular/forms";
+import {DateAdapter} from "@angular/material";
 
+
+//declare var MaterialDateTimePicker: any;
 
 @Component({
     selector: 'app-timelapses',
@@ -23,11 +27,16 @@ export class TimelapsesComponent implements OnInit {
     public selectedFormat: string = 'avi';
     public errorMessage: string;
 
+    public filesProgress: string;
     public progress: string = '0%';
     public processing: boolean = false;
 
     startDate: Date;
+    startTime: string;
+
     endDate: Date;
+    endTime: string;
+
     settings = {
         bigBanner: true,
         timePicker: true,
@@ -39,13 +48,22 @@ export class TimelapsesComponent implements OnInit {
     fpsSelected: number = this.fps;
 
     constructor(private translateService: TranslateService,
-                private timeLapsesService: TimelapsesService, private socket: Socket) {
+                private timeLapsesService: TimelapsesService,
+                private socket: Socket,
+                private adapter: DateAdapter<any>) {
+        this.adapter.setLocale('pt');
     }
 
 
+    private picker;
+
     ngOnInit() {
         this.startDate = new Date();
+        this.startTime = '00:00';
+
         this.endDate = new Date();
+        this.endTime = '23:59';
+
         this.timeLapsesService.getCodecs().then((receivedCodecs: Array<any>) => {
             this.receivedCodecs = receivedCodecs;
             this.codecsDescription = receivedCodecs.map((codec) => {
@@ -60,6 +78,9 @@ export class TimelapsesComponent implements OnInit {
         });
 
         this.setSocketEvents();
+
+
+
     }
 
     setSocketEvents() {
@@ -90,11 +111,34 @@ export class TimelapsesComponent implements OnInit {
             }
             this.reset();
         });
+
+        this.socket.on('timelapse/files/progress', (data) => {
+            console.log(data);
+            let parameters = {
+                current: data.currentIndex + 1,
+                max: data.max
+            };
+            this.translateService.get('TIMELAPSES_FILES_PROGRESS', parameters).subscribe((res: string) => {
+                this.filesProgress = res;
+            });
+
+
+        });
+
+        this.socket.on('timelapse/files/end', () => {
+            this.translateService.get('TIMELAPSES_RENDERING').subscribe((res: string) => {
+                this.filesProgress =  res;
+            });
+
+        });
+
+
     }
 
     reset() {
         this.processing = false;
         this.progress = '0%';
+        this.filesProgress = '';
     }
 
     createTimelapse() {
@@ -124,11 +168,23 @@ export class TimelapsesComponent implements OnInit {
             return;
         }
 
-        this.startDate = this.startDate instanceof Date ? this.startDate : new Date(this.startDate);
-        this.endDate = this.endDate instanceof Date ? this.endDate : new Date(this.endDate);
+     //   this.startDate = this.startDate instanceof Date ? this.startDate : new Date(this.startDate);
+       // this.endDate = this.endDate instanceof Date ? this.endDate : new Date(this.endDate);
         let format = 'YYYY-MM-DD HH:mm';
-        let momentStartDate = moment(this.startDate, '%Y-%m-%d %H:%M:%S');
-        let momentEndDate = moment(this.endDate, '%Y-%m-%d %H:%M:%S');
+
+
+
+        let splitStartTime = this.startTime.split(':');
+        this.startDate.setHours(parseInt((splitStartTime[0])));
+        this.startDate.setMinutes(parseInt((splitStartTime[1])));
+
+        let splitEndTime = this.endTime.split(':');
+        this.endDate.setHours(parseInt(splitEndTime[0]));
+        this.endDate.setMinutes(parseInt(splitEndTime[1]));
+
+        let momentStartDate = moment(this.startDate, '%d-%m-%Y %H:%M:%S');
+
+        let momentEndDate = moment(this.endDate, '%d-%m-%Y %H:%M:%S');
 
         if (momentStartDate.valueOf() > momentEndDate.valueOf()) {
             this.translateService.get('ERROR-TIMELAPSE_START_DATE_GREATER_THAN_END_DATE').subscribe((res: string) => {
