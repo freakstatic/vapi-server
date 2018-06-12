@@ -11,6 +11,7 @@ import {UserRepository} from '../repository/UserRepository';
 import {TimelapseHelper} from './TimelapseHelper';
 import {DetectionHelper} from './DetectionHelper';
 import {MotionHelper} from './motion-helper';
+import {DetectableObjectRepository} from '../repository/DetectableObjectRepository';
 
 let config = require('../../config.json');
 const YOLO_GROUP_NAME = 'yolo';
@@ -48,8 +49,12 @@ export class SocketHelper {
                     client.on('detection', async obj => {
                         try {
                             const detection:Detection = await detectionHelper.handleDetectionReceived(obj);
-                            detection.detectionObjects.then((detectionObjects:DetectionObject[])=>
+                            detection.detectionObjects.then(async (detectionObjects:DetectionObject[])=>
                             {
+                             for(let detectionObject of detectionObjects)
+                             {
+                              detectionObject.object=await getConnection().getCustomRepository(DetectableObjectRepository).findByDetectionObject();
+                             }
                              client.broadcast.to(USER_ROOM).emit('detection', {
                               id:detection.id,
                               date:detection.date,
