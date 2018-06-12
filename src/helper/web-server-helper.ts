@@ -43,24 +43,24 @@ export class WebServerHelper {
             }
 
             getConnection().getCustomRepository(UserRepository).findByUsername(username)
-             .then((user:User) => {
-              if (user == null || user == undefined) {
-               done(null, false, new ErrorObject(ErrorObject.INVALID_USERNAME_OR_PASSWORD));
-               return;
-              }
+                .then((user: User) => {
+                    if (user == null || user == undefined) {
+                        done(null, false, new ErrorObject(ErrorObject.INVALID_USERNAME_OR_PASSWORD));
+                        return;
+                    }
 
-              bcrypt.compare(password, user.password)
-               .then(matches => {
-                if (!matches) {
-                 done(null, false, new ErrorObject(ErrorObject.INVALID_USERNAME_OR_PASSWORD));
-                 return;
-                }
-                done(null, user);
-               });
-             })
-             .catch(reason => {
-              done(null, false, reason);
-             });
+                    bcrypt.compare(password, user.password)
+                        .then(matches => {
+                            if (!matches) {
+                                done(null, false, new ErrorObject(ErrorObject.INVALID_USERNAME_OR_PASSWORD));
+                                return;
+                            }
+                            done(null, user);
+                        });
+                })
+                .catch(reason => {
+                    done(null, false, reason);
+                });
         }));
 
         passport.use(new Strategy((token: string, done: any) => {
@@ -69,21 +69,21 @@ export class WebServerHelper {
                 return;
             }
             getConnection().getCustomRepository(UserRepository).findByToken(token)
-             .then((user:User) => {
-              if (user == null || user == undefined) {
-               done(null, false, new ErrorObject(ErrorObject.INVALID_TOKEN));
-               return;
-              }
+                .then((user: User) => {
+                    if (user == null || user == undefined) {
+                        done(null, false, new ErrorObject(ErrorObject.INVALID_TOKEN));
+                        return;
+                    }
 
-              if (!tokenManager.validateToken(user, token)) {
-               done(null, false);
-               return;
-              }
-              done(null, user);
-             })
-             .catch(ex => {
-              done(null, false, ex);
-             });
+                    if (!tokenManager.validateToken(user, token)) {
+                        done(null, false);
+                        return;
+                    }
+                    done(null, user);
+                })
+                .catch(ex => {
+                    done(null, false, ex);
+                });
         }));
 
         passport.serializeUser((user: User, done) => {
@@ -125,8 +125,7 @@ export class WebServerHelper {
         app.post(API_URL + 'login', passport.authenticate('basic', {
             session: false,
             failureFlash: false
-        }), async (req: Request, res:Response) =>
-        {
+        }), async (req: Request, res: Response) => {
             let user = req.user as User;
             if (!tokenManager.computeFromUser(user)) {
                 res.sendStatus(401);
@@ -234,21 +233,18 @@ export class WebServerHelper {
             res.status(200).send(detections);
             return;
         });
- 
-     app.get(API_URL + 'stats/detection/time', passport.authenticate('bearer', bearTokenOptions), async(req: Request, res: Response) =>
-     {
-      let dbObjs = await getConnection().getCustomRepository(DetectionRepository).getStatsTime();
-      if (dbObjs == null)
-      {
-       res.sendStatus(204);
-      }
-      else
-      {
-       res.status(200).send(dbObjs);
-      }
-      return;
-     });
-        
+
+        app.get(API_URL + 'stats/detection/time', passport.authenticate('bearer', bearTokenOptions), async (req: Request, res: Response) => {
+            let dbObjs = await getConnection().getCustomRepository(DetectionRepository).getStatsTime();
+            if (dbObjs == null) {
+                res.sendStatus(204);
+            }
+            else {
+                res.status(200).send(dbObjs);
+            }
+            return;
+        });
+
         app.get(API_URL + 'timelapse/codecs', async (req: any, res, next) => {
             let codecs = await TimelapseHelper.getCodecs();
             res.status(200).send(codecs);

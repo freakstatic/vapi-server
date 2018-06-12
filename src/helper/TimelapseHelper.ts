@@ -255,7 +255,12 @@ export class TimelapseHelper {
                 console.log('[TimelapseHelper] [copyFilesToTmp] Stopped');
                 return true;
             }
-            console.log('[TimelapseHelper] [copyFilesToTmp] Copying ' + (index + 1) + ' of ' + imageUrls.length);
+           // console.log('[TimelapseHelper] [copyFilesToTmp] Copying ' + (index + 1) + ' of ' + imageUrls.length);
+            socket.emit('timelapse/files/progress', {
+                currentIndex: index,
+                max: imageUrls.length
+            });
+
             let format = path.extname(imageUrls[index]);
             let filename = TimelapseHelper.pad(index, TimelapseHelper.NR_OF_LEADING_ZEROS) + format;
             try {
@@ -273,6 +278,9 @@ export class TimelapseHelper {
             return true;
         };
         await copyFileLoop(0, imageUrls.length);
+        if (!stopped){
+            socket.emit('timelapse/files/end');
+        }
         socket.removeListener('timelapse/stop', stopFunction);
         return !stopped
     }
