@@ -31,6 +31,4 @@ export class DetectionObject
  @ManyToOne(type => DetectableObject)
  @JoinColumn()
  object: DetectableObject;
- 
- detectableObject:DetectableObject;
 }
