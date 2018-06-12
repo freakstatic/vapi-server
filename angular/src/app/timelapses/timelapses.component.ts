@@ -98,11 +98,12 @@ export class TimelapsesComponent implements OnInit {
             console.log(data);
             this.progress = data.progress + '%';
         });
-        this.socket.on('timelapse/finish', (data) => {
+        this.socket.on('timelapse/finish', (timelapse) => {
             this.progress = '100%';
             setTimeout(() => {
                 this.reset();
             }, 1000);
+            this.timelapses.push(timelapse);
         });
 
         this.socket.on('timelapse/error', (error: {}) => {
