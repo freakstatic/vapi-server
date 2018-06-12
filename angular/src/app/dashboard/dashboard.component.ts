@@ -213,7 +213,10 @@ export class DashboardComponent implements OnInit, OnDestroy
   this.dashboardService.initDetectionChartLast7Weeks();
   this.dashboardService.initDetectionChartTime();
   this.dashboardService.initTop5();
-  this.dashboardService.initUsedSpace();
+  this.dashboardService.initUsedSpace().then(diskSpace=>
+  {
+   this.diskSpace=diskSpace;
+  });
  }
  
  ngOnDestroy()
