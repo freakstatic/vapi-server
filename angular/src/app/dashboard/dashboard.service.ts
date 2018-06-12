@@ -39,6 +39,7 @@ export class DashboardService
    {
     return;
    }
+   this.socket.emit('storageReport');
    this.onDetectionByWeek(detection);
    this.onDetectionByTime(detection);
    this.onDetectableStat(data);
