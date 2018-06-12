@@ -132,7 +132,12 @@ export class DashboardComponent implements OnInit, OnDestroy
    }
    else
    {
-    this.detectionPercentage = todayDetection.numberOfDetections / yesterdayDetection.numberOfDetections;
+    let divider=yesterdayDetection.numberOfDetections;
+    if(divider===0)
+    {
+     divider=1;
+    }
+    this.detectionPercentage = todayDetection.numberOfDetections / divider;
    }
    this.detectionPercentage *= 100;
    
