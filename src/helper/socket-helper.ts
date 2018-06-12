@@ -1,21 +1,16 @@
 import * as express from 'express';
 import * as http from 'http';
-import {getConnection} from "typeorm";
+import {getConnection} from 'typeorm';
 import {ErrorObject} from '../class/ErrorObject';
 import {TokenManager} from '../class/token.manager';
-import {DetectableObject} from "../entity/DetectableObject";
-import {Detection} from "../entity/Detection";
-import {DetectionObject} from "../entity/DetectionObject";
+import {Detection} from '../entity/Detection';
+import {DetectionObject} from '../entity/DetectionObject';
 import {User} from '../entity/User';
-import {DetectableObjectRepository} from "../repository/DetectableObjectRepository";
 import {DetectionRepository} from '../repository/DetectionRepository';
 import {UserRepository} from '../repository/UserRepository';
-import {DbHelper} from "./db-helper";
 import {TimelapseHelper} from './TimelapseHelper';
-
-import {DetectionImage} from "../entity/DetectionImage";
-import {DetectionHelper} from "./DetectionHelper";
-import {MotionHelper} from "./motion-helper";
+import {DetectionHelper} from './DetectionHelper';
+import {MotionHelper} from './motion-helper';
 
 let config = require('../../config.json');
 const YOLO_GROUP_NAME = 'yolo';
@@ -23,7 +18,7 @@ const USER_ROOM = 'user';
 const tokenManager = new TokenManager();
 
 export class SocketHelper {
-    constructor(detectionHelper: DetectionHelper, motionHelper: MotionHelper) {
+ constructor(detectionHelper: DetectionHelper, motionHelper: MotionHelper) {
         const socketApp = express();
         const server = http.createServer(socketApp);
         const io = require('socket.io')(server);
@@ -46,16 +41,24 @@ export class SocketHelper {
 
                 socketLoggedIn = true;
                 user = temp_user;
-                console.log('authenticated');
+                console.log(user.username+' authenticated');
                 if (user.group.name === YOLO_GROUP_NAME) {
                     client.join('yolo');
-
-                    client.emit('set-folder', motionHelper.settings['target_dir']);
-
-                    client.on('detection', async detection => {
+                 client.emit('set-folder', motionHelper.settings['target_dir']);
+                    client.on('detection', async obj => {
                         try {
-                            detection = await detectionHelper.handleDetectionReceived(detection);
-                            client.broadcast.to(USER_ROOM).emit('detection', detection);
+                            const detection:Detection = await detectionHelper.handleDetectionReceived(obj);
+                            detection.detectionObjects.then((detectionObjects:DetectionObject[])=>
+                            {
+                             client.broadcast.to(USER_ROOM).emit('detection', {
+                              id:detection.id,
+                              date:detection.date,
+                              detectionObjects:detectionObjects,
+                              numberOfDetections:detection.numberOfDetections,
+                              image:detection.image,
+                              event:detection.event
+                             });
+                            });
                         }
                         catch (error) {
                             console.error('[socket-helper] [detection] ' + error);
