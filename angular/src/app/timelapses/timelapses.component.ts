@@ -9,6 +9,7 @@ import {ErrorObject} from "../../../../src/class/ErrorObject";
 import {FormControl} from "@angular/forms";
 import {DateAdapter} from "@angular/material";
 
+import { environment } from '../../environments/environment';
 
 //declare var MaterialDateTimePicker: any;
 
@@ -47,11 +48,16 @@ export class TimelapsesComponent implements OnInit {
     fps: number = 50;
     fpsSelected: number = this.fps;
 
+    public timelapses: any[];
+
+    public apiURL: string;
+
     constructor(private translateService: TranslateService,
                 private timeLapsesService: TimelapsesService,
                 private socket: Socket,
                 private adapter: DateAdapter<any>) {
         this.adapter.setLocale('pt');
+        this.apiURL = environment.apiURL;
     }
 
 
@@ -75,6 +81,10 @@ export class TimelapsesComponent implements OnInit {
             this.formats = receiveFormats.map((format) => {
                 return format.name;
             })
+        });
+
+        this.timeLapsesService.getTimelapses().then((timelapses : any[]) => {
+            this.timelapses = timelapses;
         });
 
         this.setSocketEvents();
@@ -113,7 +123,6 @@ export class TimelapsesComponent implements OnInit {
         });
 
         this.socket.on('timelapse/files/progress', (data) => {
-            console.log(data);
             let parameters = {
                 current: data.currentIndex + 1,
                 max: data.max

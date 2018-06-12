@@ -42,6 +42,10 @@ import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from "@angular/material/
 import {MatDatetimepickerModule} from "@mat-datetimepicker/core";
 import {MAT_MOMENT_DATE_FORMATS, MomentDateAdapter} from "@angular/material-moment-adapter";
 import {AuthLoginGuard} from "./auth/auth.login.guard";
+import {VgCoreModule} from "videogular2/core";
+import {VgControlsModule} from "videogular2/controls";
+import {VgOverlayPlayModule} from "videogular2/overlay-play";
+import {VgBufferingModule} from "videogular2/buffering";
 
 
 export function createTranslateLoader(http: HttpClient) {
@@ -76,7 +80,7 @@ const config: SocketIoConfig = {
     declarations: [
         AppComponent,
         AdminLayoutComponent,
-        LoginComponent,
+        LoginComponent
     ],
     providers: [
         FormsModule,

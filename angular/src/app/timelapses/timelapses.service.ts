@@ -8,19 +8,15 @@ export class TimelapsesService {
   constructor(private http: HttpClient,) { }
 
   async getCodecs(){
-      return new Promise((resolve, reject) => {
-          this.http.get('api/timelapse/codecs').toPromise().then((response) => {
-              resolve(response);
-          })
-      })
+      return this.http.get('api/timelapse/codecs').toPromise()
   }
 
   async getFormats(){
-      return new Promise((resolve, reject) => {
-          this.http.get('api/timelapse/formats').toPromise().then((response) => {
-              resolve(response);
-          })
-      });
+      return this.http.get('api/timelapse/formats').toPromise()
+  }
+
+  async getTimelapses(){
+      return this.http.get('api/timelapses').toPromise()
   }
 
 }

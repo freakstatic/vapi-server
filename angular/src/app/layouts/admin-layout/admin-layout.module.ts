@@ -32,6 +32,10 @@ import {IonRangeSliderModule} from "ng2-ion-range-slider";
 import {AngularDateTimePickerModule} from "angular2-datetimepicker";
 import {Angular5TimePickerModule} from "angular5-time-picker";
 import {AmazingTimePickerModule} from "amazing-time-picker";
+import {VgOverlayPlayModule} from "videogular2/overlay-play";
+import {VgControlsModule} from "videogular2/controls";
+import {VgBufferingModule} from "videogular2/buffering";
+import {VgCoreModule} from "videogular2/core";
 
 
 export function createTranslateLoader(http: HttpClient) {
@@ -54,6 +58,10 @@ export function createTranslateLoader(http: HttpClient) {
         ReactiveFormsModule,
         MatDatepickerModule,
         MatNativeDateModule,
+        VgCoreModule,
+        VgControlsModule,
+        VgOverlayPlayModule,
+        VgBufferingModule,
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,

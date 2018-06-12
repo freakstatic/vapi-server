@@ -32,12 +32,12 @@ export class TimelapseHelper {
 
     private static readonly TIMELAPSES_FOLDER: string = 'timelapses';
     private static readonly TMP_FOLDER: string = TimelapseHelper.TIMELAPSES_FOLDER + '/tmp';
-    private static readonly VIDEOS_FOLDER = TimelapseHelper.TIMELAPSES_FOLDER + '/videos';
-    private static readonly THUMBNAILS_FOLDER = TimelapseHelper.TIMELAPSES_FOLDER + '/thumbnails';
+    public static readonly VIDEOS_FOLDER = TimelapseHelper.TIMELAPSES_FOLDER + '/videos';
+    public static readonly THUMBNAILS_FOLDER = TimelapseHelper.TIMELAPSES_FOLDER + '/thumbnails';
     private static readonly THUMBNAILS_WIDTH = 1920;
     private static readonly THUMBNAILS_HEIGHT = 1080;
 
-    private static readonly MOSAICS_FOLDER = TimelapseHelper.TIMELAPSES_FOLDER + '/mosaics';
+    public static readonly MOSAICS_FOLDER = TimelapseHelper.TIMELAPSES_FOLDER + '/mosaics';
 
     private static readonly FORMATS_THAT_SUPPORT_CHAPTERS = ['mp4', 'ogg', 'mov'];
 
@@ -104,9 +104,9 @@ export class TimelapseHelper {
                     let timelapse = await this.insertInDb(detections, filename, codec, imagesPath[0], user);
 
                     if (this.FORMATS_THAT_SUPPORT_CHAPTERS.includes(format)) {
-                       this.addChapters(filename, format, fps, detections);
+                     await this.addChapters(filename, format, fps, detections);
                     }
-                    await this.createMosaic(filename, 640, 4, 3);
+                    await this.createMosaic(timelapse, 640, 4, 3);
 
                     TimelapseHelper.clean(tmpFolderName);
                     socket.emit('timelapse/finish', timelapse);
@@ -187,18 +187,22 @@ export class TimelapseHelper {
             if (err) {
                 console.error('[TimelapseHelper] [addChapters] Unable to rename timelapse with chapters file');
             }
+
+
         });
     }
 
-    private static async createMosaic(filename : string, widthPerImage: number, rows: number, lines: number){
-        let filenameWithoutExtension = path.parse(filename).name;
+    private static async createMosaic(timelapse: Timelapse, widthPerImage: number, rows: number, lines: number){
+        let filenameWithoutExtension = path.parse(timelapse.filename).name;
 
-        let ffmpeg = spawn('ffmpeg', [
-            '-i', this.VIDEOS_FOLDER + '/' + filename,
+        let mosaicFileName = filenameWithoutExtension + '.jpg';
+        let mosaicFullPath = this.MOSAICS_FOLDER + '/' + mosaicFileName;
+            let ffmpeg = spawn('ffmpeg', [
+            '-i', this.VIDEOS_FOLDER + '/' + timelapse.filename,
             '-vf', 'select=gt(scene\\,0.1),scale=' + widthPerImage +':-1,tile='+ rows +'x' + lines,
             '-frames:v', '1',
             '-qscale:v', '1',
-           this.MOSAICS_FOLDER + '/' + filenameWithoutExtension + '.jpg',
+                mosaicFullPath,
             '-y'
         ]);
 
@@ -213,6 +217,8 @@ export class TimelapseHelper {
             if (code != 0){
                 console.error('[TimelapseHelper] [createMosaic] Unable to create mosaic file');
             }
+            timelapse.mosaic = mosaicFileName;
+            getConnection().getRepository(Timelapse).save(timelapse);
         });
     }
 

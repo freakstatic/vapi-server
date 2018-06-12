@@ -139,6 +139,17 @@
                     </div>
                     <div class="card-body table-responsive">
                         <div class="row">
+
+
+                            <div *ngFor="let timelapse of timelapses" class="col-md-4 img-holder">
+                                <img class="timelapse-thumbnail text-center" [src]="apiURL + '/timelapse/' + timelapse.id + '/thumbnail'">
+                                <div class="timelapse-icons">
+                                    <a [href]="apiURL + '/timelapse/' + timelapse.id + '/video' "><i class="material-icons text-center">cloud_download</i></a>
+                                    <a [href]="apiURL + '/timelapse/' + timelapse.id + '/mosaic'" class="right-icon"><i class="material-icons text-center">grid_on</i> </a>
+                                </div>
+
+                            </div>
+
                         </div>
                     </div>
                 </div>

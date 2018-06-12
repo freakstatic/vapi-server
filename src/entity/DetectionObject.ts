@@ -1,4 +1,14 @@
-import {Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    JoinTable,
+    ManyToMany,
+    ManyToOne,
+    OneToMany,
+    OneToOne,
+    PrimaryGeneratedColumn
+} from "typeorm";
 import {Detection} from "./Detection";
 import {DetectableObject} from "./DetectableObject";
 
@@ -23,7 +33,7 @@ export class DetectionObject{
     @Column()
     height: number;
 
-    @OneToOne(type => Detection)
+    @ManyToOne(type => Detection, detection => detection.detectionObjects)
     @JoinColumn()
     detection: Detection;
 

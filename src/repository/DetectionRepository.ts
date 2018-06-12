@@ -17,16 +17,6 @@ export class DetectionRepository extends Repository<Detection> {
             .leftJoinAndSelect("detection.event", "detectionEvent")
             .where('date BETWEEN :startDate AND :endDate', {startDate, endDate})
             .getMany();
-        //
-        // options['where'] = {
-        //     id : 1
-        // };
-        //
-        // // let conditions = {
-        // //     relations: ['image', 'event']
-        // // };
-        // options['relations'] = ['image', 'event'];
-
 
     }
 
