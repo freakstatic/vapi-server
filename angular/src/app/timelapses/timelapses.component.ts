@@ -60,6 +60,13 @@ export class TimelapsesComponent implements OnInit {
         this.apiURL = environment.apiURL;
     }
 
+    selectedFrequency: string;
+
+    scheduleOptions = {
+        DAILY: 'daily',
+        WEEKLY: 'weekly',
+        MONTHLY: 'monthly'
+    };
 
     private picker;
 

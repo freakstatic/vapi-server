@@ -20,6 +20,13 @@
   "TIMELAPSES_TO": "Até",
   "TIMELAPSES_FILES_PROGRESS": "Preparing files: {{current}} of {{max}}",
   "TIMELAPSES_RENDERING": "Rendering the video...",
+
+  "TIMELAPSES_FREQUENCY": "Frequency",
+  "TIMELAPSES_SCHEDULE_DAILY": "Daily",
+  "TIMELAPSES_SCHEDULE_WEEKLY": "Weekly",
+  "TIMELAPSES_SCHEDULE_MONTHLY": "Monthly",
+  "TIMELAPSES_BTN_SAVE": "Save",
+
   "TIMELAPSES_BTN_CREATE": "Create timelapse",
   "TIMELAPSES_BTN_CANCEL": "Cancel",
   "TIMELAPSES_EMPTY_FORMAT": "Please select the format",
