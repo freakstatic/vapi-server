@@ -16,13 +16,17 @@ export class DashboardService
 {
  private _detectionChartLast7Weeks: BehaviorSubject<ChartObject<Detection>>;
  private _detectableStatChartTime: BehaviorSubject<DetectableStat[]>;
- private _detectionChartTime: BehaviorSubject<ChartObject<DetectionTime>>;
- 
  constructor(private router: Router, private http: HttpClient, private socket: Socket, private translate: TranslateService)
  {
   this._detectionChartLast7Weeks = new BehaviorSubject<ChartObject<Detection>>(new ChartObject<Detection>());
   this._detectionChartTime = new BehaviorSubject<ChartObject<DetectionTime>>(new ChartObject<DetectionTime>());
   this._detectableStatChartTime = new BehaviorSubject<DetectableStat[]>([]);
+  this._usedSpace = new BehaviorSubject<number>(0);
+  
+  this.socket.on('storageReport', (data: number) =>
+  {
+   this._usedSpace.next(data);
+  });
   
   this.socket.on('detection', data =>
   {
@@ -40,6 +44,9 @@ export class DashboardService
    this.onDetectableStat(data);
   });
  }
+ private _detectionChartTime: BehaviorSubject<ChartObject<DetectionTime>>;
+ 
+ private _usedSpace: BehaviorSubject<number>;
  
  get detectionChartTime(): Observable<ChartObject<DetectionTime>>
  {
@@ -185,6 +192,38 @@ export class DashboardService
     }
     this._detectableStatChartTime.next(detectables);
    });
+ }
+ 
+ //Storage|||||||||||||||||
+ get usedSpace(): Observable<number>
+ {
+  return this._usedSpace.asObservable();
+ }
+ 
+ public initUsedSpace(): Promise<number>
+ {
+  return new Promise<number>((resolve, reject) =>
+  {
+   this.http.get('api/stats/storage')
+    .subscribe((data: any) =>
+    {
+     if(data.hasOwnProperty('usedSpace'))
+     {
+      this._usedSpace.next(parseInt(data.usedSpace,10));
+     }
+     if(data.hasOwnProperty('diskSpace'))
+     {
+      resolve(parseInt(data.diskSpace,10));
+     }
+     else
+     {
+      reject();
+     }
+    },error=>
+    {
+     reject(error);
+    });
+  });
  }
  
  private onDetectionByWeek(detection: Detection)

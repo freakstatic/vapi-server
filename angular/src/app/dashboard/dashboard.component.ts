@@ -19,11 +19,14 @@ export class DashboardComponent implements OnInit, OnDestroy
  public detectionPercentage: number;
  public detectionUpDownClass: string;
  public detectableObjects: DetectableStat[];
+ public diskSpace:number;
+ public usedSpace:number;
  
  private readonly interval;
  private detectionChartLast7Weeks: Observable<ChartObject<Detection>>;
  private detectionChartTime: Observable<ChartObject<DetectionTime>>;
  private detectableStat: Observable<DetectableStat[]>;
+ private usedSpaceObservable: Observable<number>;
  
  constructor(private dashboardService: DashboardService)
  {
@@ -32,10 +35,13 @@ export class DashboardComponent implements OnInit, OnDestroy
   this.detectionUpDownClass = '';
   this.detectableObjects = [];
   this.detectionPercentage = 0;
+  this.diskSpace=0;
+  this.usedSpace=0;
   
   this.detectionChartLast7Weeks = this.dashboardService.detectionChartLast7Weeks;
   this.detectionChartTime=this.dashboardService.detectionChartTime;
   this.detectableStat=this.dashboardService.detectableStat;
+  this.usedSpaceObservable=this.dashboardService.usedSpace;
   
   this.interval = setInterval(() =>
   {
@@ -199,10 +205,15 @@ export class DashboardComponent implements OnInit, OnDestroy
    }
    this.detectableObjects=data;
   });
+  this.usedSpaceObservable.subscribe((data:number)=>
+  {
+   this.usedSpace=data;
+  });
   
   this.dashboardService.initDetectionChartLast7Weeks();
   this.dashboardService.initDetectionChartTime();
   this.dashboardService.initTop5();
+  this.dashboardService.initUsedSpace();
  }
  
  ngOnDestroy()
