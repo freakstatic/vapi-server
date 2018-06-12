@@ -2,6 +2,10 @@ import * as bcrypt from 'bcrypt';
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import {Request, Response} from 'express';
+import * as disk from 'diskusage';
+import * as fs from 'fs';
+import {Stats} from 'fs';
+import * as os from 'os';
 import * as passport from 'passport';
 import {BasicStrategy} from 'passport-http';
 import {Strategy} from 'passport-http-bearer';
@@ -16,7 +20,7 @@ import {DetectionRepository} from '../repository/DetectionRepository';
 import {UserRepository} from '../repository/UserRepository';
 import {MotionHelper} from './motion-helper';
 import {TimelapseHelper} from './TimelapseHelper';
-import {Timelapse} from "../entity/Timelapse";
+import {Timelapse} from '../entity/Timelapse';
 
 export class WebServerHelper {
     constructor(motionHelper: MotionHelper) {
@@ -245,6 +249,28 @@ export class WebServerHelper {
             }
             return;
         });
+ 
+     app.get(API_URL + 'storage', passport.authenticate('bearer', bearTokenOptions), (req: Request, res: Response) =>
+     {
+      const path = os.platform() === 'win32' ? 'c:' : '/';
+      const diskSpace = {};
+      disk.check(path, (error:any, info:any) =>
+      {
+       if (!error)
+       {
+        diskSpace['diskSpace']=info.total/1048576;
+       }
+       fs.stat(motionHelper.settings.target_dir,(err:NodeJS.ErrnoException,stats:Stats)=>
+       {
+        if (!err)
+        {
+         diskSpace['usedSpace']=stats.size/1048576;
+        }
+        res.status(200).send(diskSpace);
+        return;
+       });
+      });
+     });
 
         app.get(API_URL + 'timelapse/codecs', async (req: any, res, next) => {
             let codecs = await TimelapseHelper.getCodecs();
