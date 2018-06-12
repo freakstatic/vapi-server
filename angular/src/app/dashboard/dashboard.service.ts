@@ -258,11 +258,11 @@ export class DashboardService
    {
     if (a.numberOccurrences < b.numberOccurrences)
     {
-     return -1;
+     return 1;
     }
     if (a.numberOccurrences > b.numberOccurrences)
     {
-     return 1;
+     return -1;
     }
     return 0;
    });

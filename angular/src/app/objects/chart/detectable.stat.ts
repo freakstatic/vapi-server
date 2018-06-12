@@ -12,7 +12,7 @@ export class DetectableStat extends DetectableObject
   }
   const detectable=new DetectableStat();
   detectable.name=data.detectable_name;
-  detectable.numberOccurrences=data.numberoccurrences;
+  detectable.numberOccurrences=parseInt(data.numberoccurrences);
   detectable.id=data.detectable_id;
   return detectable;
  }
