@@ -1,4 +1,5 @@
-import {DetectionObject} from 'app/objects/detections/detection.object';
+import {DetectionEvent} from './detection.event';
+import {DetectionObject} from './detection.object';
 
 export class Detection
 {
