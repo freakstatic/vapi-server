@@ -14,7 +14,7 @@ import {UpgradeComponent} from '../../upgrade/upgrade.component';
 
 import {
     MatButtonModule, MatDatepickerModule, MatInputModule, MatRippleModule, MatTooltipModule,
-    MatNativeDateModule
+    MatNativeDateModule, MatSelectModule
 } from '@angular/material';
 import {LoginComponent} from "../../login/login.component";
 import {TimelapsesComponent} from "../../timelapses/timelapses.component";
@@ -54,6 +54,7 @@ export function createTranslateLoader(http: HttpClient) {
         ReactiveFormsModule,
         MatDatepickerModule,
         MatNativeDateModule,
+        MatSelectModule,
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,

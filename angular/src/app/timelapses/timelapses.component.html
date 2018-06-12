@@ -53,7 +53,7 @@
                             <div class="col-md-6">
                                 <mat-form-field>
                                     <label class="control-label">{{ 'TIMELAPSES_FROM' | translate:param }} </label>
-                                    <input matInput [matDatepicker]="startDatepicker"  [(ngModel)]="startDate" readonly
+                                    <input matInput [matDatepicker]="startDatepicker" [(ngModel)]="startDate" readonly
                                            (click)="startDatepicker.open()"
                                     >
                                     <mat-datepicker-toggle matSuffix [for]="startDatepicker"
@@ -73,7 +73,7 @@
                             <div class="col-md-6">
                                 <mat-form-field>
                                     <label class="control-label">{{ 'TIMELAPSES_FROM' | translate:param }} </label>
-                                    <input matInput [matDatepicker]="endDatePicker"  [(ngModel)]="endDate" readonly
+                                    <input matInput [matDatepicker]="endDatePicker" [(ngModel)]="endDate" readonly
                                            (click)="endDatePicker.open()"
                                     >
                                     <mat-datepicker-toggle matSuffix [for]="endDatePicker"
@@ -124,6 +124,28 @@
                     </div>
                     <div class="card-body table-responsive">
                         <div class="row">
+                            <div class="col-md-12">
+                                <mat-form-field>
+                                    <label class="control-label">{{ 'TIMELAPSES_FREQUENCY' | translate:param }} </label>
+                                    <mat-select [(ngModel)]="selectedFrequency">
+                                        <mat-option [value]="scheduleOptions.DAILY">
+                                            {{ 'TIMELAPSES_SCHEDULE_DAILY' | translate:param }}
+                                        </mat-option>
+                                        <mat-option [value]="scheduleOptions.WEEKLY">
+                                            {{ 'TIMELAPSES_SCHEDULE_WEEKLY' | translate:param }}
+                                        </mat-option>
+                                        <mat-option [value]="scheduleOptions.MONTHLY">
+                                            {{ 'TIMELAPSES_SCHEDULE_MONTHLY' | translate:param }}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+
+                            <div class="col-md-12">
+                                <button class="btn btn-info" >{{ 'TIMELAPSES_BTN_SAVE' | translate:param }}
+                                </button>
+                            </div>
+
                         </div>
 
                     </div>
@@ -142,10 +164,13 @@
 
 
                             <div *ngFor="let timelapse of timelapses" class="col-md-4 img-holder">
-                                <img class="timelapse-thumbnail text-center" [src]="apiURL + '/timelapse/' + timelapse.id + '/thumbnail'">
+                                <img class="timelapse-thumbnail text-center"
+                                     [src]="apiURL + '/timelapse/' + timelapse.id + '/thumbnail'">
                                 <div class="timelapse-icons">
-                                    <a [href]="apiURL + '/timelapse/' + timelapse.id + '/video' "><i class="material-icons text-center text-success">cloud_download</i></a>
-                                    <a [href]="apiURL + '/timelapse/' + timelapse.id + '/mosaic'" class="right-icon"><i class="material-icons text-center text-success">grid_on</i> </a>
+                                    <a [href]="apiURL + '/timelapse/' + timelapse.id + '/video' "><i
+                                            class="material-icons text-center text-success">cloud_download</i></a>
+                                    <a [href]="apiURL + '/timelapse/' + timelapse.id + '/mosaic'" class="right-icon"><i
+                                            class="material-icons text-center text-success">grid_on</i> </a>
                                 </div>
 
                             </div>
