@@ -21,6 +21,9 @@ export class Timelapse {
     @Column()
     thumbnail: string;
 
+    @Column()
+    mosaic: string;
+
     @Column({
         precision: 4
     })
@@ -28,5 +31,6 @@ export class Timelapse {
 
     @ManyToOne(type => User, user => user.timelapses)
     user: User;
+
 
 }

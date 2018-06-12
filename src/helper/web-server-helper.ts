@@ -16,6 +16,7 @@ import {DetectionRepository} from '../repository/DetectionRepository';
 import {UserRepository} from '../repository/UserRepository';
 import {MotionHelper} from './motion-helper';
 import {TimelapseHelper} from './TimelapseHelper';
+import {Timelapse} from "../entity/Timelapse";
 
 export class WebServerHelper {
     constructor(motionHelper: MotionHelper) {
@@ -271,9 +272,29 @@ export class WebServerHelper {
         });
 
         app.get(API_URL + 'timelapses', async (req: any, res, next) => {
+            let timelapses = await getConnection().getRepository(Timelapse).find();
+            res.status(200).send(timelapses);
+        });
 
-            // getConnection().getRepository(Timelapse).
+        app.get(API_URL + 'timelapse/:timelapseId/thumbnail', async (req: any, res, next) => {
+            let  timelapseId = req.params.timelapseId;
+            let timelapse = await getConnection().getRepository(Timelapse).findOne(timelapseId);
+            let filePath = __dirname + '/../../' + TimelapseHelper.THUMBNAILS_FOLDER + '/' + timelapse.thumbnail;
+            res.status(200).download(path.resolve(filePath), timelapse.thumbnail);
+        });
 
+        app.get(API_URL + 'timelapse/:timelapseId/video', async (req: any, res, next) => {
+            let  timelapseId = req.params.timelapseId;
+            let timelapse = await getConnection().getRepository(Timelapse).findOne(timelapseId);
+            let filePath = __dirname + '/../../' + TimelapseHelper.VIDEOS_FOLDER + '/' + timelapse.filename;
+            res.status(200).download(path.resolve(filePath), timelapse.filename);
+        });
+
+        app.get(API_URL + 'timelapse/:timelapseId/mosaic', async (req: any, res, next) => {
+            let  timelapseId = req.params.timelapseId;
+            let timelapse = await getConnection().getRepository(Timelapse).findOne(timelapseId);
+            let filePath = __dirname + '/../../' + TimelapseHelper.MOSAICS_FOLDER + '/' + timelapse.mosaic;
+            res.status(200).download(path.resolve(filePath), timelapse.mosaic);
         });
 
         app.get('*', function (req, res) {

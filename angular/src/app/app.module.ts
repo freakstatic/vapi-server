@@ -76,7 +76,7 @@ const config: SocketIoConfig = {
     declarations: [
         AppComponent,
         AdminLayoutComponent,
-        LoginComponent,
+        LoginComponent
     ],
     providers: [
         FormsModule,
