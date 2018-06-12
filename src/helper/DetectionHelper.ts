@@ -1,14 +1,12 @@
-import {DetectionImage} from "../entity/DetectionImage";
-import {DetectionObject} from "../entity/DetectionObject";
-import {DetectableObjectRepository} from "../repository/DetectableObjectRepository";
-import {DetectionEvent} from "../entity/DetectionEvent";
-import {DetectableObject} from "../entity/DetectableObject";
-import {getConnection} from "typeorm";
-import {Detection} from "../entity/Detection";
-import moment = require("moment");
-import {DetectionEventRepository} from "../repository/DetectionEventRepository";
-import {DetectionRepository} from "../repository/DetectionRepository";
-import {unlink} from "fs";
+import {DetectionImage} from '../entity/DetectionImage';
+import {DetectionObject} from '../entity/DetectionObject';
+import {DetectableObjectRepository} from '../repository/DetectableObjectRepository';
+import {DetectionEvent} from '../entity/DetectionEvent';
+import {DetectableObject} from '../entity/DetectableObject';
+import {getConnection} from 'typeorm';
+import {Detection} from '../entity/Detection';
+import {DetectionEventRepository} from '../repository/DetectionEventRepository';
+import {unlink} from 'fs';
 
 export class DetectionHelper {
 
@@ -39,8 +37,7 @@ export class DetectionHelper {
 
     }
 
-
-    async handleDetectionReceived(detectionReceived) {
+    async handleDetectionReceived(detectionReceived):Promise<Detection> {
         try {
 
             let currentDate = new Date();
@@ -131,7 +128,7 @@ export class DetectionHelper {
                 await detectionEventRepository.save(this.lastDetectionEvent);
             }
 
-            return detection;
+            return getConnection().getCustomRepository(DetectionRepository).findOne(detection.id);
         }
         catch (e) {
             console.error(e);
