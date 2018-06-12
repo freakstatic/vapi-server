@@ -10,6 +10,7 @@ import {DetectionRepository} from '../repository/DetectionRepository';
 import {UserRepository} from '../repository/UserRepository';
 import {TimelapseHelper} from './TimelapseHelper';
 import {DetectionHelper} from './DetectionHelper';
+import {MotionHelper} from './motion-helper';
 
 let config = require('../../config.json');
 const YOLO_GROUP_NAME = 'yolo';
@@ -17,7 +18,7 @@ const USER_ROOM = 'user';
 const tokenManager = new TokenManager();
 
 export class SocketHelper {
-    constructor(detectionHelper: DetectionHelper) {
+ constructor(detectionHelper: DetectionHelper, motionHelper: MotionHelper) {
         const socketApp = express();
         const server = http.createServer(socketApp);
         const io = require('socket.io')(server);
@@ -43,6 +44,7 @@ export class SocketHelper {
                 console.log(user.username+' authenticated');
                 if (user.group.name === YOLO_GROUP_NAME) {
                     client.join('yolo');
+                 client.emit('set-folder', motionHelper.settings['target_dir']);
                     client.on('detection', async obj => {
                         try {
                             const detection:Detection = await detectionHelper.handleDetectionReceived(obj);
