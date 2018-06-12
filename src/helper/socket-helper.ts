@@ -53,7 +53,7 @@ export class SocketHelper {
                             {
                              for(let detectionObject of detectionObjects)
                              {
-                              detectionObject.object=await getConnection().getCustomRepository(DetectableObjectRepository).findByDetectionObject();
+                              detectionObject.object=await getConnection().getCustomRepository(DetectableObjectRepository).findByDetectionObject(detectionObject.id);
                              }
                              client.broadcast.to(USER_ROOM).emit('detection', {
                               id:detection.id,
