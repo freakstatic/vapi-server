@@ -3,7 +3,7 @@ export class DetectableObject
  id: number;
  name: string;
  
- public static Intance(data: any): DetectableObject
+ public static Instance(data: any): DetectableObject
  {
   if (!(data.hasOwnProperty('id') && data.hasOwnProperty('name')))
   {

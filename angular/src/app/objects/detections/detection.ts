@@ -1,5 +1,6 @@
 import {DetectionEvent} from './detection.event';
 import {DetectionObject} from './detection.object';
+import {DetectionImage} from './detection.image';
 
 export class Detection
 {
@@ -55,7 +56,7 @@ export class Detection
    const detectionImage = DetectionImage.Instance(data.image);
    if (detectionImage !== null)
    {
-    detection.detectionObjects.push(detectionImage);
+    detection.image=DetectionImage.Instance(data,detection);
    }
   }
  
@@ -64,7 +65,7 @@ export class Detection
    const detectionEvent = DetectionEvent.Instance(data.image);
    if (detectionEvent !== null)
    {
-    detection.detectionObjects.push(detectionEvent);
+    detection.event=DetectionEvent.Instance(data);
    }
   }
   return detection;
