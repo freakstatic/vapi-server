@@ -10,10 +10,22 @@ export class DetectableStat extends DetectableObject
   {
    return null;
   }
-  let detectable=new DetectableStat();
+  const detectable=new DetectableStat();
   detectable.name=data.detectable_name;
   detectable.numberOccurrences=data.numberoccurrences;
   detectable.id=data.detectable_id;
+  return detectable;
+ }
+ public static IntanceFromDetectableObject(data:DetectableObject)
+ {
+  if(data===undefined||data===null)
+  {
+   return null;
+  }
+  const detectable=new DetectableStat();
+  detectable.name=data.name;
+  detectable.numberOccurrences=1;
+  detectable.id=data.id;
   return detectable;
  }
 }

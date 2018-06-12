@@ -70,7 +70,7 @@
           </div>
       </div>
       <div class="row">
-          <div class="col-md-4">
+          <div class="col-md-5">
               <div class="card card-chart">
                   <div class="card-header card-header-success">
                       <div class="ct-chart" id="dailySalesChart"></div>
@@ -87,34 +87,18 @@
                   </div>
               </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-7">
               <div class="card card-chart">
-                  <div class="card-header card-header-warning">
-                      <div class="ct-chart" id="websiteViewsChart"></div>
+                  <div class="card-header card-header-rose">
+                      <div class="ct-chart" id="statsTime"></div>
                   </div>
                   <div class="card-body">
-                      <h4 class="card-title">Email Subscriptions</h4>
+                      <h4 class="card-title">{{ 'STATISTICS_BY_TIME' | translate:param }}</h4>
                       <p class="card-category">Last Campaign Performance</p>
                   </div>
                   <div class="card-footer">
                       <div class="stats">
-                          <i class="material-icons">access_time</i> campaign sent 2 days ago
-                      </div>
-                  </div>
-              </div>
-          </div>
-          <div class="col-md-4">
-              <div class="card card-chart">
-                  <div class="card-header card-header-danger">
-                      <div class="ct-chart" id="completedTasksChart"></div>
-                  </div>
-                  <div class="card-body">
-                      <h4 class="card-title">Completed Tasks</h4>
-                      <p class="card-category">Last Campaign Performance</p>
-                  </div>
-                  <div class="card-footer">
-                      <div class="stats">
-                          <i class="material-icons">access_time</i> campaign sent 2 days ago
+                          <i class="material-icons">access_time</i> {{ 'UPDATED' | translate:param }} {{lastUpdatedDetectionStatsTime}} {{ 'SECONDS_AGO' | translate:param }}
                       </div>
                   </div>
               </div>
