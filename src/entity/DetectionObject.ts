@@ -32,4 +32,5 @@ export class DetectionObject
  @JoinColumn()
  object: DetectableObject;
  
+ detectableObject:DetectableObject;
 }
