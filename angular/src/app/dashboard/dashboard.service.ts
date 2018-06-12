@@ -23,9 +23,9 @@ export class DashboardService
   this._detectableStatChartTime = new BehaviorSubject<DetectableStat[]>([]);
   this._usedSpace = new BehaviorSubject<number>(0);
   
-  this.socket.on('storageReport', (data: number) =>
+  this.socket.on('storageReport', (data: any) =>
   {
-   this._usedSpace.next(data);
+   this._usedSpace.next(parseInt(data,10));
   });
   
   this.socket.on('detection', data =>
