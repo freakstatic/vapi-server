@@ -12,8 +12,8 @@ import {TimelapseHelper} from './TimelapseHelper';
 import {DetectionHelper} from './DetectionHelper';
 import {MotionHelper} from './motion-helper';
 import {DetectableObjectRepository} from '../repository/DetectableObjectRepository';
-import * as fs from 'fs';
-import {Stats} from 'fs';
+
+const getSize=require('get-folder-size');
 
 let config = require('../../config.json');
 const YOLO_GROUP_NAME = 'yolo';
@@ -91,11 +91,11 @@ export class SocketHelper {
  
                  client.on('storageReport', () =>
                  {
-                  fs.stat(motionHelper.settings.target_dir, (err: NodeJS.ErrnoException, stats: Stats) =>
+                  getSize(motionHelper.settings.target_dir,(err, size)=>
                   {
                    if (!err)
                    {
-                    client.emit('storageReport', stats.size / 1048576);
+                    client.emit('storageReport', size / 1048576);
                    }
                   });
                  });

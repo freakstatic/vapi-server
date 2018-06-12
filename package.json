@@ -17,6 +17,7 @@
     "ffmpeg-on-progress": "^1.0.0",
     "fluent-ffmpeg": "^2.1.2",
     "fs-promisify": "^0.2.0",
+    "get-folder-size": "^2.0.0",
     "moment": "^2.22.1",
     "mysql2": "^1.5.3",
     "passport": "^0.4.0",

@@ -3,8 +3,6 @@ import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import {Request, Response} from 'express';
 import * as disk from 'diskusage';
-import * as fs from 'fs';
-import {Stats} from 'fs';
 import * as os from 'os';
 import * as passport from 'passport';
 import {BasicStrategy} from 'passport-http';
@@ -21,6 +19,8 @@ import {UserRepository} from '../repository/UserRepository';
 import {MotionHelper} from './motion-helper';
 import {TimelapseHelper} from './TimelapseHelper';
 import {Timelapse} from '../entity/Timelapse';
+
+const getSize=require('get-folder-size');
 
 export class WebServerHelper {
     constructor(motionHelper: MotionHelper) {
@@ -260,11 +260,11 @@ export class WebServerHelper {
        {
         diskSpace['diskSpace']=info.total/1048576;
        }
-       fs.stat(motionHelper.settings.target_dir,(err:NodeJS.ErrnoException,stats:Stats)=>
+       getSize(motionHelper.settings.target_dir,(err, size)=>
        {
         if (!err)
         {
-         diskSpace['usedSpace']=stats.size/1048576;
+         diskSpace['usedSpace']=size/1048576;
         }
         res.status(200).send(diskSpace);
         return;
