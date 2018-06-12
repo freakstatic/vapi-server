@@ -6,6 +6,7 @@ import {DetectableObject} from '../entity/DetectableObject';
 import {getConnection} from 'typeorm';
 import {Detection} from '../entity/Detection';
 import {DetectionEventRepository} from '../repository/DetectionEventRepository';
+import {DetectionRepository} from '../repository/DetectionRepository';
 import {unlink} from 'fs';
 
 export class DetectionHelper {
