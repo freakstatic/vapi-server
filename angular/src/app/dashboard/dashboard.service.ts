@@ -16,7 +16,8 @@ export class DashboardService
 {
  private _detectionChartLast7Weeks: BehaviorSubject<ChartObject<Detection>>;
  private _detectableStatChartTime: BehaviorSubject<DetectableStat[]>;
-
+ private _detectionChartTime: BehaviorSubject<ChartObject<DetectionTime>>;
+ 
  constructor(private router: Router, private http: HttpClient, private socket: Socket, private translate: TranslateService)
  {
   this._detectionChartLast7Weeks = new BehaviorSubject<ChartObject<Detection>>(new ChartObject<Detection>());
@@ -39,8 +40,6 @@ export class DashboardService
    this.onDetectableStat(data);
   });
  }
- 
- private _detectionChartTime: BehaviorSubject<ChartObject<DetectionTime>>;
  
  get detectionChartTime(): Observable<ChartObject<DetectionTime>>
  {
@@ -220,7 +219,6 @@ export class DashboardService
  
  private onDetectionByTime(detection: Detection)
  {
-  
   const object = this._detectionChartTime.getValue();
   const index = detection.date.getHours();
   object.sourceObjects[index].numberOccurrences += detection.numberOfDetections;
