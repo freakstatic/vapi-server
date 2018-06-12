@@ -19,6 +19,7 @@ export class DetectionImage
   detectionImage.id=data.id;
   detectionImage.detection=detection;
   detectionImage.dateCreated=new Date(data.dateCreated);
+  detectionImage.path=data.path;
   return detectionImage;
  }
 }
