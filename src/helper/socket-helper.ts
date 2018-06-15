@@ -13,7 +13,7 @@ import {DetectionHelper} from './DetectionHelper';
 import {MotionHelper} from './motion-helper';
 import {DetectableObjectRepository} from '../repository/DetectableObjectRepository';
 
-const getSize=require('get-folder-size');
+const getSize = require('get-folder-size');
 
 let config = require('../../config.json');
 const YOLO_GROUP_NAME = 'yolo';
@@ -21,7 +21,7 @@ const USER_ROOM = 'user';
 const tokenManager = new TokenManager();
 
 export class SocketHelper {
- constructor(detectionHelper: DetectionHelper, motionHelper: MotionHelper) {
+    constructor(detectionHelper: DetectionHelper, motionHelper: MotionHelper) {
         const socketApp = express();
         const server = http.createServer(socketApp);
         const io = require('socket.io')(server);
@@ -44,27 +44,28 @@ export class SocketHelper {
 
                 socketLoggedIn = true;
                 user = temp_user;
-                console.log(user.username+' authenticated');
+                console.log(user.username + ' authenticated');
                 if (user.group.name === YOLO_GROUP_NAME) {
                     client.join('yolo');
-                 client.emit('set-folder', motionHelper.settings['target_dir']);
+                    client.emit('set-folder', motionHelper.settings['target_dir']);
                     client.on('detection', async obj => {
                         try {
-                            const detection:Detection = await detectionHelper.handleDetectionReceived(obj);
-                            detection.detectionObjects.then(async (detectionObjects:DetectionObject[])=>
-                            {
-                             for(let detectionObject of detectionObjects)
-                             {
-                              detectionObject.object=await getConnection().getCustomRepository(DetectableObjectRepository).findByDetectionObject(detectionObject.id);
-                             }
-                             client.broadcast.to(USER_ROOM).emit('detection', {
-                              id:detection.id,
-                              date:detection.date,
-                              detectionObjects:detectionObjects,
-                              numberOfDetections:detection.numberOfDetections,
-                              image:detection.image,
-                              event:detection.event
-                             });
+                            const detection: Detection = await detectionHelper.handleDetectionReceived(obj);
+                            if (!detection){
+                                return;
+                            }
+                            detection.detectionObjects.then(async (detectionObjects: DetectionObject[]) => {
+                                for (let detectionObject of detectionObjects) {
+                                    detectionObject.object = await getConnection().getCustomRepository(DetectableObjectRepository).findByDetectionObject(detectionObject.id);
+                                }
+                                client.broadcast.to(USER_ROOM).emit('detection', {
+                                    id: detection.id,
+                                    date: detection.date,
+                                    detectionObjects: detectionObjects,
+                                    numberOfDetections: detection.numberOfDetections,
+                                    image: detection.image,
+                                    event: detection.event
+                                });
                             });
                         }
                         catch (error) {
@@ -88,17 +89,14 @@ export class SocketHelper {
                         }
 
                     });
- 
-                 client.on('storageReport', () =>
-                 {
-                  getSize(motionHelper.settings.target_dir,(err, size)=>
-                  {
-                   if (!err)
-                   {
-                    client.emit('storageReport', size / 1048576);
-                   }
-                  });
-                 });
+
+                    client.on('storageReport', () => {
+                        getSize(motionHelper.settings.target_dir, (err, size) => {
+                            if (!err) {
+                                client.emit('storageReport', size / 1048576);
+                            }
+                        });
+                    });
                 }
             });
 

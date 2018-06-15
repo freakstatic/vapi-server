@@ -23,8 +23,8 @@ export class DetectionObject
  
  @Column()
  height: number;
- 
- @OneToOne(type => Detection)
+
+ @ManyToOne(type => Detection, detection => detection.detectionObjects)
  @JoinColumn()
  detection: Detection;
  
