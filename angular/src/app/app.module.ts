@@ -15,9 +15,8 @@ import {UserProfileComponent} from './user-profile/user-profile.component';
 import {TableListComponent} from './table-list/table-list.component';
 import {TypographyComponent} from './typography/typography.component';
 import {IconsComponent} from './icons/icons.component';
-import {MapsComponent} from './maps/maps.component';
+
 import {NotificationsComponent} from './notifications/notifications.component';
-import {UpgradeComponent} from './upgrade/upgrade.component';
 import {
     AgmCoreModule
 } from '@agm/core';
@@ -34,6 +33,8 @@ import {AuthInterceptor} from "./auth.interceptor";
 import {SocketIoConfig, SocketIoModule} from "ngx-socket-io";
 import {environment} from "../environments/environment";
 import {LoginComponent} from "./login/login.component";
+
+
 
 import {TranslateLoader, TranslateModule, TranslateService} from "@ngx-translate/core";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
@@ -93,7 +94,5 @@ const config: SocketIoConfig = {
     bootstrap: [AppComponent]
 })
 export class AppModule {
-    constructor(translate: TranslateService){
-        translate.setDefaultLang('en');
-    }
+
 }

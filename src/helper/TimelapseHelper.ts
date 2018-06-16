@@ -1,11 +1,13 @@
 import * as util from "util";
 import {Socket} from "socket.io";
 import {ErrorObject} from "../class/ErrorObject";
-import {DetectionImage} from "../entity/DetectionImage";
 import {Detection} from "../entity/Detection";
 import {Timelapse} from "../entity/Timelapse";
 import {getConnection} from "typeorm";
 import {User} from "../entity/User";
+import {spawn} from 'child_process';
+
+import {format} from 'date-fns'
 
 const config = require('../../config.json');
 
@@ -23,10 +25,6 @@ const path = require('path');
 const rmdir = require('rmdir');
 
 const sharp = require('sharp');
-
-import {spawn} from 'child_process';
-
-import {format} from 'date-fns'
 
 export class TimelapseHelper {
 
@@ -104,7 +102,7 @@ export class TimelapseHelper {
                     let timelapse = await this.insertInDb(detections, filename, codec, imagesPath[0], user);
 
                     if (this.FORMATS_THAT_SUPPORT_CHAPTERS.includes(format)) {
-                     await this.addChapters(filename, format, fps, detections);
+                        await this.addChapters(filename, format, fps, detections);
                     }
                     await this.createMosaic(timelapse, 640, 4, 3);
 
@@ -192,17 +190,17 @@ export class TimelapseHelper {
         });
     }
 
-    private static async createMosaic(timelapse: Timelapse, widthPerImage: number, rows: number, lines: number){
+    private static async createMosaic(timelapse: Timelapse, widthPerImage: number, rows: number, lines: number) {
         let filenameWithoutExtension = path.parse(timelapse.filename).name;
 
         let mosaicFileName = filenameWithoutExtension + '.jpg';
         let mosaicFullPath = this.MOSAICS_FOLDER + '/' + mosaicFileName;
-            let ffmpeg = spawn('ffmpeg', [
+        let ffmpeg = spawn('ffmpeg', [
             '-i', this.VIDEOS_FOLDER + '/' + timelapse.filename,
-            '-vf', 'select=gt(scene\\,0.1),scale=' + widthPerImage +':-1,tile='+ rows +'x' + lines,
+            '-vf', 'select=gt(scene\\,0.01),scale=' + widthPerImage + ':-1,tile=' + rows + 'x' + lines,
             '-frames:v', '1',
             '-qscale:v', '1',
-                mosaicFullPath,
+            mosaicFullPath,
             '-y'
         ]);
 
@@ -214,11 +212,18 @@ export class TimelapseHelper {
 
 
         ffmpeg.on('exit', async (code) => {
-            if (code != 0){
+            if (code != 0) {
                 console.error('[TimelapseHelper] [createMosaic] Unable to create mosaic file');
             }
-            timelapse.mosaic = mosaicFileName;
-            getConnection().getRepository(Timelapse).save(timelapse);
+
+            fs.access(mosaicFullPath, fs.constants.F_OK, (err => {
+                    if (!err) {
+                        timelapse.mosaic = mosaicFileName;
+                    }
+                getConnection().getRepository(Timelapse).save(timelapse);
+                })
+            );
+
         });
     }
 
@@ -261,7 +266,7 @@ export class TimelapseHelper {
                 console.log('[TimelapseHelper] [copyFilesToTmp] Stopped');
                 return true;
             }
-           // console.log('[TimelapseHelper] [copyFilesToTmp] Copying ' + (index + 1) + ' of ' + imageUrls.length);
+            // console.log('[TimelapseHelper] [copyFilesToTmp] Copying ' + (index + 1) + ' of ' + imageUrls.length);
             socket.emit('timelapse/files/progress', {
                 currentIndex: index,
                 max: imageUrls.length
@@ -284,7 +289,7 @@ export class TimelapseHelper {
             return true;
         };
         await copyFileLoop(0, imageUrls.length);
-        if (!stopped){
+        if (!stopped) {
             socket.emit('timelapse/files/end');
         }
         socket.removeListener('timelapse/stop', stopFunction);

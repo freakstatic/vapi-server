@@ -10,7 +10,7 @@ import {DetectionRepository} from '../repository/DetectionRepository';
 import {UserRepository} from '../repository/UserRepository';
 import {TimelapseHelper} from './TimelapseHelper';
 import {DetectionHelper} from './DetectionHelper';
-import {MotionHelper} from './motion-helper';
+import {MotionHelper} from './MotionHelper';
 import {DetectableObjectRepository} from '../repository/DetectableObjectRepository';
 
 const getSize = require('get-folder-size');

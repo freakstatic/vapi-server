@@ -1,4 +1,6 @@
 export const environment = {
-    production: true,
-    socketURL: 'http://127.0.0.1:3000'
+    production: false,
+    apiEndpoint: 'api/',
+    apiURL: 'http://localhost:8080/api',
+    socketURL:'http://localhost:3000'
 };

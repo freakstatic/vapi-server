@@ -169,7 +169,7 @@
                                 <div class="timelapse-icons">
                                     <a [href]="apiURL + '/timelapse/' + timelapse.id + '/video' "><i
                                             class="material-icons text-center text-success">cloud_download</i></a>
-                                    <a [href]="apiURL + '/timelapse/' + timelapse.id + '/mosaic'" class="right-icon"><i
+                                    <a *ngIf="timelapse.mosaic" [href]="apiURL + '/timelapse/' + timelapse.id + '/mosaic'" class="right-icon"><i
                                             class="material-icons text-center text-success">grid_on</i> </a>
                                 </div>
 

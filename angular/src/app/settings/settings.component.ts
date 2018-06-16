@@ -11,7 +11,7 @@ import {NavbarComponent} from "../components/navbar/navbar.component";
     styleUrls: ['./settings.component.css']
 })
 export class SettingsComponent implements OnInit {
-
+    param = {value: 'world'};
     constructor(private translateService: TranslateService,
                 private settingsService: SettingsService) {
     }

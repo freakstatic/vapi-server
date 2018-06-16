@@ -1,7 +1,7 @@
-import {SocketHelper} from "./helper/socket-helper"
-import {WebServerHelper} from "./helper/web-server-helper";
-import {DbHelper} from "./helper/db-helper";
-import {MotionHelper} from "./helper/motion-helper";
+import {SocketHelper} from "./helper/SocketHelper"
+import {WebServerHelper} from "./helper/WebServerHelper";
+import {DbHelper} from "./helper/DbHelper";
+import {MotionHelper} from "./helper/MotionHelper";
 import {TimelapseHelper} from "./helper/TimelapseHelper";
 import {DetectionHelper} from "./helper/DetectionHelper";
 

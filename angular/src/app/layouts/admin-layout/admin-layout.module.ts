@@ -8,7 +8,6 @@ import {UserProfileComponent} from '../../user-profile/user-profile.component';
 import {TableListComponent} from '../../table-list/table-list.component';
 import {TypographyComponent} from '../../typography/typography.component';
 import {IconsComponent} from '../../icons/icons.component';
-import {MapsComponent} from '../../maps/maps.component';
 import {NotificationsComponent} from '../../notifications/notifications.component';
 import {UpgradeComponent} from '../../upgrade/upgrade.component';
 
@@ -30,7 +29,7 @@ import {CredentialsManagerService} from "../../auth/credentials.manager.service"
 import {Ng2CompleterModule} from "ng2-completer";
 import {IonRangeSliderModule} from "ng2-ion-range-slider";
 import {AngularDateTimePickerModule} from "angular2-datetimepicker";
-import {Angular5TimePickerModule} from "angular5-time-picker";
+
 import {AmazingTimePickerModule} from "amazing-time-picker";
 
 

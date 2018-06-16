@@ -19,7 +19,7 @@ import { environment } from '../../environments/environment';
     styleUrls: ['./timelapses.component.scss']
 })
 export class TimelapsesComponent implements OnInit {
-
+    param = {value: 'world'};
     private receivedCodecs = [];
     public codecsDescription = [];
     public selectedCodecDescription: string = 'libx264 H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10 (codec h264)';

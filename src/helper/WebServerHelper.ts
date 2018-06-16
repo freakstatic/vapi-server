@@ -16,7 +16,7 @@ import {MotionSettingsError} from '../exception/MotionSettingsError';
 import {DetectableObjectRepository} from '../repository/DetectableObjectRepository';
 import {DetectionRepository} from '../repository/DetectionRepository';
 import {UserRepository} from '../repository/UserRepository';
-import {MotionHelper} from './motion-helper';
+import {MotionHelper} from './MotionHelper';
 import {TimelapseHelper} from './TimelapseHelper';
 import {Timelapse} from '../entity/Timelapse';
 
@@ -124,7 +124,7 @@ export class WebServerHelper {
         //app.use(express.static('public'));
         app.use(bodyParser.json());
         app.use(bodyParser.urlencoded({extended: true, type: 'application/json'}));
-        app.use(express.static(__dirname + '/../angular/dist/'));
+        app.use(express.static(__dirname + '/../../angular/dist/'));
         app.use(passport.initialize());
 
         app.post(API_URL + 'login', passport.authenticate('basic', {
