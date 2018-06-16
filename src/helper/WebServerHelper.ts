@@ -124,7 +124,7 @@ export class WebServerHelper {
         //app.use(express.static('public'));
         app.use(bodyParser.json());
         app.use(bodyParser.urlencoded({extended: true, type: 'application/json'}));
-        app.use(express.static(__dirname + '/../../angular/dist/'));
+
         app.use(passport.initialize());
 
         app.post(API_URL + 'login', passport.authenticate('basic', {
@@ -323,9 +323,11 @@ export class WebServerHelper {
             res.status(200).download(path.resolve(filePath), timelapse.mosaic);
         });
 
+        app.use(express.static(__dirname + '/../../angular/dist/'));
+
         app.get('*', function (req, res) {
             res.status(200)
-                .sendFile(path.join(__dirname + '/../angular/dist/index.html'));
+                .sendFile(path.join(__dirname + '/../../angular/dist/index.html'));
         });
 
         app.listen(WEB_SERVER_PORT);

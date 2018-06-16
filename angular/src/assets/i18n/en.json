@@ -12,7 +12,7 @@
   "TIMELAPSES_SCHEDULE_TITLE" : "Schedule Timelapses",
   "TIMELAPSES_SCHEDULE_SECOND_TITLE": "Here you can schedule the creation of timelapses",
   "TIMELAPSES_GALLERY_TITLE": "Timelapses Gallery",
-  "TIMELAPSES_GALLERY_SECOND_TITLE": "Here you can watch the timelapses created",
+  "TIMELAPSES_GALLERY_SECOND_TITLE": "Here you can see the timelapses",
   "TIMELAPSES_CODEC": "Select the codec",
   "TIMELAPSES_FORMAT": "Select the format",
   "TIMELAPSES_FPS": "FPS:",
@@ -43,8 +43,8 @@
 
  "DASHBOARD_DETECTION_STATS_LASTEST_DETECTION": "Latest detection",
  "DASHBOARD_DETECTION_STATS_PERCENTAGE_MESSAGE": " from the previous day",
- "DASHBOARD_TOP5_STATS_DETECTABLE_OBJECTS": "Top 5 detectable objects",
- "DASHBOARD_TOP5_STATS_MESSAGE": "The 5 objects must detected.",
+ "DASHBOARD_TOP5_STATS_DETECTABLE_OBJECTS": "Top 5 of detections",
+ "DASHBOARD_TOP5_STATS_MESSAGE": "The 5 objects most detected",
  "DASHBOARD_TOP5_STATS_OBJECT": "Object",
  "DASHBOARD_TOP5_STATS_OCCURRENCES_NUMBER": "Occurrences number",
 
