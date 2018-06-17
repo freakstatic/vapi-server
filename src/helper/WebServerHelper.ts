@@ -20,7 +20,7 @@ import {MotionHelper} from './MotionHelper';
 import {TimelapseHelper} from './TimelapseHelper';
 import {Timelapse} from '../entity/Timelapse';
 
-const getSize=require('get-folder-size');
+const getSize = require('get-folder-size');
 
 export class WebServerHelper {
     constructor(motionHelper: MotionHelper) {
@@ -249,28 +249,26 @@ export class WebServerHelper {
             }
             return;
         });
- 
-     app.get(API_URL + 'storage', passport.authenticate('bearer', bearTokenOptions), (req: Request, res: Response) =>
-     {
-      const path = os.platform() === 'win32' ? 'c:' : '/';
-      const diskSpace = {};
-      disk.check(path, (error:any, info:any) =>
-      {
-       if (!error)
-       {
-        diskSpace['diskSpace']=info.total/1048576;
-       }
-       getSize(motionHelper.settings.target_dir,(err, size)=>
-       {
-        if (!err)
-        {
-         diskSpace['usedSpace']=size/1048576;
-        }
-        res.status(200).send(diskSpace);
-        return;
-       });
-      });
-     });
+
+        app.get(API_URL + 'storage', passport.authenticate('bearer', bearTokenOptions), (req: Request, res: Response) => {
+            const path = os.platform() === 'win32' ? 'c:' : '/';
+            const diskSpace = {};
+            // disk.check(path, (error: any, info: any) => {
+            //     if (!error) {
+            //         diskSpace['diskSpace'] = info.total / 1048576;
+            //     }
+            //     getSize(motionHelper.settings.target_dir, (err, size) => {
+            //         if (!err) {
+            //             diskSpace['usedSpace'] = size / 1048576;
+            //         }
+            //         res.status(200).send(diskSpace);
+            //         return;
+            //     });
+            // });
+            diskSpace['diskSpace'] = 0;
+            diskSpace['usedSpace'] = 0;
+            res.status(200).send(diskSpace);
+        });
 
         app.get(API_URL + 'timelapse/codecs', async (req: any, res, next) => {
             let codecs = await TimelapseHelper.getCodecs();
@@ -303,21 +301,21 @@ export class WebServerHelper {
         });
 
         app.get(API_URL + 'timelapse/:timelapseId/thumbnail', async (req: any, res, next) => {
-            let  timelapseId = req.params.timelapseId;
+            let timelapseId = req.params.timelapseId;
             let timelapse = await getConnection().getRepository(Timelapse).findOne(timelapseId);
             let filePath = __dirname + '/../../' + TimelapseHelper.THUMBNAILS_FOLDER + '/' + timelapse.thumbnail;
             res.status(200).download(path.resolve(filePath), timelapse.thumbnail);
         });
 
         app.get(API_URL + 'timelapse/:timelapseId/video', async (req: any, res, next) => {
-            let  timelapseId = req.params.timelapseId;
+            let timelapseId = req.params.timelapseId;
             let timelapse = await getConnection().getRepository(Timelapse).findOne(timelapseId);
             let filePath = __dirname + '/../../' + TimelapseHelper.VIDEOS_FOLDER + '/' + timelapse.filename;
             res.status(200).download(path.resolve(filePath), timelapse.filename);
         });
 
         app.get(API_URL + 'timelapse/:timelapseId/mosaic', async (req: any, res, next) => {
-            let  timelapseId = req.params.timelapseId;
+            let timelapseId = req.params.timelapseId;
             let timelapse = await getConnection().getRepository(Timelapse).findOne(timelapseId);
             let filePath = __dirname + '/../../' + TimelapseHelper.MOSAICS_FOLDER + '/' + timelapse.mosaic;
             res.status(200).download(path.resolve(filePath), timelapse.mosaic);

@@ -43,6 +43,7 @@ import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from "@angular/material/
 import {MatDatetimepickerModule} from "@mat-datetimepicker/core";
 import {MAT_MOMENT_DATE_FORMATS, MomentDateAdapter} from "@angular/material-moment-adapter";
 import {AuthLoginGuard} from "./auth/auth.login.guard";
+import {ServiceWorkerModule} from "@angular/service-worker";
 
 
 export function createTranslateLoader(http: HttpClient) {
@@ -73,6 +74,7 @@ const config: SocketIoConfig = {
                 deps: [HttpClient]
             }
         }),
+        ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
     ],
     declarations: [
         AppComponent,

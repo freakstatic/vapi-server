@@ -31,6 +31,7 @@ import {IonRangeSliderModule} from "ng2-ion-range-slider";
 import {AngularDateTimePickerModule} from "angular2-datetimepicker";
 
 import {AmazingTimePickerModule} from "amazing-time-picker";
+import {ServiceWorkerModule} from "@angular/service-worker";
 
 
 export function createTranslateLoader(http: HttpClient) {
@@ -61,7 +62,7 @@ export function createTranslateLoader(http: HttpClient) {
                 deps: [HttpClient]
             }
         }),
-
+        ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
     ],
     declarations: [
         DashboardComponent,
