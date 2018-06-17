@@ -19,11 +19,12 @@ import {UserRepository} from '../repository/UserRepository';
 import {MotionHelper} from './MotionHelper';
 import {TimelapseHelper} from './TimelapseHelper';
 import {Timelapse} from '../entity/Timelapse';
+import {NotificationHelper} from "./NotificationHelper";
 
 const getSize = require('get-folder-size');
 
 export class WebServerHelper {
-    constructor(motionHelper: MotionHelper) {
+    constructor(motionHelper: MotionHelper, notificationHelper: NotificationHelper) {
         const WEB_SERVER_PORT = 8080;
         const API_URL = '/api/';
 
@@ -320,6 +321,13 @@ export class WebServerHelper {
             let filePath = __dirname + '/../../' + TimelapseHelper.MOSAICS_FOLDER + '/' + timelapse.mosaic;
             res.status(200).download(path.resolve(filePath), timelapse.mosaic);
         });
+
+        app.post(API_URL + 'subscription/add', async (req: any, res, next) => {
+            console.log(req.body);
+            notificationHelper.sendNotification(req.body);
+            res.status(200);
+        });
+
 
         app.use(express.static(__dirname + '/../../angular/dist/'));
 

@@ -4,6 +4,7 @@ import {DbHelper} from "./helper/DbHelper";
 import {MotionHelper} from "./helper/MotionHelper";
 import {TimelapseHelper} from "./helper/TimelapseHelper";
 import {DetectionHelper} from "./helper/DetectionHelper";
+import {NotificationHelper} from "./helper/NotificationHelper";
 
 
 let dbHelper = new DbHelper();
@@ -15,7 +16,9 @@ let dbHelper = new DbHelper();
     let motionHelper = new MotionHelper();
     let socketHelper = new SocketHelper(detectionHelper, motionHelper);
     await TimelapseHelper.createFolders();
-    let webSocketHelper = new WebServerHelper(motionHelper);
+
+    let notificationHelper = new NotificationHelper();
+    let webSocketHelper = new WebServerHelper(motionHelper, notificationHelper);
 })();
 
 

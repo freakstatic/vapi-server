@@ -32,7 +32,8 @@
     "superchild": "^0.1.10",
     "tslint": "^5.9.1",
     "typeorm": "0.2.3",
-    "typescript": "^2.8.1"
+    "typescript": "^2.8.1",
+    "web-push": "^3.3.1"
   },
   "devDependencies": {
     "@types/moment": "^2.13.0",

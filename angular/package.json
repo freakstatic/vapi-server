@@ -63,7 +63,7 @@
     "@angular/cli": "1.7.4",
     "@angular/compiler-cli": "5.2.9",
     "@angular/language-service": "5.2.9",
-    "@angular/service-worker": "^6.0.5",
+    "@angular/service-worker": "^5.2.9",
     "@types/bootstrap": "3.3.32",
     "@types/chartist": "0.9.34",
     "@types/core-js": "^2.5.0",
