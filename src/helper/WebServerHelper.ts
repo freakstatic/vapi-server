@@ -227,12 +227,12 @@ export class WebServerHelper {
      {
       const repo: DetectionRepository = getConnection().getCustomRepository(DetectionRepository);
       let detection:Detection = await repo.getLast();
-      if (detection)
+      if (detection===undefined||detection===null)
       {
        res.sendStatus(204);
       }
       let detectionsWithoutPromises = repo.doThePromises(detection);
-      if (detectionsWithoutPromises)
+      if (detectionsWithoutPromises===undefined||detectionsWithoutPromises===null)
       {
        res.sendStatus(204);
       }
