@@ -19,6 +19,7 @@ import {UserRepository} from '../repository/UserRepository';
 import {MotionHelper} from './MotionHelper';
 import {TimelapseHelper} from './TimelapseHelper';
 import {Timelapse} from '../entity/Timelapse';
+import {Detection} from '../entity/Detection';
 
 const getSize=require('get-folder-size');
 
@@ -185,12 +186,12 @@ export class WebServerHelper {
             });
         });
 
-        app.get(API_URL + 'motion/settings', async (req: any, res, next) => {
+        app.get(API_URL + 'motion/settings', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: any, res, next) => {
             let settings = await motionHelper.settingsArray();
             res.status(200);
             res.send(settings);
         });
-        app.post(API_URL + 'motion/settings/update', async (req: any, res, next) => {
+        app.post(API_URL + 'motion/settings/update', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: any, res, next) => {
             let settings = req.body;
             try {
                 await motionHelper.editSettings(settings);
@@ -221,6 +222,22 @@ export class WebServerHelper {
             let detections = await getConnection().getCustomRepository(DetectionRepository).get(startDate, endDate);
             res.status(200).send(detections);
         });
+ 
+     app.get(API_URL + 'detection/last', passport.authenticate('bearer', bearTokenOptions), async(req: Request, res: Response) =>
+     {
+      const repo: DetectionRepository = getConnection().getCustomRepository(DetectionRepository);
+      let detection:Detection = await repo.getLast();
+      if (detection)
+      {
+       res.sendStatus(204);
+      }
+      let detectionsWithoutPromises = repo.doThePromises(detection);
+      if (detectionsWithoutPromises)
+      {
+       res.sendStatus(204);
+      }
+      res.status(200).send(detectionsWithoutPromises);
+     });
 
         app.get(API_URL + 'stats/detection', passport.authenticate('bearer', bearTokenOptions), async (req: any, res, next) => {
             let startDate = null;
@@ -272,7 +289,7 @@ export class WebServerHelper {
       });
      });
 
-        app.get(API_URL + 'timelapse/codecs', async (req: any, res, next) => {
+        app.get(API_URL + 'timelapse/codecs', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: any, res, next) => {
             let codecs = await TimelapseHelper.getCodecs();
             res.status(200).send(codecs);
         });
@@ -287,36 +304,36 @@ export class WebServerHelper {
             return;
         });
 
-        app.get(API_URL + 'timelapse/codecs', async (req: any, res, next) => {
+        app.get(API_URL + 'timelapse/codecs', passport.authenticate(AUTH_STRATEGY, bearTokenOptions),async (req: any, res, next) => {
             let codecs = await TimelapseHelper.getCodecs();
             res.status(200).send(codecs);
         });
 
-        app.get(API_URL + 'timelapse/formats', async (req: any, res, next) => {
+        app.get(API_URL + 'timelapse/formats', passport.authenticate(AUTH_STRATEGY, bearTokenOptions),async (req: any, res, next) => {
             let formats = await TimelapseHelper.getFormats();
             res.status(200).send(formats);
         });
 
-        app.get(API_URL + 'timelapses', async (req: any, res, next) => {
+        app.get(API_URL + 'timelapses', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: any, res, next) => {
             let timelapses = await getConnection().getRepository(Timelapse).find();
             res.status(200).send(timelapses);
         });
 
-        app.get(API_URL + 'timelapse/:timelapseId/thumbnail', async (req: any, res, next) => {
+        app.get(API_URL + 'timelapse/:timelapseId/thumbnail', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: any, res, next) => {
             let  timelapseId = req.params.timelapseId;
             let timelapse = await getConnection().getRepository(Timelapse).findOne(timelapseId);
             let filePath = __dirname + '/../../' + TimelapseHelper.THUMBNAILS_FOLDER + '/' + timelapse.thumbnail;
             res.status(200).download(path.resolve(filePath), timelapse.thumbnail);
         });
 
-        app.get(API_URL + 'timelapse/:timelapseId/video', async (req: any, res, next) => {
+        app.get(API_URL + 'timelapse/:timelapseId/video', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: any, res, next) => {
             let  timelapseId = req.params.timelapseId;
             let timelapse = await getConnection().getRepository(Timelapse).findOne(timelapseId);
             let filePath = __dirname + '/../../' + TimelapseHelper.VIDEOS_FOLDER + '/' + timelapse.filename;
             res.status(200).download(path.resolve(filePath), timelapse.filename);
         });
 
-        app.get(API_URL + 'timelapse/:timelapseId/mosaic', async (req: any, res, next) => {
+        app.get(API_URL + 'timelapse/:timelapseId/mosaic', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: any, res, next) => {
             let  timelapseId = req.params.timelapseId;
             let timelapse = await getConnection().getRepository(Timelapse).findOne(timelapseId);
             let filePath = __dirname + '/../../' + TimelapseHelper.MOSAICS_FOLDER + '/' + timelapse.mosaic;
