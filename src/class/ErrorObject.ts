@@ -7,6 +7,7 @@ export class ErrorObject {
     static readonly EMPTY_USER_ID = 'EMPTY_ID';
     static readonly EMPTY_TOKEN = 'EMPTY_TOKEN';
     static readonly TIMELAPSE_NO_DETECTIONS = 'TIMELAPSE_NO_DETECTIONS';
+    static readonly SUBSCRIPTION_INVALID = 'INVALID_SUBSCRIPTION';
 
     private static _errorMessages = {
         EMPTY_USERNAME: 'Empty username',
@@ -17,7 +18,8 @@ export class ErrorObject {
         INVALID_TOKEN: 'token invalid',
         MOTION_INVALID_SETTINGS: 'Invalid Motion settings',
         CANNOT_UPDATE_USER_TOKEN: 'Cannot update the user token',
-        TIMELAPSE_NO_DETECTIONS: 'Any detections found for timelapse'
+        TIMELAPSE_NO_DETECTIONS: 'Any detections found for timelapse',
+        INVALID_SUBSCRIPTION: 'Invalid subscription'
     };
     static readonly INVALID_TOKEN = 'INVALID_TOKEN';
 

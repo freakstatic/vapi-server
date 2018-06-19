@@ -1,16 +1,26 @@
 <div class="main-content">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-lg-6 col-md-12">
-                <div class="card">
+            <div class="col-md-12">
+                <div class="card" *ngIf="sub != null">
                     <div class="card-header card-header-danger">
                         <h4 class="title">{{ 'NOTIFICATIONS_TITLE' | translate:param }}</h4>
                         <p class="category">{{ 'NOTIFICATIONS_SECOND_TITLE' | translate:param }}</p>
                     </div>
                     <div class="card-body table-responsive">
-                        <div class="row">
-<button (click)="askPermission()" class="btn btn-danger" >Save</button>
+                        <h5>{{ 'NOTIFICATIONS_SELECT_OBJECTS_TO_NOTIFY' | translate:param }}</h5>
+                        <div *ngFor="let detectableObject of detectableObjects">
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" type="checkbox" value="" [(ngModel)]="detectableObject.selected">
+                                    {{ detectableObject.name }}
+                                    <span class="form-check-sign">
+                                    <span class="check"></span>
+                                </span>
+                                </label>
+                            </div>
                         </div>
+                        <button (click)="save()" class="btn btn-danger" >Save</button>
                     </div>
                 </div>
             </div>

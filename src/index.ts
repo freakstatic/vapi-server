@@ -11,13 +11,13 @@ let dbHelper = new DbHelper();
 
 (async () => {
     await dbHelper.connect();
-    let detectionHelper = new DetectionHelper();
+    let notificationHelper = new NotificationHelper();
+    let detectionHelper = new DetectionHelper(notificationHelper);
     await detectionHelper.fixUnfishedEvents();
     let motionHelper = new MotionHelper();
     let socketHelper = new SocketHelper(detectionHelper, motionHelper);
     await TimelapseHelper.createFolders();
 
-    let notificationHelper = new NotificationHelper();
     let webSocketHelper = new WebServerHelper(motionHelper, notificationHelper);
 })();
 

@@ -38,6 +38,8 @@
 
   "NOTIFICATIONS_TITLE": "Notifications",
   "NOTIFICATIONS_SECOND_TITLE": "Here you can configure notifications",
+  "NOTIFICATIONS_SELECT_OBJECTS_TO_NOTIFY": "Select the objects that you want to be notified when detected",
+  "NOTIFICATIONS_PLEASE_ALLOW_PERMISSIONS": "Please accept the show notification permission to use this page",
 
   "SETTINGS" : "Settings",
   "SETTINGS_SECOND_TITLE": "Here you can a adjust things to your needs",

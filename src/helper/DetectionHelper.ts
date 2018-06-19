@@ -8,14 +8,19 @@ import {Detection} from '../entity/Detection';
 import {DetectionEventRepository} from '../repository/DetectionEventRepository';
 import {DetectionRepository} from '../repository/DetectionRepository';
 import {unlink} from 'fs';
+import {NotificationHelper} from "./NotificationHelper";
 
 export class DetectionHelper {
 
     private lastDetection: Detection;
     private lastDetectionEvent: DetectionEvent;
 
-    constructor() {
+    private notificationHelper: NotificationHelper;
 
+    private static readonly DELAY_UNTIL_CLOSE_EVENT = 2000;
+
+    constructor(notificationHelper: NotificationHelper) {
+        this.notificationHelper = notificationHelper;
     }
 
     async fixUnfishedEvents() {
@@ -38,7 +43,7 @@ export class DetectionHelper {
 
     }
 
-    async handleDetectionReceived(detectionReceived):Promise<Detection> {
+    async handleDetectionReceived(detectionReceived): Promise<Detection> {
         try {
 
             let currentDate = new Date();
@@ -48,7 +53,7 @@ export class DetectionHelper {
 
             if (detectionReceived.objects.length === 0 && this.lastDetection == null) {
                 unlink(detectionReceived.imgUrl, (err) => {
-                    if (err){
+                    if (err) {
                         console.error('[DetectionHelper] [handleDetectionReceived] Unable to delete file with no detections');
                         console.error(err);
                     }
@@ -59,7 +64,7 @@ export class DetectionHelper {
             if (detectionReceived.objects.length === 0) {
                 let milisecondsPassed = currentDate.getTime() - this.lastDetection.date.getTime();
 
-                if (milisecondsPassed > 2000){
+                if (milisecondsPassed > DetectionHelper.DELAY_UNTIL_CLOSE_EVENT) {
                     this.lastDetectionEvent.endDate = currentDate;
                     await detectionEventRepository.save(this.lastDetectionEvent);
                     this.lastDetection = null;
@@ -90,7 +95,7 @@ export class DetectionHelper {
             detection.numberOfDetections = detectionReceived.objects.length;
             await getConnection().getRepository(Detection).insert(detection);
 
-            await <Promise<DetectionObject>[]> detectionReceived.objects.map(
+            let detectionObjects = Promise.all(await <Promise<DetectionObject>[]> detectionReceived.objects.map(
                 async (detectionObjectReceived): Promise<DetectionObject> => {
 
                     let detectionObject = new DetectionObject();
@@ -115,7 +120,7 @@ export class DetectionHelper {
 
                     detectionObject = await detectionObjectRepository.save(detectionObject);
                     return detectionObject;
-                });
+                }));
             this.lastDetection = detection;
 
             if (this.lastDetectionEvent == null) {
@@ -129,7 +134,14 @@ export class DetectionHelper {
                 await detectionEventRepository.save(this.lastDetectionEvent);
             }
 
-            return getConnection().getCustomRepository(DetectionRepository).findOne(detection.id);
+            detection = await getConnection().getCustomRepository(DetectionRepository).findOne(detection.id);
+
+            detection.event = this.lastDetectionEvent;
+            this.notificationHelper.notifyAboutDetection(detection).catch((err) => {
+                console.error('[DetectionHelper] [handleDetectionReceived] Unable to notify about detection', err);
+            });
+
+            return detection;
         }
         catch (e) {
             console.error(e);

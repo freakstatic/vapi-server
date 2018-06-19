@@ -25,6 +25,10 @@ export class SocketHelper {
         const socketApp = express();
         const server = http.createServer(socketApp);
         const io = require('socket.io')(server);
+        server.timeout = 500000;
+        server.keepAliveTimeout = 500000;
+
+
         io.on('connection', client => {
             let socketLoggedIn = false;
             let user: User = null;
@@ -50,6 +54,7 @@ export class SocketHelper {
                     client.emit('set-folder', motionHelper.settings['target_dir']);
                     client.on('detection', async obj => {
                         try {
+                            console.log('[SocketHelper] detection received');
                             const detection: Detection = await detectionHelper.handleDetectionReceived(obj);
                             if (!detection){
                                 return;

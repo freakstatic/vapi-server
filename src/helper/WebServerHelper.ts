@@ -20,6 +20,9 @@ import {MotionHelper} from './MotionHelper';
 import {TimelapseHelper} from './TimelapseHelper';
 import {Timelapse} from '../entity/Timelapse';
 import {NotificationHelper} from "./NotificationHelper";
+import {NotificationSubscription} from "../entity/NotificationSubscription";
+import {DetectableObject} from "../entity/DetectableObject";
+import {InvalidSubcriptionException} from "../exception/InvalidSubcriptionException";
 
 const getSize = require('get-folder-size');
 
@@ -271,6 +274,16 @@ export class WebServerHelper {
             res.status(200).send(diskSpace);
         });
 
+        app.get(API_URL + 'users', async (req: any, res, next) => {
+            let users = await getConnection().getRepository(User).find({});
+
+            for (let user of users){
+                delete user.password;
+            }
+
+            res.status(200).send(users);
+        });
+
         app.get(API_URL + 'timelapse/codecs', async (req: any, res, next) => {
             let codecs = await TimelapseHelper.getCodecs();
             res.status(200).send(codecs);
@@ -322,12 +335,38 @@ export class WebServerHelper {
             res.status(200).download(path.resolve(filePath), timelapse.mosaic);
         });
 
-        app.post(API_URL + 'subscription/add', async (req: any, res, next) => {
-            console.log(req.body);
-            notificationHelper.sendNotification(req.body);
-            res.status(200);
+        app.get(API_URL + 'detectable-objects', async (req: any, res, next) => {
+            let detectableObjects = await getConnection().getRepository(DetectableObject).find({});
+            res.send(detectableObjects);
         });
 
+        app.post(API_URL + 'notification/subscription/add', async (req: any, res, next) => {
+            let sub = req.body;
+            await notificationHelper.handleNewSubscription(sub);
+            res.status(200).send({});
+        });
+
+        app.post(API_URL + 'notification/subscription/detectable-objects', async (req: any, res, next) => {
+            let auth = req.body.keys.auth;
+            let detectableObjects = await notificationHelper.getSubscriptionDetectableObjects(auth);
+            res.send(detectableObjects);
+        });
+
+        app.post(API_URL + 'notification/subscription/detectable-objects/add', async (req: any, res, next) => {
+            let sub = req.body.sub;
+            let subscriptionDetectableObjects = req.body.subscriptionDetectableObjects;
+
+            try {
+                await notificationHelper.addSubscriptionDetectableObjects(sub, subscriptionDetectableObjects);
+                res.status(200).send({});
+            }catch (e) {
+                res.status(400);
+                if (e instanceof InvalidSubcriptionException){
+                    res.send(new ErrorObject(ErrorObject.SUBSCRIPTION_INVALID));
+                }
+            }
+
+        });
 
         app.use(express.static(__dirname + '/../../angular/dist/'));
 
