@@ -25,6 +25,8 @@ import {DetectableObject} from "../entity/DetectableObject";
 import {InvalidSubcriptionException} from "../exception/InvalidSubcriptionException";
 
 const getSize = require('get-folder-size');
+const util = require('util');
+const spawn = require('child_process').spawn;
 
 export class WebServerHelper {
     constructor(motionHelper: MotionHelper, notificationHelper: NotificationHelper) {
@@ -256,28 +258,41 @@ export class WebServerHelper {
 
         app.get(API_URL + 'storage', passport.authenticate('bearer', bearTokenOptions), (req: Request, res: Response) => {
             const path = os.platform() === 'win32' ? 'c:' : '/';
-            const diskSpace = {};
-            // disk.check(path, (error: any, info: any) => {
-            //     if (!error) {
-            //         diskSpace['diskSpace'] = info.total / 1048576;
-            //     }
-            //     getSize(motionHelper.settings.target_dir, (err, size) => {
-            //         if (!err) {
-            //             diskSpace['usedSpace'] = size / 1048576;
-            //         }
-            //         res.status(200).send(diskSpace);
-            //         return;
-            //     });
-            // });
-            diskSpace['diskSpace'] = 0;
-            diskSpace['usedSpace'] = 0;
-            res.status(200).send(diskSpace);
+            const diskSpace = {} as any;
+            disk.check(path, (error: any, info: any) => {
+                if (!error) {
+                    diskSpace.diskSpace = info.total / 1048576;
+                }
+
+
+                let du = spawn('du', ['-hm', motionHelper.settings.target_dir] as ReadonlyArray<string>);
+                du.stdout.on('data', function (data: Uint8Array) {
+                    let dataString = String.fromCharCode.apply(null, data);
+
+                    let splitData = dataString.split('\t');
+                    let size = splitData[0];
+                    console.log('size: ' + size);
+                    diskSpace.usedSpace = size;
+                    res.status(200).send(diskSpace);
+                });
+
+                du.on('exit', function (code) {
+                    if (code != 0) {
+                        res.status(500).send({});
+                    }
+                });
+
+                du.on('error', function (err) {
+                    res.status(500).send({});
+                });
+
+            });
         });
 
         app.get(API_URL + 'users', async (req: any, res, next) => {
             let users = await getConnection().getRepository(User).find({});
 
-            for (let user of users){
+            for (let user of users) {
                 delete user.password;
             }
 
@@ -359,9 +374,9 @@ export class WebServerHelper {
             try {
                 await notificationHelper.addSubscriptionDetectableObjects(sub, subscriptionDetectableObjects);
                 res.status(200).send({});
-            }catch (e) {
+            } catch (e) {
                 res.status(400);
-                if (e instanceof InvalidSubcriptionException){
+                if (e instanceof InvalidSubcriptionException) {
                     res.send(new ErrorObject(ErrorObject.SUBSCRIPTION_INVALID));
                 }
             }
