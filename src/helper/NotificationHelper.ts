@@ -30,7 +30,7 @@ export class NotificationHelper {
             "notification": {
                 "title": "VAPi",
                 "body": message,
-                "icon": "assets/icons/icon-72x72.png",
+                "icon": "assets/icons/android-icon-72x72.png",
                 "data": {
                     "dateOfArrival": Date.now(),
                 },

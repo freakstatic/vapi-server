@@ -20,10 +20,24 @@ const YOLO_GROUP_NAME = 'yolo';
 const USER_ROOM = 'user';
 const tokenManager = new TokenManager();
 
+const fs = require( 'fs' );
+const https = require('https');
+
 export class SocketHelper {
     constructor(detectionHelper: DetectionHelper, motionHelper: MotionHelper) {
         const socketApp = express();
-        const server = http.createServer(socketApp);
+
+        let server;
+        if (config.ssl) {
+            server = https.createServer({
+                key: fs.readFileSync(__dirname +'/../../ssl/privkey.pem'),
+                cert: fs.readFileSync(__dirname + '/../../ssl/fullchain.pem')
+            }, socketApp);
+        } else {
+            server = http.createServer(socketApp);
+        }
+
+
         const io = require('socket.io')(server);
         server.timeout = 500000;
         server.keepAliveTimeout = 500000;
@@ -59,7 +73,7 @@ export class SocketHelper {
                         try {
                             console.log('[SocketHelper] detection received');
                             const detection: Detection = await detectionHelper.handleDetectionReceived(obj);
-                            if (!detection){
+                            if (!detection) {
                                 return;
                             }
                             detection.detectionObjects.then(async (detectionObjects: DetectionObject[]) => {
