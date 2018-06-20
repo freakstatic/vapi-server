@@ -27,6 +27,12 @@ import {InvalidSubcriptionException} from '../exception/InvalidSubcriptionExcept
 const util = require('util');
 const spawn = require('child_process').spawn;
 
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
+
+const config = require('../../config.json');
+
 export class WebServerHelper {
     constructor(motionHelper: MotionHelper, notificationHelper: NotificationHelper) {
         const WEB_SERVER_PORT = 8080;
@@ -226,30 +232,25 @@ export class WebServerHelper {
             let detections = await getConnection().getCustomRepository(DetectionRepository).get(startDate, endDate);
             res.status(200).send(detections);
         });
- 
-     app.get(API_URL + 'detection/last', passport.authenticate('bearer', bearTokenOptions), async(req: Request, res: Response) =>
-     {
-      const repo: DetectionRepository = getConnection().getCustomRepository(DetectionRepository);
-      let detection:Detection = await repo.getLast();
-      if (detection===undefined||detection===null)
-      {
-       res.sendStatus(204);
-      }
-      let detectionsWithoutPromises = null;
-      try
-      {
-       detectionsWithoutPromises=await repo.doThePromises(detection);
-       if (detectionsWithoutPromises===undefined||detectionsWithoutPromises===null)
-       {
-        res.sendStatus(204);
-       }
-       res.status(200).send(detectionsWithoutPromises);
-      }
-      catch(e)
-      {
-       res.status(500).send(e);
-      }
-     });
+
+        app.get(API_URL + 'detection/last', passport.authenticate('bearer', bearTokenOptions), async (req: Request, res: Response) => {
+            const repo: DetectionRepository = getConnection().getCustomRepository(DetectionRepository);
+            let detection: Detection = await repo.getLast();
+            if (detection === undefined || detection === null) {
+                res.sendStatus(204);
+            }
+            let detectionsWithoutPromises = null;
+            try {
+                detectionsWithoutPromises = await repo.doThePromises(detection);
+                if (detectionsWithoutPromises === undefined || detectionsWithoutPromises === null) {
+                    res.sendStatus(204);
+                }
+                res.status(200).send(detectionsWithoutPromises);
+            }
+            catch (e) {
+                res.status(500).send(e);
+            }
+        });
 
         app.get(API_URL + 'stats/detection', passport.authenticate('bearer', bearTokenOptions), async (req: any, res, next) => {
             let startDate = null;
@@ -312,7 +313,7 @@ export class WebServerHelper {
             });
         });
 
-        app.get(API_URL + 'users', passport.authenticate('bearer', bearTokenOptions),async (req: any, res, next) => {
+        app.get(API_URL + 'users', passport.authenticate('bearer', bearTokenOptions), async (req: any, res, next) => {
             let users = await getConnection().getRepository(User).find({});
 
             for (let user of users) {
@@ -337,12 +338,12 @@ export class WebServerHelper {
             return;
         });
 
-        app.get(API_URL + 'timelapse/codecs', passport.authenticate(AUTH_STRATEGY, bearTokenOptions),async (req: any, res, next) => {
+        app.get(API_URL + 'timelapse/codecs', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: any, res, next) => {
             let codecs = await TimelapseHelper.getCodecs();
             res.status(200).send(codecs);
         });
 
-        app.get(API_URL + 'timelapse/formats', passport.authenticate(AUTH_STRATEGY, bearTokenOptions),async (req: any, res, next) => {
+        app.get(API_URL + 'timelapse/formats', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: any, res, next) => {
             let formats = await TimelapseHelper.getFormats();
             res.status(200).send(formats);
         });
@@ -353,21 +354,21 @@ export class WebServerHelper {
         });
 
         app.get(API_URL + 'timelapse/:timelapseId/thumbnail', async (req: any, res, next) => {
-            let  timelapseId = req.params.timelapseId;
+            let timelapseId = req.params.timelapseId;
             let timelapse = await getConnection().getRepository(Timelapse).findOne(timelapseId);
             let filePath = __dirname + '/../../' + TimelapseHelper.THUMBNAILS_FOLDER + '/' + timelapse.thumbnail;
             res.status(200).download(path.resolve(filePath), timelapse.thumbnail);
         });
 
         app.get(API_URL + 'timelapse/:timelapseId/video', async (req: any, res, next) => {
-            let  timelapseId = req.params.timelapseId;
+            let timelapseId = req.params.timelapseId;
             let timelapse = await getConnection().getRepository(Timelapse).findOne(timelapseId);
             let filePath = __dirname + '/../../' + TimelapseHelper.VIDEOS_FOLDER + '/' + timelapse.filename;
             res.status(200).download(path.resolve(filePath), timelapse.filename);
         });
 
         app.get(API_URL + 'timelapse/:timelapseId/mosaic', async (req: any, res, next) => {
-            let  timelapseId = req.params.timelapseId;
+            let timelapseId = req.params.timelapseId;
             let timelapse = await getConnection().getRepository(Timelapse).findOne(timelapseId);
             let filePath = __dirname + '/../../' + TimelapseHelper.MOSAICS_FOLDER + '/' + timelapse.mosaic;
             res.status(200).download(path.resolve(filePath), timelapse.mosaic);
@@ -414,7 +415,18 @@ export class WebServerHelper {
                 .sendFile(path.join(__dirname + '/../../angular/dist/index.html'));
         });
 
-        app.listen(WEB_SERVER_PORT);
-        console.log('Started web server on ' + WEB_SERVER_PORT);
+        if (config.ssl){
+            let options = {
+                key: fs.readFileSync('./ssl/privkey.pem'),
+                cert: fs.readFileSync('./ssl/fullchain.pem'),
+            };
+            const server = https.createServer(options, app).listen(WEB_SERVER_PORT, function () {
+                console.log('Started SSL web server on ' + WEB_SERVER_PORT);
+            });
+        }else {
+            app.listen(WEB_SERVER_PORT);
+            console.log('Started web server on ' + WEB_SERVER_PORT);
+        }
+
     }
 }
