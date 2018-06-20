@@ -231,12 +231,20 @@ export class WebServerHelper {
       {
        res.sendStatus(204);
       }
-      let detectionsWithoutPromises = repo.doThePromises(detection);
-      if (detectionsWithoutPromises===undefined||detectionsWithoutPromises===null)
+      let detectionsWithoutPromises = null;
+      try
       {
-       res.sendStatus(204);
+       detectionsWithoutPromises=await repo.doThePromises(detection);
+       if (detectionsWithoutPromises===undefined||detectionsWithoutPromises===null)
+       {
+        res.sendStatus(204);
+       }
+       res.status(200).send(detectionsWithoutPromises);
       }
-      res.status(200).send(detectionsWithoutPromises);
+      catch(e)
+      {
+       res.status(500).send(e);
+      }
      });
 
         app.get(API_URL + 'stats/detection', passport.authenticate('bearer', bearTokenOptions), async (req: any, res, next) => {
