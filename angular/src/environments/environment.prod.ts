@@ -1,6 +1,6 @@
 export const environment = {
-    production: false,
+    production: true,
     apiEndpoint: 'api/',
-    apiURL: 'http://ei-project.ricardomaltez.com:8080/api',
-    socketURL:'http://ei-project.ricardomaltez.com:3000'
+    apiURL: 'http://localhost:8080/api',
+    socketURL:'http://localhost:3000'
 };

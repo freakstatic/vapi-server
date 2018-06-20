@@ -6,6 +6,7 @@
     "ng": "ng",
     "start": "ng serve --proxy-config proxy-conf.json --base-href / --host 0.0.0.0",
     "build": "ng build",
+    "deploy": "ng build --prod --base-href src",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -34,6 +35,7 @@
     "amazing-time-picker": "^1.5.3",
     "angular2-datetimepicker": "^1.1.1",
     "angular5-time-picker": "^1.0.8",
+    "arraybuffer-to-string": "^1.0.2",
     "arrive": "2.4.1",
     "bootstrap": "^4.1.1",
     "bootstrap-material-design": "4.1.1",
@@ -63,6 +65,7 @@
     "@angular/cli": "1.7.4",
     "@angular/compiler-cli": "5.2.9",
     "@angular/language-service": "5.2.9",
+    "@angular/service-worker": "^5.2.9",
     "@types/bootstrap": "3.3.32",
     "@types/chartist": "0.9.34",
     "@types/core-js": "^2.5.0",

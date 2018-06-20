@@ -21,14 +21,17 @@ export class NavbarComponent implements OnInit {
     private toggleButton: any;
     private sidebarVisible: boolean;
 
+    private language: string;
+
     constructor(location: Location, private element: ElementRef,
                 private authService: AuthService,
                 private router: Router,
                 // private socket: Socket,
-                // private translateService: TranslateService,
+                private translateService: TranslateService
     ) {
         this.location = location;
         this.sidebarVisible = false;
+        this.language = localStorage.getItem('language');
     }
 
     ngOnInit() {
@@ -44,9 +47,7 @@ export class NavbarComponent implements OnInit {
             }
         });
 
-        // this.socket.on('error', (errorObject: ErrorObject) => {
-        //     this.handleSocketError(this.socket, errorObject);
-        // })
+        console.log(this.language);
     }
 
     sidebarOpen() {
@@ -171,6 +172,13 @@ export class NavbarComponent implements OnInit {
             type: 'success',
             timer: 2000,
         });
+    }
+
+    changeLanguage(newLanguage){
+        this.language = newLanguage;
+        this.translateService.use(newLanguage);
+        localStorage.setItem('language', newLanguage);
+        window.location.reload();
     }
 
     handleSocketError(socket: Socket, errorObject: ErrorObject) {

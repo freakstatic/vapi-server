@@ -1,42 +1,93 @@
-import { Component, OnInit } from '@angular/core';
-declare var $: any;
+import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {SwPush} from '@angular/service-worker';
+import {NotificationsService} from './notifications.service';
+import {NavbarComponent} from '../components/navbar/navbar.component';
+import {TranslateService} from "@ngx-translate/core";
+
 @Component({
-  selector: 'app-notifications',
-  templateUrl: './notifications.component.html',
-  styleUrls: ['./notifications.component.css']
+    selector: 'app-notifications',
+    templateUrl: './notifications.component.html',
+    styleUrls: ['./notifications.component.scss']
 })
-export class NotificationsComponent implements OnInit {
+export class NotificationsComponent implements OnInit, AfterViewInit {
+    param = {value: 'world'};
 
-  constructor() { }
-  showNotification(from, align){
-      const type = ['','info','success','warning','danger'];
+    readonly VAPID_PUBLIC_KEY = 'BFE4GlwPRGEyykZgCBZ6WLwCIPHLoal9Tffs225gQkk0KetZyHVnh4ml-apTDu6g6tUacvl1IC8UfQpargMyZMk';
 
-      const color = Math.floor((Math.random() * 4) + 1);
+    detectableObjects: any[];
+    sub: PushSubscription;
 
-      $.notify({
-          icon: "notifications",
-          message: "Welcome to <b>Material Dashboard</b> - a beautiful freebie for every web developer."
+    constructor(private swPush: SwPush, private notificationsService: NotificationsService,
+                private translateService: TranslateService) {
+    }
 
-      },{
-          type: type[color],
-          timer: 4000,
-          placement: {
-              from: from,
-              align: align
-          },
-          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
-            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
-            '<i class="material-icons" data-notify="icon">notifications</i> ' +
-            '<span data-notify="title">{1}</span> ' +
-            '<span data-notify="message">{2}</span>' +
-            '<div class="progress" data-notify="progressbar">' +
-              '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
-            '</div>' +
-            '<a href="{3}" target="{4}" data-notify="url"></a>' +
-          '</div>'
-      });
-  }
-  ngOnInit() {
-  }
 
+    ngOnInit() {
+        this.notificationsService.getDetectableObjects()
+            .then((detectableObjects: any[]) => {
+                this.detectableObjects = detectableObjects;
+            });
+    }
+
+    ngAfterViewInit() {
+        console.log('after');
+        this.askPermission();
+    }
+
+    askPermission() {
+        this.swPush.requestSubscription({
+            serverPublicKey: this.VAPID_PUBLIC_KEY
+        }).then((sub: PushSubscription) => {
+            this.sub = sub;
+
+            this.notificationsService.addSubscription(sub).then(() => {
+                console.log('[NotificationsComponent] [askPermission]');
+                console.log(this);
+                this.getSubscriptionDetectableObjects();
+            }).catch((err) => {
+                console.error('Unable to addSubscription', err);
+            });
+        }).catch(err => {
+            console.error('Could not subscribe to notifications', err);
+            this.translateService.get('NOTIFICATIONS_PLEASE_ALLOW_PERMISSIONS').subscribe((res: string) => {
+                NavbarComponent.showErrorMessage(res);
+            });
+        });
+    }
+
+    getSubscriptionDetectableObjects() {
+
+        if (this.sub == null) {
+            return;
+        }
+        this.notificationsService.getSubscriptionDetectableObjects(this.sub).then((subscriptionDetectableObjects: any[]) => {
+            if (subscriptionDetectableObjects == null || subscriptionDetectableObjects.length === 0){
+                return;
+            }
+
+            subscriptionDetectableObjects.forEach((subscriptionDetectableObject) => {
+                const detectableObjectFound = this.detectableObjects.find((detectableObject) => {
+                    return detectableObject.name === subscriptionDetectableObject.name;
+                });
+
+                if (detectableObjectFound) {
+                    detectableObjectFound.selected = true;
+                }
+            });
+        }).catch((err) => {
+            console.error('[NotificationsComponent] [getSubscriptionDetectableObjects] Unable to getSubscriptionDetectableObjects', err);
+        });
+    }
+
+    save() {
+        const subscriptionDetectableObjects = this.detectableObjects.filter((detectableObject) => {
+            return detectableObject.selected;
+        });
+
+        this.notificationsService.addSubscriptionDetectableObjects(this.sub, subscriptionDetectableObjects).then(() => {
+            NavbarComponent.showMessage('Notification settings saved');
+        }).catch(() => {
+            console.error('Error saving notification subscriptionDetectableObjects');
+        });
+    }
 }

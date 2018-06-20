@@ -8,7 +8,6 @@ import {UserProfileComponent} from '../../user-profile/user-profile.component';
 import {TableListComponent} from '../../table-list/table-list.component';
 import {TypographyComponent} from '../../typography/typography.component';
 import {IconsComponent} from '../../icons/icons.component';
-import {NotificationsComponent} from '../../notifications/notifications.component';
 import {UpgradeComponent} from '../../upgrade/upgrade.component';
 
 import {
@@ -31,6 +30,8 @@ import {IonRangeSliderModule} from "ng2-ion-range-slider";
 import {AngularDateTimePickerModule} from "angular2-datetimepicker";
 
 import {AmazingTimePickerModule} from "amazing-time-picker";
+import {ServiceWorkerModule} from "@angular/service-worker";
+import {NotificationsComponent} from "../../notifications/notifications.component";
 
 
 export function createTranslateLoader(http: HttpClient) {
@@ -61,7 +62,7 @@ export function createTranslateLoader(http: HttpClient) {
                 deps: [HttpClient]
             }
         }),
-
+        ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
     ],
     declarations: [
         DashboardComponent,
@@ -69,18 +70,17 @@ export function createTranslateLoader(http: HttpClient) {
         TableListComponent,
         TypographyComponent,
         IconsComponent,
-        NotificationsComponent,
         UpgradeComponent,
         DashboardComponent,
         UserProfileComponent,
         TableListComponent,
         TypographyComponent,
         IconsComponent,
-        NotificationsComponent,
         UpgradeComponent,
         SettingsComponent,
         TimelapsesComponent,
         UserListComponent,
+        NotificationsComponent
     ]
 })
 
@@ -89,7 +89,9 @@ export class AdminLayoutModule {
         private socket: Socket,
         private credentialsManager: CredentialsManagerService, translate: TranslateService
     ) {
-        translate.setDefaultLang('en');
+        translate.setDefaultLang(localStorage.getItem('language'));
+        translate.use(localStorage.getItem('language') );
+
         this.socket.on('connect', () => {
             if (this.credentialsManager.checkLogin()) {
                 this.socket.emit('authenticate', this.credentialsManager.getLogin.token);

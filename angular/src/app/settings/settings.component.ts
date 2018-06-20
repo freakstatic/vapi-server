@@ -12,14 +12,15 @@ import {NavbarComponent} from "../components/navbar/navbar.component";
 })
 export class SettingsComponent implements OnInit {
     param = {value: 'world'};
-    constructor(private translateService: TranslateService,
-                private settingsService: SettingsService) {
-    }
 
     @Input()
     motionSettings: ConfigObject[];
     private originalMotionSettings: ConfigObject[];
     waitingResponse: boolean;
+
+    constructor(private translateService: TranslateService,
+                private settingsService: SettingsService) {
+    }
     
     ngOnInit() {
 

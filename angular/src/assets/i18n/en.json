@@ -36,6 +36,11 @@
   "ERROR-TIMELAPSE_NO_DETECTIONS" : "No detections found in the date interval selected",
   "ERROR-TIMELAPSE_UNKNOWN": "Unable to render the timelapse. Ffmpeg returned the following error:",
 
+  "NOTIFICATIONS_TITLE": "Notifications",
+  "NOTIFICATIONS_SECOND_TITLE": "Here you can configure notifications",
+  "NOTIFICATIONS_SELECT_OBJECTS_TO_NOTIFY": "Select the objects that you want to be notified when detected",
+  "NOTIFICATIONS_PLEASE_ALLOW_PERMISSIONS": "Please accept the show notification permission to use this page",
+
   "SETTINGS" : "Settings",
   "SETTINGS_SECOND_TITLE": "Here you can a adjust things to your needs",
   "SETTINGS_NOTHING_TO_UPDATE": "There is nothing to update!",
@@ -51,7 +56,7 @@
  "UPDATED": "updated",
  "SECONDS_AGO": "seconds ago",
  "STATISTICS_BY_TIME":"Statistics by time",
- "USED_SPACE":"used space",
+ "USED_SPACE":"Used space",
 
  "MONDAY": "Monday",
  "TUESDAY": "Tuesday",

@@ -19,12 +19,17 @@ import {UserRepository} from '../repository/UserRepository';
 import {MotionHelper} from './MotionHelper';
 import {TimelapseHelper} from './TimelapseHelper';
 import {Timelapse} from '../entity/Timelapse';
-import {Detection} from '../entity/Detection';
+import {NotificationHelper} from "./NotificationHelper";
+import {NotificationSubscription} from "../entity/NotificationSubscription";
+import {DetectableObject} from "../entity/DetectableObject";
+import {InvalidSubcriptionException} from "../exception/InvalidSubcriptionException";
 
-const getSize=require('get-folder-size');
+
+const util = require('util');
+const spawn = require('child_process').spawn;
 
 export class WebServerHelper {
-    constructor(motionHelper: MotionHelper) {
+    constructor(motionHelper: MotionHelper, notificationHelper: NotificationHelper) {
         const WEB_SERVER_PORT = 8080;
         const API_URL = '/api/';
 
@@ -274,28 +279,49 @@ export class WebServerHelper {
             }
             return;
         });
- 
-     app.get(API_URL + 'storage', passport.authenticate('bearer', bearTokenOptions), (req: Request, res: Response) =>
-     {
-      const path = os.platform() === 'win32' ? 'c:' : '/';
-      const diskSpace = {};
-      disk.check(path, (error:any, info:any) =>
-      {
-       if (!error)
-       {
-        diskSpace['diskSpace']=info.total/1048576;
-       }
-       getSize(motionHelper.settings.target_dir,(err, size)=>
-       {
-        if (!err)
-        {
-         diskSpace['usedSpace']=size/1048576;
-        }
-        res.status(200).send(diskSpace);
-        return;
-       });
-      });
-     });
+
+        app.get(API_URL + 'storage', passport.authenticate('bearer', bearTokenOptions), (req: Request, res: Response) => {
+            const path = os.platform() === 'win32' ? 'c:' : '/';
+            const diskSpace = {} as any;
+            disk.check(path, (error: any, info: any) => {
+                if (!error) {
+                    diskSpace.diskSpace = info.total / 1048576;
+                }
+
+
+                let du = spawn('du', ['-hm', motionHelper.settings.target_dir] as ReadonlyArray<string>);
+                du.stdout.on('data', function (data: Uint8Array) {
+                    let dataString = String.fromCharCode.apply(null, data);
+
+                    let splitData = dataString.split('\t');
+                    let size = splitData[0];
+                    console.log('size: ' + size);
+                    diskSpace.usedSpace = size;
+                    res.status(200).send(diskSpace);
+                });
+
+                du.on('exit', function (code) {
+                    if (code != 0) {
+                        res.status(500).send({});
+                    }
+                });
+
+                du.on('error', function (err) {
+                    res.status(500).send({});
+                });
+
+            });
+        });
+
+        app.get(API_URL + 'users', passport.authenticate('bearer', bearTokenOptions),async (req: any, res, next) => {
+            let users = await getConnection().getRepository(User).find({});
+
+            for (let user of users) {
+                delete user.password;
+            }
+
+            res.status(200).send(users);
+        });
 
         app.get(API_URL + 'timelapse/codecs', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: any, res, next) => {
             let codecs = await TimelapseHelper.getCodecs();
@@ -327,25 +353,59 @@ export class WebServerHelper {
             res.status(200).send(timelapses);
         });
 
-        app.get(API_URL + 'timelapse/:timelapseId/thumbnail', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: any, res, next) => {
+        app.get(API_URL + 'timelapse/:timelapseId/thumbnail', async (req: any, res, next) => {
             let  timelapseId = req.params.timelapseId;
             let timelapse = await getConnection().getRepository(Timelapse).findOne(timelapseId);
             let filePath = __dirname + '/../../' + TimelapseHelper.THUMBNAILS_FOLDER + '/' + timelapse.thumbnail;
             res.status(200).download(path.resolve(filePath), timelapse.thumbnail);
         });
 
-        app.get(API_URL + 'timelapse/:timelapseId/video', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: any, res, next) => {
+        app.get(API_URL + 'timelapse/:timelapseId/video', async (req: any, res, next) => {
             let  timelapseId = req.params.timelapseId;
             let timelapse = await getConnection().getRepository(Timelapse).findOne(timelapseId);
             let filePath = __dirname + '/../../' + TimelapseHelper.VIDEOS_FOLDER + '/' + timelapse.filename;
             res.status(200).download(path.resolve(filePath), timelapse.filename);
         });
 
-        app.get(API_URL + 'timelapse/:timelapseId/mosaic', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: any, res, next) => {
+        app.get(API_URL + 'timelapse/:timelapseId/mosaic', async (req: any, res, next) => {
             let  timelapseId = req.params.timelapseId;
             let timelapse = await getConnection().getRepository(Timelapse).findOne(timelapseId);
             let filePath = __dirname + '/../../' + TimelapseHelper.MOSAICS_FOLDER + '/' + timelapse.mosaic;
             res.status(200).download(path.resolve(filePath), timelapse.mosaic);
+        });
+
+        app.get(API_URL + 'detectable-objects', async (req: any, res, next) => {
+            let detectableObjects = await getConnection().getRepository(DetectableObject).find({});
+            res.send(detectableObjects);
+        });
+
+        app.post(API_URL + 'notification/subscription/add', async (req: any, res, next) => {
+            let sub = req.body;
+            let language = req.headers.language;
+            await notificationHelper.handleNewSubscription(sub, language);
+            res.status(200).send({});
+        });
+
+        app.post(API_URL + 'notification/subscription/detectable-objects', async (req: any, res, next) => {
+            let auth = req.body.keys.auth;
+            let detectableObjects = await notificationHelper.getSubscriptionDetectableObjects(auth);
+            res.send(detectableObjects);
+        });
+
+        app.post(API_URL + 'notification/subscription/detectable-objects/add', async (req: any, res, next) => {
+            let sub = req.body.sub;
+            let subscriptionDetectableObjects = req.body.subscriptionDetectableObjects;
+
+            try {
+                await notificationHelper.addSubscriptionDetectableObjects(sub, subscriptionDetectableObjects);
+                res.status(200).send({});
+            } catch (e) {
+                res.status(400);
+                if (e instanceof InvalidSubcriptionException) {
+                    res.send(new ErrorObject(ErrorObject.SUBSCRIPTION_INVALID));
+                }
+            }
+
         });
 
         app.use(express.static(__dirname + '/../../angular/dist/'));

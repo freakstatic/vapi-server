@@ -167,9 +167,9 @@
                                 <img class="timelapse-thumbnail text-center"
                                      [src]="apiURL + '/timelapse/' + timelapse.id + '/thumbnail'">
                                 <div class="timelapse-icons">
-                                    <a [href]="apiURL + '/timelapse/' + timelapse.id + '/video' "><i
+                                    <a target="_self" [href]="apiURL + '/timelapse/' + timelapse.id + '/video' "><i
                                             class="material-icons text-center text-success">cloud_download</i></a>
-                                    <a *ngIf="timelapse.mosaic" [href]="apiURL + '/timelapse/' + timelapse.id + '/mosaic'" class="right-icon"><i
+                                    <a target="_self"  *ngIf="timelapse.mosaic" [href]="apiURL + '/timelapse/' + timelapse.id + '/mosaic'" class="right-icon"><i
                                             class="material-icons text-center text-success">grid_on</i> </a>
                                 </div>
 

@@ -18,6 +18,7 @@
     "fluent-ffmpeg": "^2.1.2",
     "fs-promisify": "^0.2.0",
     "get-folder-size": "^2.0.0",
+    "i18n": "^0.8.3",
     "moment": "^2.22.1",
     "mysql2": "^1.5.3",
     "passport": "^0.4.0",
@@ -32,18 +33,20 @@
     "superchild": "^0.1.10",
     "tslint": "^5.9.1",
     "typeorm": "0.2.3",
-    "typescript": "^2.8.1"
+    "typescript": "^2.8.1",
+    "web-push": "^3.3.1"
   },
   "devDependencies": {
-    "@types/moment": "^2.13.0",
     "@types/bcrypt": "^1.0.0",
     "@types/express": "^4.11.1",
+    "@types/i18n": "^0.8.3",
+    "@types/moment": "^2.13.0",
     "@types/node": "^9.6.6",
     "@types/passport": "^0.4.5",
     "@types/passport-http": "^0.3.6",
     "@types/passport-http-bearer": "^1.0.33",
-    "@types/socket.io": "^1.4.33",
     "@types/sharp": "^0.17.8",
+    "@types/socket.io": "^1.4.33",
     "ts-node": "3.3.0",
     "tslint": "^5.9.1",
     "webpack": "^4.10.2"
