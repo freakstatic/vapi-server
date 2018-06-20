@@ -30,7 +30,6 @@ export class NotificationsComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        console.log('after');
         this.askPermission();
     }
 
