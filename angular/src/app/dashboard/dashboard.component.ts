@@ -21,7 +21,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     public detectableObjects: DetectableStat[];
     public diskSpace: number;
     public usedSpace: number;
-
+    public lastDetection:Detection;
+    
+    private lastDetectionObeservable:Observable<Detection>;
     private readonly interval;
     private detectionChartLast7Weeks: Observable<ChartObject<Detection>>;
     private detectionChartTime: Observable<ChartObject<DetectionTime>>;
@@ -36,7 +38,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.detectionPercentage = 0;
         this.diskSpace = 0;
         this.usedSpace = 0;
+        this.lastDetection=null;
 
+        this.lastDetectionObeservable=this.dashboardService.lastDetection;
         this.detectionChartLast7Weeks = this.dashboardService.detectionChartLast7Weeks;
         this.detectionChartTime = this.dashboardService.detectionChartTime;
         this.detectableStat = this.dashboardService.detectableStat;
@@ -185,7 +189,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.usedSpaceObservable.subscribe((data: number) => {
             this.usedSpace = data;
         });
+        
+        this.lastDetectionObeservable.subscribe((detection:Detection)=>
+        {
+         if(detection===undefined||detection===null)
+         {
+             return;
+         }
+         this.lastDetection=detection;
+        });
 
+        this.dashboardService.initLastDetection();
         this.dashboardService.initDetectionChartLast7Weeks();
         this.dashboardService.initDetectionChartTime();
         this.dashboardService.initTop5();
