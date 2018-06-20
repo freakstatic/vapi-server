@@ -19,11 +19,10 @@ import {UserRepository} from '../repository/UserRepository';
 import {MotionHelper} from './MotionHelper';
 import {TimelapseHelper} from './TimelapseHelper';
 import {Timelapse} from '../entity/Timelapse';
-import {NotificationHelper} from "./NotificationHelper";
-import {NotificationSubscription} from "../entity/NotificationSubscription";
-import {DetectableObject} from "../entity/DetectableObject";
-import {InvalidSubcriptionException} from "../exception/InvalidSubcriptionException";
-
+import {DetectableObject} from '../entity/DetectableObject';
+import {NotificationHelper} from './NotificationHelper';
+import {Detection} from '../entity/Detection';
+import {InvalidSubcriptionException} from '../exception/InvalidSubcriptionException';
 
 const util = require('util');
 const spawn = require('child_process').spawn;

@@ -1,13 +1,13 @@
-import * as util from "util";
-import {Socket} from "socket.io";
-import {ErrorObject} from "../class/ErrorObject";
-import {Detection} from "../entity/Detection";
-import {Timelapse} from "../entity/Timelapse";
-import {getConnection} from "typeorm";
-import {User} from "../entity/User";
+import * as util from 'util';
+import {Socket} from 'socket.io';
+import {ErrorObject} from '../class/ErrorObject';
+import {Detection} from '../entity/Detection';
+import {Timelapse} from '../entity/Timelapse';
+import {getConnection} from 'typeorm';
+import {User} from '../entity/User';
 import {spawn} from 'child_process';
 
-import {format} from 'date-fns'
+import {format} from 'date-fns';
 
 const config = require('../../config.json');
 
@@ -161,7 +161,7 @@ export class TimelapseHelper {
         let tmpFullFilename = this.VIDEOS_FOLDER + '/' + filenameWithoutExtension + '_new.' + fileExtension;
         let ffmpeg = spawn('ffmpeg', ['-y', '-i',
             fullFilename, '-i', txtFullFilename, '-map_metadata', '1', '-codec', 'copy',
-            tmpFullFilename] as ReadonlyArray<string>);
+            tmpFullFilename]);
 
 
         ffmpeg.on('exit', async (code) => {
@@ -202,7 +202,7 @@ export class TimelapseHelper {
                 '-qscale:v', '1',
                 mosaicFullPath,
                 '-y'
-            ] as ReadonlyArray<string>);
+            ]);
 
             ffmpeg.stderr.on('data', (data) => {
                 // if (config.debugMode) {
