@@ -357,7 +357,8 @@ export class WebServerHelper {
 
         app.post(API_URL + 'notification/subscription/add', async (req: any, res, next) => {
             let sub = req.body;
-            await notificationHelper.handleNewSubscription(sub);
+            let language = req.headers.language;
+            await notificationHelper.handleNewSubscription(sub, language);
             res.status(200).send({});
         });
 

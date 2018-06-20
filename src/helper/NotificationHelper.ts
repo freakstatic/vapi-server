@@ -14,8 +14,9 @@ export class NotificationHelper {
 
     private notificationSubscriptionRepository: Repository<NotificationSubscription>;
     private lastNotifiedDetection: Detection;
-
-    constructor() {
+    private i18n;
+    constructor(i18n) {
+        this.i18n = i18n;
         webpush.setVapidDetails(
             'mailto:example@localhost',
             vapidKeys.publicKey,
@@ -54,7 +55,7 @@ export class NotificationHelper {
 
     }
 
-    async handleNewSubscription(sub) {
+    async handleNewSubscription(sub, language) {
         let notificationSubscription = await this.getSubscription(sub.keys.auth);
 
         if (notificationSubscription != null) {
@@ -65,6 +66,7 @@ export class NotificationHelper {
         notificationSubscription.endpoint = sub.endpoint;
         notificationSubscription.auth = sub.keys.auth;
         notificationSubscription.p256dh = sub.keys.p256dh;
+        notificationSubscription.language = language;
 
         await  this.notificationSubscriptionRepository.save(notificationSubscription);
     }
@@ -143,7 +145,9 @@ export class NotificationHelper {
             notificationSubscriptionsToNotify.forEach((notifySubscription) => {
 
                 try {
-                    this.send(notifySubscription, detectableObjectToNotify.name);
+                    this.i18n.setLocale(notifySubscription.language);
+                    let message = this.i18n.__('DETECTED', {name: detectableObjectToNotify.name});
+                    this.send(notifySubscription,  message);
                 } catch (e) {
                     console.error('[NotificationHelper] [notifyAboutDetection] Unable to send notification');
                 }

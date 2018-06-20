@@ -21,4 +21,7 @@ export class NotificationSubscription {
         name: 'notification_subscription_detectable_object'
     })
     detectableObjects: DetectableObject[];
+
+    @Column()
+    language: string
 }

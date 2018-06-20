@@ -28,6 +28,9 @@ export class SocketHelper {
         server.timeout = 500000;
         server.keepAliveTimeout = 500000;
 
+        server.setTimeout(50000, () => {
+            console.error('[SocketHelper] [timeout]');
+        });
 
         io.on('connection', client => {
             let socketLoggedIn = false;

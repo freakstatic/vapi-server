@@ -89,7 +89,9 @@ export class AdminLayoutModule {
         private socket: Socket,
         private credentialsManager: CredentialsManagerService, translate: TranslateService
     ) {
-        translate.setDefaultLang('en');
+        translate.setDefaultLang(localStorage.getItem('language'));
+        translate.use(localStorage.getItem('language') );
+
         this.socket.on('connect', () => {
             if (this.credentialsManager.checkLogin()) {
                 this.socket.emit('authenticate', this.credentialsManager.getLogin.token);
