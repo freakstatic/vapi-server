@@ -5,7 +5,7 @@ import {Request, Response} from 'express';
 import * as disk from 'diskusage';
 import * as os from 'os';
 import * as passport from 'passport';
-import {BasicStrategy} from 'passport-http';
+import {Strategy as LocalStrategy} from 'passport-local';
 import {Strategy} from 'passport-http-bearer';
 import * as path from 'path';
 import {getConnection} from 'typeorm';
@@ -41,7 +41,7 @@ export class WebServerHelper {
         const app = express();
         const tokenManager = new TokenManager();
 
-        passport.use(new BasicStrategy((username: string, password: string, done: any) => {
+        passport.use(new LocalStrategy((username: string, password: string, done: any) => {
             if (username == undefined || username.trim().length == 0) {
                 done(null, false, new ErrorObject(ErrorObject.EMPTY_USERNAME));
                 return;
@@ -132,7 +132,7 @@ export class WebServerHelper {
 
         app.use(passport.initialize());
 
-        app.post(API_URL + 'login', passport.authenticate('basic', {
+        app.post(API_URL + 'login', passport.authenticate('local', {
             session: false,
             failureFlash: false
         }), async (req: Request, res: Response) => {
