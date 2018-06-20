@@ -74,3 +74,5 @@ angular/dist
 motion/motion.conf
 
 /timelapses/*
+
+/config.json
