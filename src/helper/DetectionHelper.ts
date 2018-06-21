@@ -8,7 +8,7 @@ import {Detection} from '../entity/Detection';
 import {DetectionEventRepository} from '../repository/DetectionEventRepository';
 import {DetectionRepository} from '../repository/DetectionRepository';
 import {unlink} from 'fs';
-import {NotificationHelper} from "./NotificationHelper";
+import {NotificationHelper} from './NotificationHelper';
 
 export class DetectionHelper {
 
@@ -134,7 +134,7 @@ export class DetectionHelper {
                 await detectionEventRepository.save(this.lastDetectionEvent);
             }
 
-            detection = await getConnection().getCustomRepository(DetectionRepository).findOne(detection.id);
+            detection = await getConnection().getCustomRepository(DetectionRepository).getByIdWithRelations(detection.id);
 
             detection.event = this.lastDetectionEvent;
             this.notificationHelper.notifyAboutDetection(detection).catch((err) => {

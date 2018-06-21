@@ -82,6 +82,15 @@ export class DetectionRepository extends Repository<Detection>
   return dbObjs;
  }
  
+ public async getByIdWithRelations(id:number)
+ {
+  return await this.createQueryBuilder('detection')
+   .innerJoinAndSelect('detection.event', 'detectionEvent')
+   .leftJoinAndSelect('detection.image', 'detectionImage')
+   .where('detection.id = :id', {id})
+   .getOne();
+ }
+ 
  public async getLast(): Promise<Detection>
  {
   let dbObj: Detection = null;
