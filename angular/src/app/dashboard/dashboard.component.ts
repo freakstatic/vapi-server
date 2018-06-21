@@ -249,7 +249,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
  {
   if (this.lastDetection === undefined || this.lastDetection === null)
   {
-   return;
    return '';
   }
   const lastIndex = this.lastDetection.image.path.lastIndexOf('/');
