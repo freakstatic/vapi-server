@@ -62,7 +62,7 @@ export class Detection
  
   if (data.hasOwnProperty('event'))
   {
-   const detectionEvent = DetectionEvent.Instance(data.image);
+   const detectionEvent = DetectionEvent.Instance(data.event);
    if (detectionEvent !== null)
    {
     detection.event=DetectionEvent.Instance(data);
