@@ -6,6 +6,10 @@ export class DetectionEvent
  
  public static Instance(data: any): DetectionEvent
  {
+  if(data===undefined||data===null)
+  {
+   return null;
+  }
   if (!(data.hasOwnProperty('id') && data.hasOwnProperty('startDate') && data.hasOwnProperty('endDate')))
   {
    return null;
