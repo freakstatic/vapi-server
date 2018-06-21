@@ -50,24 +50,24 @@ export class Detection
     }
    }
   }
- 
+  
   if (data.hasOwnProperty('image'))
   {
    const detectionImage = DetectionImage.Instance(data.image);
    if (detectionImage !== null)
    {
-    detection.image=DetectionImage.Instance(data,detection);
+    detection.image = detectionImage
    }
-  }
- 
-  if (data.hasOwnProperty('event'))
-  {
-   const detectionEvent = DetectionEvent.Instance(data.event);
-   if (detectionEvent !== null)
+   
+   if (data.hasOwnProperty('event'))
    {
-    detection.event=DetectionEvent.Instance(data);
+    const detectionEvent = DetectionEvent.Instance(data.event);
+    if (detectionEvent !== null)
+    {
+     detection.event = detectionEvent;
+    }
    }
+   return detection;
   }
-  return detection;
  }
 }
