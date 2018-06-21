@@ -32,6 +32,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private detectionChartTime: Observable<ChartObject<DetectionTime>>;
     private detectableStat: Observable<DetectableStat[]>;
     private usedSpaceObservable: Observable<number>;
+    private lastDetectionDetectables:DetectableObject[];
+    private staticNumericIterator:Iterator<number>;
 
     constructor(private dashboardService: DashboardService) {
         this.lastUpdatedDetectionStats = 0;
@@ -48,6 +50,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.detectionChartTime = this.dashboardService.detectionChartTime;
         this.detectableStat = this.dashboardService.detectableStat;
         this.usedSpaceObservable = this.dashboardService.usedSpace;
+        this.lastDetectionDetectables=null;
+        this.staticNumericIterator=null;
 
         this.interval = setInterval(() => {
             this.lastUpdatedDetectionStats++;
@@ -114,6 +118,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
         seq2 = 0;
     };
 
+    public get numberRowsLastDetectable():Iterator<number>
+    {
+     if(this.lastDetection===undefined||this.lastDetection===null)
+     {
+      return new Array<number>(0).keys();
+     }
+     return this.staticNumericIterator;
+    }
+
+    ngOnDestroy() {
+        clearInterval(this.interval);
+    }
+    
     ngOnInit() {
         this.detectionChartLast7Weeks.subscribe(object => {
             const seriesArray = object.series[0];
@@ -200,6 +217,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
              return;
          }
          this.lastDetection=detection;
+         this.lastDetectionDetectables=this.lastDetection.detectionObjects.map((value:DetectionObject)=> value.object);
+         this.staticNumericIterator=new Array(Math.floor(this.lastDetectionDetectables.length/3)+1).keys();
         });
 
         this.dashboardService.initLastDetection();
@@ -210,24 +229,31 @@ export class DashboardComponent implements OnInit, OnDestroy {
             this.diskSpace = diskSpace;
         });
     }
-
-    ngOnDestroy() {
-        clearInterval(this.interval);
-    }
     
-    public lastDetectionDetectables():DetectableObject[]
+    public getBeautifiedDetectables(row:number):DetectableObject[]
     {
         if(this.lastDetection===undefined||this.lastDetection===null)
         {
             return [];
         }
-        return this.lastDetection.detectionObjects.map((value:DetectionObject)=> value.object);
+        const rowStartIndex=row*3;
+        let rowEndIndex=rowStartIndex+3;
+        if(rowEndIndex>this.lastDetectionDetectables.length)
+        {
+         rowEndIndex=this.lastDetectionDetectables.length;
+        }
+        return this.lastDetectionDetectables.slice(rowStartIndex,rowEndIndex);
     }
-    
-    public getDetectionImage():string
-    {
-        const lastIndex=this.lastDetection.image.path.lastIndexOf('/');
-        const filename=this.lastDetection.image.path.substr(lastIndex);
-        return environment.apiURL+'/detection/img'+filename;
-    }
+ 
+ public getDetectionImage(): string
+ {
+  if (this.lastDetection === undefined || this.lastDetection === null)
+  {
+   return;
+   return '';
+  }
+  const lastIndex = this.lastDetection.image.path.lastIndexOf('/');
+  const filename = this.lastDetection.image.path.substr(lastIndex);
+  return environment.apiURL + '/detection/img' + filename;
+ }
 }
