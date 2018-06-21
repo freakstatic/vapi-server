@@ -6,6 +6,8 @@ import {ChartObject} from '../objects/chart/chart';
 import {Detection} from '../objects/detections/detection';
 import {DashboardService} from './dashboard.service';
 import {DetectionTime} from '../objects/chart/detection.time';
+import {DetectableObject} from '../objects/detections/detectable.object';
+import {DetectionObject} from '../objects/detections/detection.object';
 
 @Component({
     selector: 'app-dashboard',
@@ -210,5 +212,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         clearInterval(this.interval);
+    }
+    
+    public lastDetectionDetectables():DetectableObject[]
+    {
+        if(this.lastDetection===undefined||this.lastDetection===null)
+        {
+            return [];
+        }
+        return this.lastDetection.detectionObjects.map((value:DetectionObject)=> value.object);
     }
 }
