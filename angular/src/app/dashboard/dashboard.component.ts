@@ -8,6 +8,7 @@ import {DashboardService} from './dashboard.service';
 import {DetectionTime} from '../objects/chart/detection.time';
 import {DetectableObject} from '../objects/detections/detectable.object';
 import {DetectionObject} from '../objects/detections/detection.object';
+import {environment} from '../../environments/environment';
 
 @Component({
     selector: 'app-dashboard',
@@ -221,5 +222,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
             return [];
         }
         return this.lastDetection.detectionObjects.map((value:DetectionObject)=> value.object);
+    }
+    
+    public getDetectionImage():string
+    {
+        const lastIndex=this.lastDetection.image.path.lastIndexOf('/');
+        const filename=this.lastDetection.image.path.substr(lastIndex);
+        return environment.apiURL+'/detection/img'+filename;
     }
 }
