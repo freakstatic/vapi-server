@@ -16,8 +16,8 @@
   "TIMELAPSES_CODEC": "Select the codec",
   "TIMELAPSES_FORMAT": "Select the format",
   "TIMELAPSES_FPS": "FPS:",
-  "TIMELAPSES_FROM": "De",
-  "TIMELAPSES_TO": "Até",
+  "TIMELAPSES_FROM": "From",
+  "TIMELAPSES_TO": "To",
   "TIMELAPSES_FILES_PROGRESS": "Preparing files: {{current}} of {{max}}",
   "TIMELAPSES_RENDERING": "Rendering the video...",
 
