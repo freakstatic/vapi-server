@@ -14,9 +14,9 @@ export class NotificationHelper {
 
     private notificationSubscriptionRepository: Repository<NotificationSubscription>;
     private lastNotifiedDetection: Detection;
-    private i18n;
-    constructor(i18n) {
-        this.i18n = i18n;
+    private translator;
+    constructor(translator) {
+        this.translator = translator;
         webpush.setVapidDetails(
             'mailto:example@localhost',
             vapidKeys.publicKey,
@@ -59,6 +59,11 @@ export class NotificationHelper {
         let notificationSubscription = await this.getSubscription(sub.keys.auth);
 
         if (notificationSubscription != null) {
+            if (notificationSubscription.language != language){
+                notificationSubscription.language = language;
+                this.notificationSubscriptionRepository.save(notificationSubscription);
+            }
+
             return notificationSubscription;
         }
 
@@ -145,15 +150,21 @@ export class NotificationHelper {
             notificationSubscriptionsToNotify.forEach((notifySubscription) => {
 
                 try {
-                    this.i18n.setLocale(notifySubscription.language);
-                    let message = this.i18n.__('DETECTED', {name: detectableObjectToNotify.name});
+                    console.log(this.translator.getLocale());
+                    this.translator.setLocale(notifySubscription.language);
+                    console.log("new " + notifySubscription.language);
+                    console.log(this.translator.getLocale());
+                    let objectTranslatedName = this.translator.__(detectableObjectToNotify.name.toUpperCase());
+                    let message = this.translator.__('DETECTED', {name: objectTranslatedName});
                     this.send(notifySubscription,  message);
                 } catch (e) {
                     console.error('[NotificationHelper] [notifyAboutDetection] Unable to send notification');
                 }
             });
         });
-        this.lastNotifiedDetection = detection;
+        if (detectableObjectsToNotify.length){
+            this.lastNotifiedDetection = detection;
+        }
     }
 
 }
