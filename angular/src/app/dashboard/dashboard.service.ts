@@ -21,11 +21,12 @@ export class DashboardService
   this._detectionChartLast7Weeks = new BehaviorSubject<ChartObject<Detection>>(new ChartObject<Detection>());
   this._detectionChartTime = new BehaviorSubject<ChartObject<DetectionTime>>(new ChartObject<DetectionTime>());
   this._detectableStatChartTime = new BehaviorSubject<DetectableStat[]>([]);
+  this._lastDetection = new BehaviorSubject<Detection>(null);
   this._usedSpace = new BehaviorSubject<number>(0);
   
   this.socket.on('storageReport', (data: any) =>
   {
-   this._usedSpace.next(parseInt(data,10));
+   this._usedSpace.next(parseInt(data, 10));
   });
   
   this.socket.on('detection', data =>
@@ -40,11 +41,15 @@ export class DashboardService
     return;
    }
    this.socket.emit('storageReport');
+   this._lastDetection.next(detection);
    this.onDetectionByWeek(detection);
    this.onDetectionByTime(detection);
    this.onDetectableStat(data);
   });
  }
+ 
+ private _lastDetection: BehaviorSubject<Detection>;
+ 
  private _detectionChartTime: BehaviorSubject<ChartObject<DetectionTime>>;
  
  private _usedSpace: BehaviorSubject<number>;
@@ -195,6 +200,30 @@ export class DashboardService
    });
  }
  
+ public get lastDetection(): Observable<Detection>
+ {
+  return this._lastDetection.asObservable();
+ }
+ 
+ public initLastDetection()
+ {
+  this.http.get('api/detection/last')
+   .subscribe((data: Array<any>) =>
+   {
+    if (data === undefined || data === null)
+    {
+     return;
+    }
+    
+    const detection: Detection = Detection.Instance(data);
+    if (detection === undefined || detection === null)
+    {
+     return;
+    }
+    this._lastDetection.next(detection);
+   });
+ }
+ 
  //Storage|||||||||||||||||
  get usedSpace(): Observable<number>
  {
@@ -208,19 +237,19 @@ export class DashboardService
    this.http.get('api/storage')
     .subscribe((data: any) =>
     {
-     if(data.hasOwnProperty('usedSpace'))
+     if (data.hasOwnProperty('usedSpace'))
      {
-      this._usedSpace.next(parseInt(data.usedSpace,10));
+      this._usedSpace.next(parseInt(data.usedSpace, 10));
      }
-     if(data.hasOwnProperty('diskSpace'))
+     if (data.hasOwnProperty('diskSpace'))
      {
-      resolve(parseInt(data.diskSpace,10));
+      resolve(parseInt(data.diskSpace, 10));
      }
      else
      {
       reject();
      }
-    },error=>
+    }, error =>
     {
      reject(error);
     });
