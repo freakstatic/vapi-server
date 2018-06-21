@@ -251,6 +251,23 @@ export class WebServerHelper {
                 res.status(500).send(e);
             }
         });
+ 
+     app.get(API_URL + 'detection/img/:img', (req: Request, res: Response) =>
+     {
+      if (req.params.img == undefined || req.params.img === null)
+      {
+       res.sendStatus(400);
+      }
+      const filename=motionHelper.settings.target_dir+'/'+req.params.img;
+      fs.exists(filename,(exists)=>
+      {
+       if(!exists)
+       {
+        res.sendStatus(204);
+       }
+       res.status(200).download(path.resolve(filename), req.params.img);
+      });
+     });
 
         app.get(API_URL + 'stats/detection', passport.authenticate('bearer', bearTokenOptions), async (req: any, res, next) => {
             let startDate = null;
@@ -407,7 +424,7 @@ export class WebServerHelper {
             }
 
         });
-
+        
         app.use(express.static(__dirname + '/../../angular/dist/'));
 
         app.get('*', function (req, res) {
