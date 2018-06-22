@@ -24,16 +24,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
     public detectableObjects: DetectableStat[];
     public diskSpace: number;
     public usedSpace: number;
-    public lastDetection:Detection;
-    
-    private lastDetectionObeservable:Observable<Detection>;
+    public lastDetection: Detection;
+
+    private lastDetectionObeservable: Observable<Detection>;
     private readonly interval;
     private detectionChartLast7Weeks: Observable<ChartObject<Detection>>;
     private detectionChartTime: Observable<ChartObject<DetectionTime>>;
     private detectableStat: Observable<DetectableStat[]>;
     private usedSpaceObservable: Observable<number>;
-    private lastDetectionDetectables:DetectableObject[];
-    private staticNumericIterator:Iterator<number>;
+    private lastDetectionDetectables: DetectableObject[];
+    private staticNumericIterator: Iterator<number>;
 
     constructor(private dashboardService: DashboardService) {
         this.lastUpdatedDetectionStats = 0;
@@ -43,15 +43,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.detectionPercentage = 0;
         this.diskSpace = 0;
         this.usedSpace = 0;
-        this.lastDetection=null;
+        this.lastDetection = null;
 
-        this.lastDetectionObeservable=this.dashboardService.lastDetection;
+        this.lastDetectionObeservable = this.dashboardService.lastDetection;
         this.detectionChartLast7Weeks = this.dashboardService.detectionChartLast7Weeks;
         this.detectionChartTime = this.dashboardService.detectionChartTime;
         this.detectableStat = this.dashboardService.detectableStat;
         this.usedSpaceObservable = this.dashboardService.usedSpace;
-        this.lastDetectionDetectables=null;
-        this.staticNumericIterator=null;
+        this.lastDetectionDetectables = null;
+        this.staticNumericIterator = null;
 
         this.interval = setInterval(() => {
             this.lastUpdatedDetectionStats++;
@@ -118,19 +118,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
         seq2 = 0;
     };
 
-    public get numberRowsLastDetectable():Iterator<number>
-    {
-     if(this.lastDetection===undefined||this.lastDetection===null)
-     {
-      return new Array<number>(0).keys();
-     }
-     return this.staticNumericIterator;
+    public get numberRowsLastDetectable(): Iterator<number> {
+        if (this.lastDetection === undefined || this.lastDetection === null) {
+            return new Array<number>(0).keys();
+        }
+        return this.staticNumericIterator;
     }
 
     ngOnDestroy() {
         clearInterval(this.interval);
     }
-    
+
     ngOnInit() {
         this.detectionChartLast7Weeks.subscribe(object => {
             const seriesArray = object.series[0];
@@ -209,16 +207,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.usedSpaceObservable.subscribe((data: number) => {
             this.usedSpace = data;
         });
-        
-        this.lastDetectionObeservable.subscribe((detection:Detection)=>
-        {
-         if(detection===undefined||detection===null)
-         {
-             return;
-         }
-         this.lastDetection=detection;
-         this.lastDetectionDetectables=this.lastDetection.detectionObjects.map((value:DetectionObject)=> value.object);
-         this.staticNumericIterator=new Array(Math.floor(this.lastDetectionDetectables.length/3)+1).keys();
+
+        this.lastDetectionObeservable.subscribe((detection: Detection) => {
+            if (detection === undefined || detection === null) {
+                return;
+            }
+            this.lastDetection = detection;
+            this.lastDetectionDetectables = this.lastDetection.detectionObjects.map((value: DetectionObject) => value.object);
+            this.staticNumericIterator = new Array(Math.floor(this.lastDetectionDetectables.length / 3) + 1).keys();
         });
 
         this.dashboardService.initLastDetection();
@@ -229,30 +225,25 @@ export class DashboardComponent implements OnInit, OnDestroy {
             this.diskSpace = diskSpace;
         });
     }
-    
-    public getBeautifiedDetectables(row:number):DetectableObject[]
-    {
-        if(this.lastDetection===undefined||this.lastDetection===null)
-        {
+
+    public getBeautifiedDetectables(row: number): DetectableObject[] {
+        if (this.lastDetection === undefined || this.lastDetection === null) {
             return [];
         }
-        const rowStartIndex=row*3;
-        let rowEndIndex=rowStartIndex+3;
-        if(rowEndIndex>this.lastDetectionDetectables.length)
-        {
-         rowEndIndex=this.lastDetectionDetectables.length;
+        const rowStartIndex = row * 3;
+        let rowEndIndex = rowStartIndex + 3;
+        if (rowEndIndex > this.lastDetectionDetectables.length) {
+            rowEndIndex = this.lastDetectionDetectables.length;
         }
-        return this.lastDetectionDetectables.slice(rowStartIndex,rowEndIndex);
+        return this.lastDetectionDetectables.slice(rowStartIndex, rowEndIndex);
     }
- 
- public getDetectionImage(): string
- {
-  if (this.lastDetection === undefined || this.lastDetection === null)
-  {
-   return '';
-  }
-  const lastIndex = this.lastDetection.image.path.lastIndexOf('/');
-  const filename = this.lastDetection.image.path.substr(lastIndex);
-  return environment.apiURL + '/detection/img' + filename;
- }
+
+    public getDetectionImage(): string {
+        if (this.lastDetection === undefined || this.lastDetection === null) {
+            return '';
+        }
+        const lastIndex = this.lastDetection.image.path.lastIndexOf('/');
+        const filename = this.lastDetection.image.path.substr(lastIndex);
+        return environment.apiURL + '/detection/img' + filename;
+    }
 }

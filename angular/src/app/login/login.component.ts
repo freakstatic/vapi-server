@@ -47,10 +47,18 @@ export class LoginComponent implements OnInit {
         this.passwordEmpty = false;
 
         if (this.username.trim().length === 0) {
+            this.translateService.get('ERROR-EMPTY_USERNAME').toPromise()
+                .then((res: string) => {
+                    NavbarComponent.showErrorMessage(res);
+                });
             this.usernameEmpty = true;
         }
 
         if (this.password.trim().length === 0) {
+            this.translateService.get('ERROR-EMPTY_PASSWORD').toPromise()
+                .then((res: string) => {
+                    NavbarComponent.showErrorMessage(res);
+                });
             this.passwordEmpty = true;
         }
 

@@ -1,104 +1,111 @@
 <div class="main-content">
- <div class="container-fluid">
-  <div class="row">
-   <div class="col-lg-5 col-md-6 col-sm-6">
-    <div class="card card-stats">
-     <div class="card-header card-header-info card-header-icon">
-      <div class="card-icon">
-       <i class="material-icons">data_usage</i>
-      </div>
-      <p class="card-category">{{ 'USED_SPACE' | translate:param }}</p>
-      <h3 class="card-title">{{ usedSpace }}/{{ diskSpace }}
-       <small>MB</small>
-      </h3>
-     </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-5 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <div class="card-header card-header-info card-header-icon">
+                        <div class="card-icon">
+                            <i class="material-icons">data_usage</i>
+                        </div>
+                        <p class="card-category">{{ 'USED_SPACE' | translate:param }}</p>
+                        <h3 class="card-title">{{ usedSpace }}/{{ diskSpace }}
+                            <small>MB</small>
+                        </h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <div class="card card-chart">
+                    <div class="card-header card-header-success">
+                        <div class="ct-chart" id="dailySalesChart"></div>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title">{{ 'DASHBOARD_DETECTION_STATS_LASTEST_DETECTION' | translate:param
+                            }}</h4>
+                        <p class="card-category">
+                            <span class="text-success"><i [class]="detectionUpDownClass"></i> {{ detectionPercentage.toFixed(2) }}% </span>
+                            {{ 'DASHBOARD_DETECTION_STATS_PERCENTAGE_MESSAGE' | translate:param }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <i class="material-icons">access_time</i> {{ 'UPDATED' | translate:param }}
+                            {{lastUpdatedDetectionStats}} {{
+                            'SECONDS_AGO' | translate:param }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-7">
+                <div class="card card-chart">
+                    <div class="card-header card-header-rose">
+                        <div class="ct-chart" id="statsTime"></div>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title">{{ 'STATISTICS_BY_TIME' | translate:param }}</h4>
+                        <p class="card-category">Last Campaign Performance</p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <i class="material-icons">access_time</i> {{ 'UPDATED' | translate:param }}
+                            {{lastUpdatedDetectionStatsTime}} {{
+                            'SECONDS_AGO' | translate:param }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-5 col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-warning">
+                        <h4 class="card-title">{{ 'DASHBOARD_TOP5_STATS_DETECTABLE_OBJECTS' | translate:param }}</h4>
+                        <p class="card-category">{{ 'DASHBOARD_TOP5_STATS_MESSAGE' | translate:param }}</p>
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table class="table table-hover">
+                            <thead class="text-warning">
+                            <tr>
+                                <td>{{ 'DASHBOARD_TOP5_STATS_OBJECT' | translate:param }}</td>
+                                <td>{{ 'DASHBOARD_TOP5_STATS_OCCURRENCES_NUMBER' | translate:param }}</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let detectableObject of detectableObjects">
+                                <td>{{ detectableObject.name.toUpperCase() | translate:param }}</td>
+                                <td>{{ detectableObject.numberOccurrences }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-7" *ngIf="lastDetection!==null">
+                <div class="card">
+                    <div class="card-header card-header-success">
+                        <h4 class="card-title">{{ 'LATEST_DETECTION' | translate:param }}</h4>
+                        <p class="card-category"><br/></p>
+                    </div>
+                    <div class="card-body table-responsive">
+                        <img [src]="getDetectionImage()" class="last-detection-img">
+
+                        <h5 class="indigo-text text-center">{{ 'DASHBOARD_TOP5_STATS_OCCURRENCES_NUMBER' | translate:param
+                            }}: {{ lastDetection.numberOfDetections }}</h5>
+
+                        <table class="table table-hover col-md-4 table-responsive">
+                            <tbody class="text-black">
+                            <tr *ngFor="let i of numberRowsLastDetectable">
+                                <td *ngFor="let detectableObject of getBeautifiedDetectables(i)">{{
+                                    detectableObject.name.toUpperCase() | translate:param }}
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
-   </div>
-  </div>
-  <div class="row">
-   <div class="col-md-5">
-    <div class="card card-chart">
-     <div class="card-header card-header-success">
-      <div class="ct-chart" id="dailySalesChart"></div>
-     </div>
-     <div class="card-body">
-      <h4 class="card-title">{{ 'DASHBOARD_DETECTION_STATS_LASTEST_DETECTION' | translate:param }}</h4>
-      <p class="card-category">
-       <span class="text-success"><i [class]="detectionUpDownClass"></i> {{ detectionPercentage.toFixed(2) }}% </span>
-       {{ 'DASHBOARD_DETECTION_STATS_PERCENTAGE_MESSAGE' | translate:param }}</p>
-     </div>
-     <div class="card-footer">
-      <div class="stats">
-       <i class="material-icons">access_time</i> {{ 'UPDATED' | translate:param }} {{lastUpdatedDetectionStats}} {{
-       'SECONDS_AGO' | translate:param }}
-      </div>
-     </div>
-    </div>
-   </div>
-   <div class="col-md-7">
-    <div class="card card-chart">
-     <div class="card-header card-header-rose">
-      <div class="ct-chart" id="statsTime"></div>
-     </div>
-     <div class="card-body">
-      <h4 class="card-title">{{ 'STATISTICS_BY_TIME' | translate:param }}</h4>
-      <p class="card-category">Last Campaign Performance</p>
-     </div>
-     <div class="card-footer">
-      <div class="stats">
-       <i class="material-icons">access_time</i> {{ 'UPDATED' | translate:param }} {{lastUpdatedDetectionStatsTime}} {{
-       'SECONDS_AGO' | translate:param }}
-      </div>
-     </div>
-    </div>
-   </div>
-  </div>
-  <div class="row">
-   <div class="col-lg-5 col-md-12">
-    <div class="card">
-     <div class="card-header card-header-warning">
-      <h4 class="card-title">{{ 'DASHBOARD_TOP5_STATS_DETECTABLE_OBJECTS' | translate:param }}</h4>
-      <p class="card-category">{{ 'DASHBOARD_TOP5_STATS_MESSAGE' | translate:param }}</p>
-     </div>
-     <div class="card-body table-responsive">
-      <table class="table table-hover">
-       <thead class="text-warning">
-       <tr>
-        <td>{{ 'DASHBOARD_TOP5_STATS_OBJECT' | translate:param }}</td>
-        <td>{{ 'DASHBOARD_TOP5_STATS_OCCURRENCES_NUMBER' | translate:param }}</td>
-       </tr>
-       </thead>
-       <tbody>
-       <tr *ngFor="let detectableObject of detectableObjects">
-        <td>{{ detectableObject.name.toUpperCase() | translate:param }}</td>
-        <td>{{ detectableObject.numberOccurrences }}</td>
-       </tr>
-       </tbody>
-      </table>
-     </div>
-    </div>
-   </div>
-   <div class="col-md-7" *ngIf="lastDetection!==null">
-    <div class="card">
-     <div class="view view-cascade overlay">
-      <img [src]="getDetectionImage()" class="card-img-top">
-      <a href="#!">
-       <div class="mask rgba-white-slight"></div>
-      </a>
-     </div>
-     <div class="card-body card-body-cascade text-center">
-      <h4 class="card-title"><strong>{{ 'LATEST_DETECTION' | translate:param }}</strong></h4>
-      <h5 class="indigo-text"><strong>{{ 'DASHBOARD_TOP5_STATS_OCCURRENCES_NUMBER' | translate:param }}: {{ lastDetection.numberOfDetections }}</strong></h5>
-     </div>
-     <table class="table table-hover col-md-4 table-responsive">
-      <tbody class="text-black">
-      <tr *ngFor="let i of numberRowsLastDetectable">
-       <td *ngFor="let detectableObject of getBeautifiedDetectables(i)">{{ detectableObject.name.toUpperCase() | translate:param }}</td>
-      </tr>
-      </tbody>
-     </table>
-    </div>
-   </div>
-  </div>
- </div>
 </div>
