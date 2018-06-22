@@ -59,7 +59,8 @@
   "SECONDS_AGO":"segundos atrás",
   "STATISTICS_BY_TIME":"Estatísticas por tempo",
   "USED_SPACE":"Espaço ocupado",
-  "LATEST_DETECTION":"Última detecção",
+  "DASHBOARD_LATEST_DETECTION":"Última detecção",
+  "DASHBOARD_LATEST_DETECTION_SECOND_TITLE": "A última detecção registada",
 
   "MONDAY":"segunda-feira",
   "TUESDAY":"terça-feira",

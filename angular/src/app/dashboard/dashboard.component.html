@@ -84,8 +84,8 @@
             <div class="col-md-7" *ngIf="lastDetection!==null">
                 <div class="card">
                     <div class="card-header card-header-success">
-                        <h4 class="card-title">{{ 'LATEST_DETECTION' | translate:param }}</h4>
-                        <p class="card-category"><br/></p>
+                        <h4 class="card-title">{{ 'DASHBOARD_LATEST_DETECTION' | translate:param }}</h4>
+                        <p class="card-category">{{ 'DASHBOARD_LATEST_DETECTION_SECOND_TITLE' | translate:param }}</p>
                     </div>
                     <div class="card-body table-responsive">
                         <img [src]="getDetectionImage()" class="last-detection-img">
