@@ -71,7 +71,8 @@ export class SocketHelper {
                     client.emit('set-folder', motionHelper.settings['target_dir']);
                     client.on('detection', async obj => {
                         try {
-                            console.log('[SocketHelper] detection received');
+                           // console.log('[SocketHelper] detection received');
+                           // console.log(JSON.stringify(obj, null, 4));
                             const detection: Detection = await detectionHelper.handleDetectionReceived(obj);
                             if (!detection) {
                                 return;

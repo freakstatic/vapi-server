@@ -46,16 +46,17 @@
   "SETTINGS_NOTHING_TO_UPDATE": "There is nothing to update!",
   "SETTINGS_UPDATED": "Settings saved",
 
- "DASHBOARD_DETECTION_STATS_LASTEST_DETECTION": "Latest detection",
+ "DASHBOARD_DETECTION_STATS_LASTEST_DETECTION": "Detections during the past days",
  "DASHBOARD_DETECTION_STATS_PERCENTAGE_MESSAGE": " from the previous day",
  "DASHBOARD_TOP5_STATS_DETECTABLE_OBJECTS": "Top 5 of detections",
  "DASHBOARD_TOP5_STATS_MESSAGE": "The 5 objects most detected",
  "DASHBOARD_TOP5_STATS_OBJECT": "Object",
- "DASHBOARD_TOP5_STATS_OCCURRENCES_NUMBER": "Occurrences number",
+ "DASHBOARD_TOP5_STATS_OCCURRENCES_NUMBER": "Number of occurrences:",
 
  "UPDATED": "updated",
  "SECONDS_AGO": "seconds ago",
- "STATISTICS_BY_TIME":"Statistics by time",
+ "STATISTICS_BY_TIME":"Detections by hours",
+
  "USED_SPACE":"Used space",
   "DASHBOARD_LATEST_DETECTION":"Latest detection",
   "DASHBOARD_LATEST_DETECTION_SECOND_TITLE": "The last detection received",

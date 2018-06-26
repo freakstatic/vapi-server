@@ -48,7 +48,7 @@
 
 
 
-  "DASHBOARD_DETECTION_STATS_LASTEST_DETECTION":"Últimas Deteções",
+  "DASHBOARD_DETECTION_STATS_LASTEST_DETECTION":"Deteções dos últimos dias",
   "DASHBOARD_DETECTION_STATS_PERCENTAGE_MESSAGE":" face ao dia anterior",
   "DASHBOARD_TOP5_STATS_DETECTABLE_OBJECTS": "Top 5 de Objetos Detetados",
   "DASHBOARD_TOP5_STATS_MESSAGE": "Os 5 tipos de objectos mais detetados.",
