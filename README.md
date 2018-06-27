@@ -1,6 +1,6 @@
 # VAPi Server
 This project uses [Motion](https://github.com/Motion-Project/motion) to detect movement and to save a picture of that movement.
-Then receives, by websocket, the [node-object-detection](https://github.com/freakstatic/node-object-detection) (Yolo) analyze with the objects 
+Then receives, by websocket, the [node-object-detection](https://github.com/freakstatic/node-object-detection) (Yolo) analysis with the objects 
 detected in that picture. This information is saved in the database so it can be displayed to the user on the angular web interface.
  
 
