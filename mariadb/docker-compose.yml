@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  mariadb:
+    image: 'bitnami/mariadb:latest'
+    ports:
+      - '3306:3306'
+    environment:
+      - MARIADB_ROOT_PASSWORD=80P6&R960c81
+      - MARIADB_USER=vapi_user
+      - MARIADB_PASSWORD=u1f!3q308Vf6
+      - MARIADB_DATABASE=vapi_database
+    volumes:
+      - ./:/bitnami
