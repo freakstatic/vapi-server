@@ -47,7 +47,7 @@ npm start
 ```
 
 ### Config Files
-Database
+Database configurations
 ```
 ormconfig.json
 ```
