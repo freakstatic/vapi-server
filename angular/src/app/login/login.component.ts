@@ -15,8 +15,8 @@ declare var $: any;
 export class LoginComponent implements OnInit {
     param = {value: 'world'};
     showNav: boolean;
-    username: string;
-    password: string;
+    username: string ;
+    password: string ;
     usernameEmpty = false;
     passwordEmpty = false;
 
@@ -24,8 +24,8 @@ export class LoginComponent implements OnInit {
                 private authService: AuthService,
                 private translateService: TranslateService, private router: Router) {
         this.showNav = true;
-        this.username = '';
-        this.password = '';
+        this.username = 'test';
+        this.password = 'test';
     }
 
     ngOnInit() {
