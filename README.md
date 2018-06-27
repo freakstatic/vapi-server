@@ -9,6 +9,7 @@ detected in that picture. This information is saved in the database so it can be
 * [node-object-detection](https://github.com/freakstatic/node-object-detection)
 * [Docker Compose](https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-16-04) or MariaDB Server
 * [Motion](https://github.com/Motion-Project/motion)
+* [FFmpeg](https://www.ffmpeg.org/)
 
   
 ## Getting started 
