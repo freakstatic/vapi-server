@@ -76,3 +76,4 @@ motion/motion.conf
 /timelapses/*
 
 /config.json
+/ssl/*
