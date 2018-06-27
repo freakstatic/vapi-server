@@ -6,6 +6,7 @@ detected in that picture. This information is saved in the database so it can be
 
 ### Prerequisites
 * [Node.js](https://nodejs.org/en/)
+* [node-object-detection](https://github.com/freakstatic/node-object-detection)
 * [Docker Compose](https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-16-04) or MariaDB Server
 * [Motion](https://github.com/Motion-Project/motion)
 
@@ -29,19 +30,20 @@ npm install
 npm start
 ```
 ## Deployment
-Build angular files for deployment
+Run MariaDB docker container
+```
+docker-compose -f mariadb/docker-compose.yml up -d
+```
 
+Build angular files for deployment
 ```
 cd angular && npm install && npm run deploy
 ```
+
 Run Node.js server
 ```
 npm install
 npm start
-```
-Run MariaDB docker container
-```
-docker-compose -f mariadb/docker-compose.yml up -d
 ```
 
 ### Config Files
