@@ -12,6 +12,7 @@ import {TimelapseHelper} from './TimelapseHelper';
 import {DetectionHelper} from './DetectionHelper';
 import {MotionHelper} from './MotionHelper';
 import {DetectableObjectRepository} from '../repository/DetectableObjectRepository';
+import {WebServerHelper} from "./WebServerHelper";
 
 const getSize = require('get-folder-size');
 
@@ -24,27 +25,17 @@ const fs = require( 'fs' );
 const https = require('https');
 
 export class SocketHelper {
-    constructor(detectionHelper: DetectionHelper, motionHelper: MotionHelper) {
+    constructor(webServerHelper: WebServerHelper, detectionHelper: DetectionHelper, motionHelper: MotionHelper) {
         const socketApp = express();
 
-        let server;
-        if (config.ssl) {
-            server = https.createServer({
-                key: fs.readFileSync(__dirname +'/../../ssl/privkey.pem'),
-                cert: fs.readFileSync(__dirname + '/../../ssl/fullchain.pem')
-            }, socketApp);
-        } else {
-            server = http.createServer(socketApp);
-        }
 
-
-        const io = require('socket.io')(server);
-        server.timeout = 500000;
-        server.keepAliveTimeout = 500000;
-
-        server.setTimeout(50000, () => {
-            console.error('[SocketHelper] [timeout]');
-        });
+        const io = require('socket.io')(webServerHelper.server);
+        // server.timeout = 500000;
+        // server.keepAliveTimeout = 500000;
+        //
+        // server.setTimeout(50000, () => {
+        //     console.error('[SocketHelper] [timeout]');
+        // });
 
         io.on('connection', client => {
             let socketLoggedIn = false;
@@ -67,7 +58,7 @@ export class SocketHelper {
                 user = temp_user;
                 console.log(user.username + ' authenticated');
                 if (user.group.name === YOLO_GROUP_NAME) {
-                    client.join('yolo');
+                    client.join(YOLO_GROUP_NAME);
                     client.emit('set-folder', motionHelper.settings['target_dir']);
                     client.on('detection', async obj => {
                         try {
@@ -128,7 +119,7 @@ export class SocketHelper {
                 client.disconnect(false);
             });
         });
-        server.listen(config.socketPort);
+
     }
 
     private async checkUserCredentials(token: string): Promise<User> {

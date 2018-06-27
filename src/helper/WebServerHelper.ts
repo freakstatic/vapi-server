@@ -34,8 +34,11 @@ const https = require('https');
 const config = require('../../config.json');
 
 export class WebServerHelper {
+
+    private _server;
+
     constructor(motionHelper: MotionHelper, notificationHelper: NotificationHelper) {
-        const WEB_SERVER_PORT = 8080;
+
         const API_URL = '/api/';
 
         const bearTokenOptions = {
@@ -305,7 +308,6 @@ export class WebServerHelper {
                     diskSpace.diskSpace = info.total / 1048576;
                 }
 
-
                 let du = spawn('du', ['-hm', motionHelper.settings.target_dir] as ReadonlyArray<string>);
                 du.stdout.on('data', function (data: Uint8Array) {
                     let dataString = String.fromCharCode.apply(null, data);
@@ -437,13 +439,16 @@ export class WebServerHelper {
                 key: fs.readFileSync('./ssl/privkey.pem'),
                 cert: fs.readFileSync('./ssl/fullchain.pem'),
             };
-            const server = https.createServer(options, app).listen(WEB_SERVER_PORT, function () {
-                console.log('Started SSL web server on ' + WEB_SERVER_PORT);
-            });
+            this._server = https.createServer(options, app);
         }else {
-            app.listen(WEB_SERVER_PORT);
-            console.log('Started web server on ' + WEB_SERVER_PORT);
+            this._server = http.createServer(app);
         }
+        this._server.listen(config.webServerPort, () => {
+            console.log('Started web server on ' + config.webServerPort);
+        });
+    }
 
+    get server() {
+        return this._server;
     }
 }

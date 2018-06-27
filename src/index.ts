@@ -22,10 +22,10 @@ let dbHelper = new DbHelper();
     let detectionHelper = new DetectionHelper(notificationHelper);
     await detectionHelper.fixUnfishedEvents();
     let motionHelper = new MotionHelper();
-    let socketHelper = new SocketHelper(detectionHelper, motionHelper);
     await TimelapseHelper.createFolders();
 
-    let webSocketHelper = new WebServerHelper(motionHelper, notificationHelper);
+    let webServerHelper = new WebServerHelper(motionHelper, notificationHelper);
+    let socketHelper = new SocketHelper(webServerHelper, detectionHelper, motionHelper);
 })();
 
 
