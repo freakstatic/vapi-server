@@ -7,5 +7,5 @@
     "defaultConfig": "motion/default.conf"
   },
   "debugMode": true,
-  "ssl": true
+  "ssl": false
 }
