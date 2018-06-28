@@ -36,6 +36,7 @@ Run MariaDB docker container
 docker-compose -f mariadb/docker-compose.yml up -d
 ```
 
+
 Build angular files for deployment
 ```
 cd angular && npm install && npm run deploy
