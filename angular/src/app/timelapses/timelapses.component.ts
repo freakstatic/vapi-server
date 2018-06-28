@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {TimelapsesService} from "./timelapses.service";
 import {Socket} from "ngx-socket-io";
 import * as moment from 'moment';
@@ -18,7 +18,7 @@ import { environment } from '../../environments/environment';
     templateUrl: './timelapses.component.html',
     styleUrls: ['./timelapses.component.scss']
 })
-export class TimelapsesComponent implements OnInit {
+export class TimelapsesComponent implements OnInit, OnDestroy {
     param = {value: 'world'};
     private receivedCodecs = [];
     public codecsDescription = [];
@@ -95,9 +95,14 @@ export class TimelapsesComponent implements OnInit {
         });
 
         this.setSocketEvents();
+    }
 
-
-
+    ngOnDestroy(){
+        this.socket.removeAllListeners('timelapse/progress');
+        this.socket.removeAllListeners('timelapse/finish');
+        this.socket.removeAllListeners('timelapse/error');
+        this.socket.removeAllListeners('timelapse/files/progress');
+        this.socket.removeAllListeners('timelapse/files/end');
     }
 
     setSocketEvents() {
