@@ -322,8 +322,7 @@ export class WebServerHelper {
 
                     dataString = dataString.split('\n').slice(-2)[0];
                     let splitData = dataString.split('\t');
-                    let size = splitData[0];
-                    diskSpace.usedSpace = size;
+                    diskSpace.usedSpace = splitData[0];
                     res.status(200).send(diskSpace);
                 });
 
