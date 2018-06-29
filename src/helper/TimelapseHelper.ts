@@ -28,7 +28,7 @@ const sharp = require('sharp');
 
 export class TimelapseHelper {
 
-    private static readonly TIMELAPSES_FOLDER: string = 'timelapses';
+    public static readonly TIMELAPSES_FOLDER: string = 'timelapses';
     private static readonly TMP_FOLDER: string = TimelapseHelper.TIMELAPSES_FOLDER + '/tmp';
     public static readonly VIDEOS_FOLDER = TimelapseHelper.TIMELAPSES_FOLDER + '/videos';
     public static readonly THUMBNAILS_FOLDER = TimelapseHelper.TIMELAPSES_FOLDER + '/thumbnails';

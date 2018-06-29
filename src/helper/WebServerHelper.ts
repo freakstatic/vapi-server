@@ -30,6 +30,7 @@ const spawn = require('child_process').spawn;
 const fs = require('fs');
 const http = require('http');
 const https = require('https');
+const exec = require('child_process').exec;
 
 const config = require('../../config.json');
 
@@ -307,25 +308,27 @@ export class WebServerHelper {
                 if (!error) {
                     diskSpace.diskSpace = info.total / 1048576;
                 }
+                let dataString = '';
+                let du = exec('du -shm --total ' + motionHelper.settings.target_dir + ' ' + __dirname + '/../../' + TimelapseHelper.TIMELAPSES_FOLDER);
+                du.stdout.on('data', function (data: string) {
+                    dataString += data
+                });
 
-                let du = spawn('du', ['-hm', motionHelper.settings.target_dir] as ReadonlyArray<string>);
-                du.stdout.on('data', function (data: Uint8Array) {
-                    let dataString = String.fromCharCode.apply(null, data);
+                du.on('exit', function (code, err) {
+                    if (code != 0) {
+                        res.status(500).send({});
+                        return;
+                    }
 
+                    dataString = dataString.split('\n').slice(-2)[0];
                     let splitData = dataString.split('\t');
                     let size = splitData[0];
-                    console.log('size: ' + size);
                     diskSpace.usedSpace = size;
                     res.status(200).send(diskSpace);
                 });
 
-                du.on('exit', function (code) {
-                    if (code != 0) {
-                        res.status(500).send({});
-                    }
-                });
-
                 du.on('error', function (err) {
+                    console.error(err);
                     res.status(500).send({});
                 });
 
