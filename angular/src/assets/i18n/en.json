@@ -51,7 +51,8 @@
  "DASHBOARD_TOP5_STATS_DETECTABLE_OBJECTS": "Top 5 of detections",
  "DASHBOARD_TOP5_STATS_MESSAGE": "The 5 objects most detected",
  "DASHBOARD_TOP5_STATS_OBJECT": "Object",
- "DASHBOARD_TOP5_STATS_OCCURRENCES_NUMBER": "Number of occurrences:",
+ "DASHBOARD_TOP5_STATS_OCCURRENCES_NUMBER": "Number of objects detected",
+  "DASHBOARD_LAST_DETECTION_OBJECTS": "Objects detected",
 
  "UPDATED": "updated",
  "SECONDS_AGO": "seconds ago",

@@ -53,7 +53,9 @@
   "DASHBOARD_TOP5_STATS_DETECTABLE_OBJECTS": "Top 5 de Objetos Detetados",
   "DASHBOARD_TOP5_STATS_MESSAGE": "Os 5 tipos de objectos mais detetados.",
   "DASHBOARD_TOP5_STATS_OBJECT": "Objeto",
-  "DASHBOARD_TOP5_STATS_OCCURRENCES_NUMBER": "Número de ocorrências",
+  "DASHBOARD_TOP5_STATS_OCCURRENCES_NUMBER": "Número de objetos detetados",
+  "DASHBOARD_LAST_DETECTION_OBJECTS": "Objetos detetados",
+
 
   "UPDATED":"atualizado",
   "SECONDS_AGO":"segundos atrás",

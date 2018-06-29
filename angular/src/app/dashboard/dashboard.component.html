@@ -44,7 +44,7 @@
                     </div>
                     <div class="card-body">
                         <h4 class="card-title">{{ 'STATISTICS_BY_TIME' | translate:param }}</h4>
-                        <p class="card-category"> <br> </p>
+                        <p class="card-category"><br></p>
                     </div>
                     <div class="card-footer">
                         <div class="stats">
@@ -90,18 +90,22 @@
                     <div class="card-body table-responsive">
                         <img [src]="getDetectionImage()" class="last-detection-img">
 
-                        <h5 class="indigo-text text-center">{{ 'DASHBOARD_TOP5_STATS_OCCURRENCES_NUMBER' | translate:param
+                        <h5 class="indigo-text text-center">{{ 'DASHBOARD_TOP5_STATS_OCCURRENCES_NUMBER' |
+                            translate:param
                             }}: {{ lastDetection.numberOfDetections }}</h5>
-
-                        <table class="table table-hover col-md-4 table-responsive">
-                            <tbody class="text-black">
-                            <tr *ngFor="let i of numberRowsLastDetectable">
-                                <td *ngFor="let detectableObject of getBeautifiedDetectables(i)">{{
-                                    detectableObject.name.toUpperCase() | translate:param }}
-                                </td>
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>{{ 'DASHBOARD_LAST_DETECTION_OBJECTS' | translate:param }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let detectionObject of lastDetection.detectionObjects">
+                                <td>{{ detectionObject.object.name.toUpperCase() | translate:param }}</td>
                             </tr>
                             </tbody>
                         </table>
+
                     </div>
                 </div>
 

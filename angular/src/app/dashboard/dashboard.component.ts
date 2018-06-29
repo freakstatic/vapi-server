@@ -118,11 +118,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
         seq2 = 0;
     };
 
-    public get numberRowsLastDetectable(): Iterator<number> {
-        if (this.lastDetection === undefined || this.lastDetection === null) {
-            return new Array<number>(0).keys();
+    public get numberRowsLastDetectable(): any[] {
+        if (!this.lastDetection) {
+            return [];
         }
-        return this.staticNumericIterator;
+        return this.lastDetection.detectionObjects;
     }
 
     ngOnDestroy() {
@@ -235,6 +235,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (rowEndIndex > this.lastDetectionDetectables.length) {
             rowEndIndex = this.lastDetectionDetectables.length;
         }
+
+        console.log('[getBeautifiedDetectables]', this.lastDetectionDetectables);
+        console.log('[getBeautifiedDetectables]', this.lastDetectionDetectables.slice(rowStartIndex, rowEndIndex));
         return this.lastDetectionDetectables.slice(rowStartIndex, rowEndIndex);
     }
 
