@@ -6,6 +6,7 @@ import {CustomNamingStrategy} from "../custom-naming-strategy";
 import {User} from "../entity/User";
 import {UserGroup} from "../entity/UserGroup";
 import {DetectableObject} from "../entity/DetectableObject";
+import {TimelapseScheduleOption} from "../entity/TimelapseScheduleOption";
 
 export class DbHelper {
     constructor() {
@@ -37,6 +38,22 @@ export class DbHelper {
             getConnection().getRepository(DetectableObject).insert(detectableObject);
         });
 
+        let timelapseScheduleOptionRepository = getConnection().getRepository(TimelapseScheduleOption);
+
+        let daily = new TimelapseScheduleOption();
+        daily.name = 'DAILY';
+        daily.cronFormat = '0 0 0 * * *';
+        timelapseScheduleOptionRepository.insert(daily);
+
+        let weekly = new TimelapseScheduleOption();
+        weekly.name = 'WEEKLY';
+        weekly.cronFormat = '0 0 1 * * 0';
+        timelapseScheduleOptionRepository.insert(weekly);
+
+        let monthly = new TimelapseScheduleOption();
+        monthly.name = 'MONTHLY';
+        monthly.cronFormat = '0 0 2 1 * *';
+        timelapseScheduleOptionRepository.insert(monthly);
     }
 
     static async isDBEmpty(): Promise<boolean> {
