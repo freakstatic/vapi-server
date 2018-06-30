@@ -24,6 +24,8 @@ import {NotificationHelper} from './NotificationHelper';
 import {Detection} from '../entity/Detection';
 import {InvalidSubcriptionException} from '../exception/InvalidSubcriptionException';
 import {TimelapseScheduleOption} from "../entity/TimelapseScheduleOption";
+import {TimelapseJob} from "../entity/TimelapseJob";
+import {TimelapseJobHelper} from "./TimelapseJobHelper";
 
 const util = require('util');
 const spawn = require('child_process').spawn;
@@ -39,7 +41,7 @@ export class WebServerHelper {
 
     private _server;
 
-    constructor(motionHelper: MotionHelper, notificationHelper: NotificationHelper) {
+    constructor(motionHelper: MotionHelper, notificationHelper: NotificationHelper, timelapseJobHelper: TimelapseJobHelper) {
 
         const API_URL = '/api/';
 
@@ -378,14 +380,14 @@ export class WebServerHelper {
             res.status(200).download(path.resolve(filePath), timelapse.thumbnail);
         });
 
-        app.get(API_URL + 'timelapse/:timelapseId/video/:token', this.autheticateBearerTokenInURL, async (req: any, res, next) => {
+        app.get(API_URL + 'timelapse/:timelapseId/video/:token', this.authenticateBearerTokenInURL, async (req: any, res, next) => {
             let timelapseId = req.params.timelapseId;
             let timelapse = await getConnection().getRepository(Timelapse).findOne(timelapseId);
             let filePath = __dirname + '/../../' + TimelapseHelper.VIDEOS_FOLDER + '/' + timelapse.filename;
             res.status(200).download(path.resolve(filePath), timelapse.filename);
         });
 
-        app.get(API_URL + 'timelapse/:timelapseId/mosaic/:token', this.autheticateBearerTokenInURL, async (req: any, res, next) => {
+        app.get(API_URL + 'timelapse/:timelapseId/mosaic/:token', this.authenticateBearerTokenInURL, async (req: any, res, next) => {
             let timelapseId = req.params.timelapseId;
             let timelapse = await getConnection().getRepository(Timelapse).findOne(timelapseId);
             let filePath = __dirname + '/../../' + TimelapseHelper.MOSAICS_FOLDER + '/' + timelapse.mosaic;
@@ -410,7 +412,7 @@ export class WebServerHelper {
             res.send(detectableObjects);
         });
 
-        app.post(API_URL + 'notification/subscription/detectable-objects/add', async (req: any, res, next) => {
+        app.post(API_URL + 'notification/subscription/detectable-objects/add', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: any, res, next) => {
             let sub = req.body.sub;
             let subscriptionDetectableObjects = req.body.subscriptionDetectableObjects;
 
@@ -425,9 +427,25 @@ export class WebServerHelper {
             }
         });
 
-        app.get(API_URL + 'timelapse/schedule-options', async (req: any, res, next) => {
+        app.get(API_URL + 'timelapse/schedule-options', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: any, res, next) => {
             let timelapseScheduleOptions  = await getConnection().getRepository(TimelapseScheduleOption).find({});
             res.send(timelapseScheduleOptions);
+        });
+
+        app.get(API_URL + 'timelapse/jobs', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: any, res, next) => {
+            res.send(timelapseJobHelper.getJobs());
+        });
+
+        app.post(API_URL + 'timelapse/jobs/add', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: any, res, next) => {
+            let timelapseJobs = req.body.timelapseJobs;
+
+            if (timelapseJobs == null){
+                res.status(400);
+                res.send(new ErrorObject(ErrorObject.INVALID_TIMELAPSES_JOBS));
+                return;
+            }
+            await timelapseJobHelper.handleNewJobs(timelapseJobs);
+            res.status(200).send({});
         });
 
         app.use(express.static(__dirname + '/../../angular/dist/'));
@@ -453,7 +471,7 @@ export class WebServerHelper {
 
     }
 
-    autheticateBearerTokenInURL(req: any, res: any, next){
+    authenticateBearerTokenInURL(req: any, res: any, next){
         let token = req.params.token;
 
         if (token == null || token.trim().length == 0){

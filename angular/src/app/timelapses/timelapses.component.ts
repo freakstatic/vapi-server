@@ -53,6 +53,11 @@ export class TimelapsesComponent implements OnInit, OnDestroy {
 
     public apiURL: string;
 
+
+    public scheduleTimelapseSelectedFormat: string = 'avi';
+    public scheduleTimelapseSelectedCodecDescription: string = 'libx264 H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10 (codec h264)';
+    public scheduleTimelapseSelectedFps: number = this.fps
+
     constructor(private translateService: TranslateService,
                 private timeLapsesService: TimelapsesService,
                 private socket: Socket,
@@ -67,6 +72,7 @@ export class TimelapsesComponent implements OnInit, OnDestroy {
     public timelapseScheduleOptions;
 
     private picker;
+
     ngOnInit() {
         this.startDate = new Date();
         this.startTime = '00:00';
@@ -101,6 +107,17 @@ export class TimelapsesComponent implements OnInit, OnDestroy {
         this.socket.removeAllListeners('timelapse/error');
         this.socket.removeAllListeners('timelapse/files/progress');
         this.socket.removeAllListeners('timelapse/files/end');
+    }
+
+    getJobs(){
+        this.timeLapsesService.getJobs().then((jobs: any[]) => {
+            jobs.forEach((job) => {
+                let scheduleOption = this.timelapseScheduleOptions.filter((timelapseScheduleOption) => {
+
+                });
+            });
+
+        });
     }
 
     setSocketEvents() {
@@ -236,12 +253,45 @@ export class TimelapsesComponent implements OnInit, OnDestroy {
         //this.fps = $event.to();
     }
 
+    sliderScheduleTimelapseUpdate($event: IonRangeSliderCallback){
+        this.scheduleTimelapseSelectedFps = $event.from;
+    }
+
     stopTimelapse() {
         this.socket.emit('timelapse/stop');
         this.reset()
     }
 
-    getToken(){
+    scheduleTimelapseJobs() {
+        let timelapseJobs = this.timelapseScheduleOptions
+            .filter(timelapseScheduleOption => timelapseScheduleOption.selected)
+            .map((timelapseScheduleOption) => {
+                let timelapseJob: any =  {};
+                timelapseJob.scheduleOption = timelapseScheduleOption;
+                timelapseJob.format = this.scheduleTimelapseSelectedFormat;
+
+                let selectedCodec = this.receivedCodecs.find((codec) => {
+                    return this.scheduleTimelapseSelectedCodecDescription == codec.description
+                });
+
+                timelapseJob.codec = selectedCodec.name;
+                timelapseJob.fps = this.scheduleTimelapseSelectedFps;
+                return timelapseJob;
+            });
+
+        this.timeLapsesService.scheduleTimelaseJobs(timelapseJobs).then(() => {
+            this.translateService.get('TIMELAPSE_SCHEDULE_SAVED').subscribe((res: string) => {
+                NavbarComponent.showMessage(res);
+            });
+        }).catch(() => {
+            this.translateService.get('ERROR_NO_CONNECTION').subscribe((res: string) => {
+                NavbarComponent.showErrorMessage(res);
+            });
+        });
+    }
+
+
+    getToken() {
         return this.credentialsManagerService.getToken();
     }
 }

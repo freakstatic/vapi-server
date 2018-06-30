@@ -25,6 +25,8 @@
   "TIMELAPSES_SCHEDULE_DAILY": "Daily",
   "TIMELAPSES_SCHEDULE_WEEKLY": "Weekly",
   "TIMELAPSES_SCHEDULE_MONTHLY": "Monthly",
+  "TIMELAPSE_SCHEDULE_SAVED": "Schedule timelapses settings saved",
+
   "TIMELAPSES_BTN_SAVE": "Save",
 
   "TIMELAPSES_BTN_CREATE": "Create timelapse",

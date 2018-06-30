@@ -90,10 +90,15 @@ export class TimelapseHelper {
                     console.log('Spawned Ffmpeg with command: ' + commandLine);
                 })
                 .on('progress', ffmpegOnProgress((progress, event) => {
+
                     // progress is a floating point number from 0 to 1
                     let progressFixed = (progress * 100).toFixed();
                     let data = {'progress': progressFixed};
-                    socket.emit('timelapse/progress', data);
+
+                    if (socket) {
+                        socket.emit('timelapse/progress', data);
+                    }
+
                     console.log('progress', progressFixed)
                 }, durationEstimate))
                 .on('end', async () => {
@@ -106,7 +111,9 @@ export class TimelapseHelper {
                     timelapse = await this.createMosaic(timelapse, 640, 4, 3);
 
                     TimelapseHelper.clean(tmpFolderName);
-                    socket.emit('timelapse/finish', timelapse);
+                    if (socket) {
+                        socket.emit('timelapse/finish', timelapse);
+                    }
                 })
                 .save(filePath);
 
@@ -118,10 +125,14 @@ export class TimelapseHelper {
                         console.error('[TimelapseHelper] [create] Unable to clean file');
                     }
                 });
-                socket.removeListener('timelapse/stop', stopFunction);
+                if (socket) {
+                    socket.removeListener('timelapse/stop', stopFunction);
+                }
             };
 
-            socket.on('timelapse/stop', stopFunction);
+            if (socket) {
+                socket.on('timelapse/stop', stopFunction);
+            }
         }
     }
 
@@ -189,7 +200,7 @@ export class TimelapseHelper {
         });
     }
 
-    private static async createMosaic(timelapse: Timelapse, widthPerImage: number, rows: number, lines: number) : Promise<any> {
+    private static async createMosaic(timelapse: Timelapse, widthPerImage: number, rows: number, lines: number): Promise<any> {
         return new Promise((resolve) => {
             let filenameWithoutExtension = path.parse(timelapse.filename).name;
 
@@ -260,10 +271,14 @@ export class TimelapseHelper {
         let stopFunction = () => {
             console.log('[TimelapseHelper] [copyFilesToTmp] Received Stop Event');
             stopped = true;
-            socket.removeListener('timelapse/stop', stopFunction);
+            if (socket) {
+                socket.removeListener('timelapse/stop', stopFunction);
+            }
         };
 
-        socket.on('timelapse/stop', stopFunction);
+        if (socket) {
+            socket.on('timelapse/stop', stopFunction);
+        }
 
         let copyFileLoop = async (index, max) => {
             if (stopped) {
@@ -271,10 +286,12 @@ export class TimelapseHelper {
                 return true;
             }
             // console.log('[TimelapseHelper] [copyFilesToTmp] Copying ' + (index + 1) + ' of ' + imageUrls.length);
-            socket.emit('timelapse/files/progress', {
-                currentIndex: index,
-                max: imageUrls.length
-            });
+            if (socket) {
+                socket.emit('timelapse/files/progress', {
+                    currentIndex: index,
+                    max: imageUrls.length
+                });
+            }
 
             let format = path.extname(imageUrls[index]);
             let filename = TimelapseHelper.pad(index, TimelapseHelper.NR_OF_LEADING_ZEROS) + format;
@@ -294,9 +311,13 @@ export class TimelapseHelper {
         };
         await copyFileLoop(0, imageUrls.length);
         if (!stopped) {
-            socket.emit('timelapse/files/end');
+            if (socket) {
+                socket.emit('timelapse/files/end');
+            }
         }
-        socket.removeListener('timelapse/stop', stopFunction);
+        if (socket) {
+            socket.removeListener('timelapse/stop', stopFunction);
+        }
         return !stopped
     }
 

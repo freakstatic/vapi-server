@@ -1,4 +1,4 @@
-import {Column, Entity, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn} from "typeorm";
 import {TimelapseScheduleOption} from "./TimelapseScheduleOption";
 
 @Entity()
@@ -7,7 +7,15 @@ export class TimelapseJob {
     id: number;
 
     @OneToOne(type => TimelapseScheduleOption)
-    scheduleOption;
+    @JoinColumn()
+    scheduleOption: TimelapseScheduleOption;
 
+    @Column()
+    format: string;
 
+    @Column()
+    codec: string;
+
+    @Column()
+    fps: number;
 }

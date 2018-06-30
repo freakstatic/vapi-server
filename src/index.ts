@@ -6,6 +6,7 @@ import {TimelapseHelper} from "./helper/TimelapseHelper";
 import {DetectionHelper} from "./helper/DetectionHelper";
 import {NotificationHelper} from "./helper/NotificationHelper";
 import * as i18n from 'i18n';
+import {TimelapseJobHelper} from "./helper/TimelapseJobHelper";
 
 let translator = {} as any;
 i18n.configure({
@@ -23,8 +24,8 @@ let dbHelper = new DbHelper();
     await detectionHelper.fixUnfishedEvents();
     let motionHelper = new MotionHelper();
     await TimelapseHelper.createFolders();
-
-    let webServerHelper = new WebServerHelper(motionHelper, notificationHelper);
+    let timelapseJobHelper = new TimelapseJobHelper();
+    let webServerHelper = new WebServerHelper(motionHelper, notificationHelper, timelapseJobHelper);
     let socketHelper = new SocketHelper(webServerHelper, detectionHelper, motionHelper);
 })();
 
