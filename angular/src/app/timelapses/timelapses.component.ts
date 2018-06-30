@@ -9,7 +9,8 @@ import {ErrorObject} from "../../../../src/class/ErrorObject";
 import {FormControl} from "@angular/forms";
 import {DateAdapter} from "@angular/material";
 
-import { environment } from '../../environments/environment';
+import {environment} from '../../environments/environment';
+import {CredentialsManagerService} from "../auth/credentials.manager.service";
 
 //declare var MaterialDateTimePicker: any;
 
@@ -55,21 +56,17 @@ export class TimelapsesComponent implements OnInit, OnDestroy {
     constructor(private translateService: TranslateService,
                 private timeLapsesService: TimelapsesService,
                 private socket: Socket,
-                private adapter: DateAdapter<any>) {
+                private adapter: DateAdapter<any>,
+                private credentialsManagerService: CredentialsManagerService) {
         this.adapter.setLocale('pt');
         this.apiURL = environment.apiURL;
     }
 
     selectedFrequency: string;
 
-    scheduleOptions = {
-        DAILY: 'daily',
-        WEEKLY: 'weekly',
-        MONTHLY: 'monthly'
-    };
+    public timelapseScheduleOptions;
 
     private picker;
-
     ngOnInit() {
         this.startDate = new Date();
         this.startTime = '00:00';
@@ -90,14 +87,15 @@ export class TimelapsesComponent implements OnInit, OnDestroy {
             })
         });
 
-        this.timeLapsesService.getTimelapses().then((timelapses : any[]) => {
+        this.timeLapsesService.getTimelapses().then((timelapses: any[]) => {
             this.timelapses = timelapses;
         });
 
         this.setSocketEvents();
+        this.getTimelapseScheduleOptions();
     }
 
-    ngOnDestroy(){
+    ngOnDestroy() {
         this.socket.removeAllListeners('timelapse/progress');
         this.socket.removeAllListeners('timelapse/finish');
         this.socket.removeAllListeners('timelapse/error');
@@ -149,12 +147,20 @@ export class TimelapsesComponent implements OnInit, OnDestroy {
 
         this.socket.on('timelapse/files/end', () => {
             this.translateService.get('TIMELAPSES_RENDERING').subscribe((res: string) => {
-                this.filesProgress =  res;
+                this.filesProgress = res;
             });
 
         });
+    }
 
-
+    getTimelapseScheduleOptions() {
+        this.timeLapsesService.getTimelapseScheduleOptions().then((timelapseScheduleOptions) => {
+            this.timelapseScheduleOptions = timelapseScheduleOptions;
+        }).catch(() => {
+            this.translateService.get('ERROR_NO_CONNECTION').subscribe((res: string) => {
+                NavbarComponent.showErrorMessage(res);
+            });
+        })
     }
 
     reset() {
@@ -190,11 +196,9 @@ export class TimelapsesComponent implements OnInit, OnDestroy {
             return;
         }
 
-     //   this.startDate = this.startDate instanceof Date ? this.startDate : new Date(this.startDate);
-       // this.endDate = this.endDate instanceof Date ? this.endDate : new Date(this.endDate);
+        //   this.startDate = this.startDate instanceof Date ? this.startDate : new Date(this.startDate);
+        // this.endDate = this.endDate instanceof Date ? this.endDate : new Date(this.endDate);
         let format = 'YYYY-MM-DD HH:mm';
-
-
 
         let splitStartTime = this.startTime.split(':');
         this.startDate.setHours(parseInt((splitStartTime[0])));
@@ -235,5 +239,9 @@ export class TimelapsesComponent implements OnInit, OnDestroy {
     stopTimelapse() {
         this.socket.emit('timelapse/stop');
         this.reset()
+    }
+
+    getToken(){
+        return this.credentialsManagerService.getToken();
     }
 }

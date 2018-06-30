@@ -27,6 +27,7 @@ import {AngularDateTimePickerModule} from "angular2-datetimepicker";
 import {AmazingTimePickerModule} from "amazing-time-picker";
 import {ServiceWorkerModule} from "@angular/service-worker";
 import {NotificationsComponent} from "../../notifications/notifications.component";
+import {SecurePipe} from "../../auth/secure.pipe";
 
 
 export function createTranslateLoader(http: HttpClient) {
@@ -65,7 +66,8 @@ export function createTranslateLoader(http: HttpClient) {
         SettingsComponent,
         TimelapsesComponent,
         UserListComponent,
-        NotificationsComponent
+        NotificationsComponent,
+        SecurePipe
     ]
 })
 

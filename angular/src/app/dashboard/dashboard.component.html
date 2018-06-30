@@ -88,8 +88,7 @@
                         <p class="card-category">{{ 'DASHBOARD_LATEST_DETECTION_SECOND_TITLE' | translate:param }}</p>
                     </div>
                     <div class="card-body table-responsive">
-                        <img [src]="getDetectionImage()" class="last-detection-img">
-
+                        <img [attr.src]="getDetectionImage() | secure | async" class="last-detection-img">
                         <h5 class="indigo-text text-center">{{ 'DASHBOARD_TOP5_STATS_OCCURRENCES_NUMBER' |
                             translate:param
                             }}: {{ lastDetection.numberOfDetections }}</h5>

@@ -5,7 +5,7 @@ import 'rxjs/add/operator/toPromise';
 @Injectable()
 export class TimelapsesService {
 
-  constructor(private http: HttpClient,) { }
+  constructor(private http: HttpClient) { }
 
   async getCodecs(){
       return this.http.get('api/timelapse/codecs').toPromise()
@@ -17,6 +17,10 @@ export class TimelapsesService {
 
   async getTimelapses(){
       return this.http.get('api/timelapses').toPromise()
+  }
+
+  async getTimelapseScheduleOptions(){
+      return this.http.get('api/timelapse/schedule-options').toPromise()
   }
 
 }

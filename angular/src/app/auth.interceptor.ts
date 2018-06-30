@@ -19,7 +19,7 @@ export class AuthInterceptor implements HttpInterceptor
   const authReq = req.clone({
    setHeaders: {
     Authorization: 'Bearer ' + this.credentialsManager.getLogin.token,
-    Language: 'en'
+    Language: localStorage.getItem('language')
    }
   });
   

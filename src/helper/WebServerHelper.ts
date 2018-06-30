@@ -23,6 +23,7 @@ import {DetectableObject} from '../entity/DetectableObject';
 import {NotificationHelper} from './NotificationHelper';
 import {Detection} from '../entity/Detection';
 import {InvalidSubcriptionException} from '../exception/InvalidSubcriptionException';
+import {TimelapseScheduleOption} from "../entity/TimelapseScheduleOption";
 
 const util = require('util');
 const spawn = require('child_process').spawn;
@@ -255,23 +256,19 @@ export class WebServerHelper {
                 res.status(500).send(e);
             }
         });
- 
-     app.get(API_URL + 'detection/img/:img', (req: Request, res: Response) =>
-     {
-      if (req.params.img == undefined || req.params.img === null)
-      {
-       res.sendStatus(400);
-      }
-      const filename=motionHelper.settings.target_dir+'/'+req.params.img;
-      fs.exists(filename,(exists)=>
-      {
-       if(!exists)
-       {
-        res.sendStatus(204);
-       }
-       res.status(200).download(path.resolve(filename), req.params.img);
-      });
-     });
+
+        app.get(API_URL + 'detection/img/:img', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), (req: Request, res: Response) => {
+            if (req.params.img == undefined || req.params.img === null) {
+                res.sendStatus(400);
+            }
+            const filename = motionHelper.settings.target_dir + '/' + req.params.img;
+            fs.exists(filename, (exists) => {
+                if (!exists) {
+                    res.sendStatus(204);
+                }
+                res.status(200).download(path.resolve(filename), req.params.img);
+            });
+        });
 
         app.get(API_URL + 'stats/detection', passport.authenticate('bearer', bearTokenOptions), async (req: any, res, next) => {
             let startDate = null;
@@ -374,40 +371,40 @@ export class WebServerHelper {
             res.status(200).send(timelapses);
         });
 
-        app.get(API_URL + 'timelapse/:timelapseId/thumbnail', async (req: any, res, next) => {
+        app.get(API_URL + 'timelapse/:timelapseId/thumbnail', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: any, res, next) => {
             let timelapseId = req.params.timelapseId;
             let timelapse = await getConnection().getRepository(Timelapse).findOne(timelapseId);
             let filePath = __dirname + '/../../' + TimelapseHelper.THUMBNAILS_FOLDER + '/' + timelapse.thumbnail;
             res.status(200).download(path.resolve(filePath), timelapse.thumbnail);
         });
 
-        app.get(API_URL + 'timelapse/:timelapseId/video', async (req: any, res, next) => {
+        app.get(API_URL + 'timelapse/:timelapseId/video/:token', this.autheticateBearerTokenInURL, async (req: any, res, next) => {
             let timelapseId = req.params.timelapseId;
             let timelapse = await getConnection().getRepository(Timelapse).findOne(timelapseId);
             let filePath = __dirname + '/../../' + TimelapseHelper.VIDEOS_FOLDER + '/' + timelapse.filename;
             res.status(200).download(path.resolve(filePath), timelapse.filename);
         });
 
-        app.get(API_URL + 'timelapse/:timelapseId/mosaic', async (req: any, res, next) => {
+        app.get(API_URL + 'timelapse/:timelapseId/mosaic/:token', this.autheticateBearerTokenInURL, async (req: any, res, next) => {
             let timelapseId = req.params.timelapseId;
             let timelapse = await getConnection().getRepository(Timelapse).findOne(timelapseId);
             let filePath = __dirname + '/../../' + TimelapseHelper.MOSAICS_FOLDER + '/' + timelapse.mosaic;
             res.status(200).download(path.resolve(filePath), timelapse.mosaic);
         });
 
-        app.get(API_URL + 'detectable-objects', async (req: any, res, next) => {
+        app.get(API_URL + 'detectable-objects', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: any, res, next) => {
             let detectableObjects = await getConnection().getRepository(DetectableObject).find({});
             res.send(detectableObjects);
         });
 
-        app.post(API_URL + 'notification/subscription/add', async (req: any, res, next) => {
+        app.post(API_URL + 'notification/subscription/add', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: any, res, next) => {
             let sub = req.body;
             let language = req.headers.language;
             await notificationHelper.handleNewSubscription(sub, language);
             res.status(200).send({});
         });
 
-        app.post(API_URL + 'notification/subscription/detectable-objects', async (req: any, res, next) => {
+        app.post(API_URL + 'notification/subscription/detectable-objects', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: any, res, next) => {
             let auth = req.body.keys.auth;
             let detectableObjects = await notificationHelper.getSubscriptionDetectableObjects(auth);
             res.send(detectableObjects);
@@ -426,9 +423,13 @@ export class WebServerHelper {
                     res.send(new ErrorObject(ErrorObject.SUBSCRIPTION_INVALID));
                 }
             }
-
         });
-        
+
+        app.get(API_URL + 'timelapse/schedule-options', async (req: any, res, next) => {
+            let timelapseScheduleOptions  = await getConnection().getRepository(TimelapseScheduleOption).find({});
+            res.send(timelapseScheduleOptions);
+        });
+
         app.use(express.static(__dirname + '/../../angular/dist/'));
 
         app.get('*', function (req, res) {
@@ -436,21 +437,52 @@ export class WebServerHelper {
                 .sendFile(path.join(__dirname + '/../../angular/dist/index.html'));
         });
 
-        if (config.ssl){
+        if (config.ssl) {
             let options = {
                 key: fs.readFileSync('./ssl/privkey.pem'),
                 cert: fs.readFileSync('./ssl/fullchain.pem'),
             };
             this._server = https.createServer(options, app);
-        }else {
+        } else {
             this._server = http.createServer(app);
         }
         this._server.listen(config.webServerPort, () => {
             console.log('Started web server on ' + config.webServerPort);
         });
+
+
+    }
+
+    autheticateBearerTokenInURL(req: any, res: any, next){
+        let token = req.params.token;
+
+        if (token == null || token.trim().length == 0){
+            res.status(400);
+            return;
+        }
+        const tokenManager = new TokenManager();
+
+        getConnection().getCustomRepository(UserRepository).findByToken(token)
+            .then((user: User) => {
+                if (user == null || user == undefined) {
+                    res.sendStatus(401);
+                    return;
+                }
+
+                if (!tokenManager.validateToken(user, token)) {
+                    res.sendStatus(401);
+                    return;
+                }
+                next();
+            })
+            .catch(ex => {
+                res.sendStatus(500);
+            });
     }
 
     get server() {
         return this._server;
     }
+
+
 }

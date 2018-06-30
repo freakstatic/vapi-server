@@ -128,14 +128,8 @@
                                 <mat-form-field>
                                     <label class="control-label">{{ 'TIMELAPSES_FREQUENCY' | translate:param }} </label>
                                     <mat-select [(ngModel)]="selectedFrequency">
-                                        <mat-option [value]="scheduleOptions.DAILY">
-                                            {{ 'TIMELAPSES_SCHEDULE_DAILY' | translate:param }}
-                                        </mat-option>
-                                        <mat-option [value]="scheduleOptions.WEEKLY">
-                                            {{ 'TIMELAPSES_SCHEDULE_WEEKLY' | translate:param }}
-                                        </mat-option>
-                                        <mat-option [value]="scheduleOptions.MONTHLY">
-                                            {{ 'TIMELAPSES_SCHEDULE_MONTHLY' | translate:param }}
+                                        <mat-option *ngFor="let timelapseScheduleOption of timelapseScheduleOptions" [value]="timelapseScheduleOption.id">
+                                            {{ 'TIMELAPSES_SCHEDULE_' + timelapseScheduleOption.name | translate:param }}
                                         </mat-option>
                                     </mat-select>
                                 </mat-form-field>
@@ -145,9 +139,7 @@
                                 <button class="btn btn-info" >{{ 'TIMELAPSES_BTN_SAVE' | translate:param }}
                                 </button>
                             </div>
-
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -163,11 +155,11 @@
                         <div class="row">
                             <div *ngFor="let timelapse of timelapses" class="col-md-4 img-holder">
                                 <img class="timelapse-thumbnail text-center"
-                                     [src]="apiURL + '/timelapse/' + timelapse.id + '/thumbnail'">
+                                     [attr.src]="apiURL + '/timelapse/' + timelapse.id + '/thumbnail' | secure | async ">
                                 <div class="timelapse-icons">
-                                    <a target="_self" [href]="apiURL + '/timelapse/' + timelapse.id + '/video' " download=""><i
+                                    <a target="_self" [href]="apiURL + '/timelapse/' + timelapse.id + '/video/' + getToken()" download=""><i
                                             class="material-icons text-center text-success">cloud_download</i></a>
-                                    <a target="_self"  *ngIf="timelapse.mosaic" [href]="apiURL + '/timelapse/' + timelapse.id + '/mosaic'" class="right-icon" download=""><i
+                                    <a target="_self"  *ngIf="timelapse.mosaic" [href]="apiURL + '/timelapse/' + timelapse.id + '/mosaic/' + getToken()" class="right-icon" download=""><i
                                             class="material-icons text-center text-success">grid_on</i> </a>
                                 </div>
 
