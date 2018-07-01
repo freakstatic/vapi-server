@@ -64,6 +64,20 @@
   "DASHBOARD_LATEST_DETECTION":"Latest detection",
   "DASHBOARD_LATEST_DETECTION_SECOND_TITLE": "The last detection received",
 
+ "USER_MANAGEMENT":"User Management",
+ "GROUP_MANAGEMENT":"Group Management",
+ "USER_MANAGEMENT_TITLE":"In this area you can add/remove/change user details",
+ "GROUP_MANAGEMENT_TITLE":"In this area you can add/remove/change group details",
+
+ "USERNAME":"Username",
+ "USER_GROUP":"User Group",
+ "NAME":"Name",
+ "VALUE":"Value",
+ "PASSWORD":"Password",
+ "ACTIONS":"Actions",
+ "EDIT":"edit",
+ "REMOVE":"remove",
+
  "MONDAY": "Monday",
  "TUESDAY": "Tuesday",
  "WEDNESDAY": "Wednesday",

@@ -64,6 +64,20 @@
   "DASHBOARD_LATEST_DETECTION":"Última detecção",
   "DASHBOARD_LATEST_DETECTION_SECOND_TITLE": "A última detecção registada",
 
+  "USER_MANAGEMENT":"Gestão de Utilizadores",
+  "GROUP_MANAGEMENT":"Gestão de Grupos",
+  "USER_MANAGEMENT_TITLE":"Neste cartão pode-se criar/apagar/modificar os detalhes do utilizador.",
+  "GROUP_MANAGEMENT_TITLE":"Neste cartão pode-se criar/apagar/modificar os detalhes do grupo.",
+  "ACTIONS":"Ações",
+  "EDIT":"editar",
+  "REMOVE":"remover",
+
+  "USERNAME":"Nome de Utilizador",
+  "USER_GROUP":"Grupo",
+  "NAME":"Nome",
+  "VALUE":"Valor",
+  "PASSWORD":"Password",
+
   "MONDAY":"segunda-feira",
   "TUESDAY":"terça-feira",
   "WEDNESDAY":"quarta-feira",
