@@ -4,7 +4,6 @@ import {FormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
 import {RouterModule} from '@angular/router';
 
-
 import {AppRoutingModule} from './app.routing';
 import {ComponentsModule} from './components/components.module';
 
@@ -24,19 +23,17 @@ import {SocketIoConfig, SocketIoModule} from 'ngx-socket-io';
 import {environment} from '../environments/environment';
 import {LoginComponent} from './login/login.component';
 
-
-
-import {TranslateLoader, TranslateModule, TranslateService} from '@ngx-translate/core';
+import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
-import {MatDatetimepickerModule} from '@mat-datetimepicker/core';
 import {MAT_MOMENT_DATE_FORMATS, MomentDateAdapter} from '@angular/material-moment-adapter';
 import {AuthLoginGuard} from './auth/auth.login.guard';
 import {ServiceWorkerModule} from '@angular/service-worker';
-import { NotificationsComponent } from './notifications/notifications.component';
 import {NotificationsService} from './notifications/notifications.service';
-
+import {ModalDialogModule} from 'ngx-modal-dialog';
+import {UserDetailsModalComponent} from './user-details-modal/user-details-modal.component';
+import {UserListService} from './user-list/user-list.service';
 
 export function createTranslateLoader(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -59,6 +56,7 @@ const config: SocketIoConfig = {
         RouterModule,
         AppRoutingModule,
         SocketIoModule.forRoot(config),
+        ModalDialogModule.forRoot(),
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,
@@ -71,12 +69,13 @@ const config: SocketIoConfig = {
     declarations: [
         AppComponent,
         AdminLayoutComponent,
-        LoginComponent
+        LoginComponent,
+        UserDetailsModalComponent
     ],
     providers: [
         FormsModule,
         AuthService, AuthGuard, AuthLoginGuard, TitleService, SettingsService, DashboardService, TimelapsesService, NotificationsService,
-        CredentialsManagerService, {
+        CredentialsManagerService, UserListService,{
             provide: HTTP_INTERCEPTORS,
             useClass: AuthInterceptor,
             multi: true
