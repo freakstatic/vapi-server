@@ -154,7 +154,7 @@
                             </div>
                             <div class="col-md-12">
                                 <label class="control-label">{{ 'TIMELAPSES_FPS' | translate:param }} </label>
-                                <ion-range-slider min="1" max="144" [from]="fps"
+                                <ion-range-slider min="1" max="144" [from]="scheduleFps"
                                                   (onChange)="sliderScheduleTimelapseUpdate($event)"
                                 ></ion-range-slider>
                             </div>

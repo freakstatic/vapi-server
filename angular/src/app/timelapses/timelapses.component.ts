@@ -56,7 +56,8 @@ export class TimelapsesComponent implements OnInit, OnDestroy {
 
     public scheduleTimelapseSelectedFormat: string = 'avi';
     public scheduleTimelapseSelectedCodecDescription: string = 'libx264 H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10 (codec h264)';
-    public scheduleTimelapseSelectedFps: number = this.fps
+    public scheduleFps = 50;
+    public scheduleTimelapseSelectedFps: number = this.scheduleFps;
 
     constructor(private translateService: TranslateService,
                 private timeLapsesService: TimelapsesService,
@@ -109,12 +110,28 @@ export class TimelapsesComponent implements OnInit, OnDestroy {
         this.socket.removeAllListeners('timelapse/files/end');
     }
 
-    getJobs(){
+    getJobs() {
         this.timeLapsesService.getJobs().then((jobs: any[]) => {
-            jobs.forEach((job) => {
-                let scheduleOption = this.timelapseScheduleOptions.filter((timelapseScheduleOption) => {
+            if (jobs == null) {
+                return;
+            }
 
+
+            jobs.forEach((job) => {
+                let scheduleOptions = this.timelapseScheduleOptions.filter((timelapseScheduleOption) => {
+                    return timelapseScheduleOption.id == job.scheduleOption.id
                 });
+                scheduleOptions[0].selected = true;
+                this.scheduleTimelapseSelectedFormat = job.format;
+
+                let codec  = this.receivedCodecs.find((codec) => {
+                    return job.codec == codec.name
+                });
+                console.log(codec);
+                this.scheduleTimelapseSelectedCodecDescription = codec.description;
+                this.scheduleFps = job.fps;
+                this.scheduleTimelapseSelectedFps = job.fps;
+
             });
 
         });
@@ -173,6 +190,7 @@ export class TimelapsesComponent implements OnInit, OnDestroy {
     getTimelapseScheduleOptions() {
         this.timeLapsesService.getTimelapseScheduleOptions().then((timelapseScheduleOptions) => {
             this.timelapseScheduleOptions = timelapseScheduleOptions;
+            this.getJobs();
         }).catch(() => {
             this.translateService.get('ERROR_NO_CONNECTION').subscribe((res: string) => {
                 NavbarComponent.showErrorMessage(res);
@@ -253,7 +271,7 @@ export class TimelapsesComponent implements OnInit, OnDestroy {
         //this.fps = $event.to();
     }
 
-    sliderScheduleTimelapseUpdate($event: IonRangeSliderCallback){
+    sliderScheduleTimelapseUpdate($event: IonRangeSliderCallback) {
         this.scheduleTimelapseSelectedFps = $event.from;
     }
 
@@ -266,7 +284,7 @@ export class TimelapsesComponent implements OnInit, OnDestroy {
         let timelapseJobs = this.timelapseScheduleOptions
             .filter(timelapseScheduleOption => timelapseScheduleOption.selected)
             .map((timelapseScheduleOption) => {
-                let timelapseJob: any =  {};
+                let timelapseJob: any = {};
                 timelapseJob.scheduleOption = timelapseScheduleOption;
                 timelapseJob.format = this.scheduleTimelapseSelectedFormat;
 

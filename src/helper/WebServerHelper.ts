@@ -433,7 +433,7 @@ export class WebServerHelper {
         });
 
         app.get(API_URL + 'timelapse/jobs', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: any, res, next) => {
-            res.send(timelapseJobHelper.getJobs());
+            res.send(await timelapseJobHelper.getJobs());
         });
 
         app.post(API_URL + 'timelapse/jobs/add', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: any, res, next) => {
