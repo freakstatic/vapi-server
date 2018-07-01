@@ -1,5 +1,5 @@
-import {EntityRepository, Repository} from "typeorm";
-import {User} from "../entity/User";
+import {EntityRepository, Repository} from 'typeorm';
+import {User} from '../entity/User';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User>
@@ -18,5 +18,12 @@ export class UserRepository extends Repository<User>
    .where("user.token = :token", {token})
    .leftJoinAndSelect("user.group", "userGroup")
    .getOne();
+ }
+ 
+ async getAllWithoutPassword():Promise<User[]>
+ {
+  return this.createQueryBuilder("user")
+   .select(['id','username','password','email','userGroupId'])
+   .getMany();
  }
 }
