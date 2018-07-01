@@ -23,9 +23,9 @@ import {DetectableObject} from '../entity/DetectableObject';
 import {NotificationHelper} from './NotificationHelper';
 import {Detection} from '../entity/Detection';
 import {InvalidSubcriptionException} from '../exception/InvalidSubcriptionException';
-import {TimelapseScheduleOption} from "../entity/TimelapseScheduleOption";
-import {TimelapseJob} from "../entity/TimelapseJob";
-import {TimelapseJobHelper} from "./TimelapseJobHelper";
+import {TimelapseScheduleOption} from '../entity/TimelapseScheduleOption';
+import {TimelapseJobHelper} from './TimelapseJobHelper';
+import {UserGroup} from '../entity/UserGroup';
 
 const util = require('util');
 const spawn = require('child_process').spawn;
@@ -447,7 +447,47 @@ export class WebServerHelper {
             await timelapseJobHelper.handleNewJobs(timelapseJobs);
             res.status(200).send({});
         });
-
+ 
+     app.get(API_URL + 'users', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), (req: Request, res: Response) =>
+     {
+      const user = req.user as User;
+      if (user.group.id !== 1)
+      {
+       res.status(403).send();
+       return;
+      }
+      getConnection().getCustomRepository(UserRepository).getAllWithoutPassword()
+       .then((users: User[]) =>
+       {
+        if (users === undefined || users === null || users.length < 1)
+        {
+         res.sendStatus(204);
+        }
+        res.status(200);
+        res.send(users);
+       });
+     });
+ 
+     app.get(API_URL + 'groups', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), (req: Request, res: Response) =>
+     {
+      const user = req.user as User;
+      if (user.group.id !== 1)
+      {
+       res.status(403).send();
+       return;
+      }
+      getConnection().getRepository(UserGroup).find()
+       .then((groups: UserGroup[]) =>
+       {
+        if (groups === undefined || groups === null || groups.length < 1)
+        {
+         res.sendStatus(204);
+        }
+        res.status(200);
+        res.send(groups);
+       });
+     });
+        
         app.use(express.static(__dirname + '/../../angular/dist/'));
 
         app.get('*', function (req, res) {
