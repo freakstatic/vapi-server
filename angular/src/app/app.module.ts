@@ -32,8 +32,8 @@ import {AuthLoginGuard} from './auth/auth.login.guard';
 import {ServiceWorkerModule} from '@angular/service-worker';
 import {NotificationsService} from './notifications/notifications.service';
 import {ModalDialogModule} from 'ngx-modal-dialog';
-import {UserDetailsModalComponent} from './user-details-modal/user-details-modal.component';
 import {UserListService} from './user-list/user-list.service';
+import {UserDetailsModalComponent} from './user-details-modal/user-details-modal.component';
 
 export function createTranslateLoader(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
