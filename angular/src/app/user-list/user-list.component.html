@@ -1,3 +1,95 @@
-<p>
-  user-list works!
-</p>
+<div class="main-content">
+ <div class="container-fluid">
+  <div class="row">
+   <div class="col-md-8">
+    <div class="card">
+     <div class="card-header card-header-tabs card-header-primary">
+      <div class="row">
+       <div class="col-md-11">
+        <h4 class="card-title">{{ 'USER_MANAGEMENT' | translate:param }}</h4>
+        <p class="card-category">{{ 'USER_MANAGEMENT_TITLE' | translate:param }}</p>
+       </div>
+       <div class="col-md-1 text-right">
+        <button mat-fab>
+         <span class="mdc-fab__icon material-icons">add</span>
+        </button>
+       </div>
+      </div>
+     </div>
+     <div class="card-body">
+      <table class="table">
+       <thead>
+       <th>{{ 'ID' | translate:param }}</th>
+       <th>{{ 'USERNAME' | translate:param }}</th>
+       <th>{{ 'USER_GROUP' | translate:param }}</th>
+       <th>{{ 'ACTIONS' | translate:param }}</th>
+       </thead>
+       <tbody *ngFor="let user of (users | async)">
+       <tr>
+        <td>{{ user.id }}</td>
+        <td>{{ user.username }}</td>
+        <td>{{ user.groupId }}</td>
+        <td class="td-actions">
+         <button mat-raised-button type="button" matTooltip="{{ 'EDIT' | translate:param }}"
+                 [matTooltipPosition]="'above'" class="btn btn-primary btn-link btn-sm btn-just-icon">
+          <i class="material-icons">edit</i>
+         </button>
+         <button mat-raised-button type="button" matTooltip="{{ 'REMOVE' | translate:param }}"
+                 [matTooltipPosition]="'above'" class="btn btn-danger btn-link btn-sm btn-just-icon">
+          <i class="material-icons">close</i>
+         </button>
+        </td>
+       </tr>
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+
+   <div class="col-md-4">
+    <div class="card">
+     <div class="card-header card-header-danger">
+      <div class="row">
+       <div class="col-md-11">
+        <h4 class="card-title">{{ 'GROUP_MANAGEMENT' | translate:param }}</h4>
+        <p class="card-category">{{ 'GROUP_MANAGEMENT_TITLE' | translate:param }}</p>
+       </div>
+       <div class="col-md-1 text-right">
+        <button mat-fab>
+         <span class="mdc-fab__icon material-icons">add</span>
+        </button>
+       </div>
+      </div>
+     </div>
+     <div class="card-body">
+      <div class="table-responsive">
+       <table class="table">
+        <thead>
+        <th>{{ 'ID' | translate:param }}</th>
+        <th>{{ 'NAME' | translate:param }}</th>
+        <th>{{ 'ACTIONS' | translate:param }}</th>
+        </thead>
+        <tbody *ngFor="let group of (groups | async)">
+        <tr>
+         <td>{{ group.id }}</td>
+         <td>{{ group.name }}</td>
+         <td class="td-actions">
+          <button mat-raised-button type="button" matTooltip="{{ 'EDIT' | translate:param }}"
+                  [matTooltipPosition]="'above'" class="btn btn-primary btn-link btn-sm btn-just-icon">
+           <i class="material-icons">edit</i>
+          </button>
+          <button mat-raised-button type="button" matTooltip="{{ 'REMOVE' | translate:param }}"
+                  [matTooltipPosition]="'above'" class="btn btn-danger btn-link btn-sm btn-just-icon">
+           <i class="material-icons">close</i>
+          </button>
+         </td>
+        </tr>
+        </tbody>
+       </table>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+ </div>
+</div>
