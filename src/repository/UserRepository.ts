@@ -20,10 +20,10 @@ export class UserRepository extends Repository<User>
    .getOne();
  }
  
- async getAllWithoutPassword():Promise<User[]>
+ async getAllWithoutPassword():Promise<any[]>
  {
   return this.createQueryBuilder("user")
-   .select(['id','username','password','email','userGroupId'])
-   .getMany();
+   .select(['id','username','email','group_id'])
+   .getRawMany();
  }
 }

@@ -332,16 +332,26 @@ export class WebServerHelper {
 
             });
         });
-
-        app.get(API_URL + 'users', passport.authenticate('bearer', bearTokenOptions), async (req: any, res, next) => {
-            let users = await getConnection().getRepository(User).find({});
-
-            for (let user of users) {
-                delete user.password;
-            }
-
-            res.status(200).send(users);
-        });
+ 
+     app.get(API_URL + 'users', passport.authenticate('bearer', bearTokenOptions), async(req: Request, res:Response) =>
+     {
+      const user = req.user as User;
+      if (user.group.id !== 1)
+      {
+       res.status(403).send();
+       return;
+      }
+      getConnection().getCustomRepository(UserRepository).getAllWithoutPassword()
+       .then((users: any[]) =>
+       {
+        if (users === undefined || users === null || users.length < 1)
+        {
+         res.sendStatus(204);
+        }
+        res.status(200);
+        res.send(users);
+       });
+     });
 
         app.get(API_URL + 'timelapse/codecs', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: any, res, next) => {
             let codecs = await TimelapseHelper.getCodecs();
@@ -447,26 +457,6 @@ export class WebServerHelper {
             await timelapseJobHelper.handleNewJobs(timelapseJobs);
             res.status(200).send({});
         });
- 
-     app.get(API_URL + 'users', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), (req: Request, res: Response) =>
-     {
-      const user = req.user as User;
-      if (user.group.id !== 1)
-      {
-       res.status(403).send();
-       return;
-      }
-      getConnection().getCustomRepository(UserRepository).getAllWithoutPassword()
-       .then((users: User[]) =>
-       {
-        if (users === undefined || users === null || users.length < 1)
-        {
-         res.sendStatus(204);
-        }
-        res.status(200);
-        res.send(users);
-       });
-     });
  
      app.get(API_URL + 'groups', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), (req: Request, res: Response) =>
      {
