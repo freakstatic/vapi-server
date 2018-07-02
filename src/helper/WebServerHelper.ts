@@ -405,39 +405,29 @@ export class WebServerHelper {
       })
      });
  
-     app.delete(API_URL + 'users', passport.authenticate('bearer', bearTokenOptions), async(req: Request, res:Response) =>
+     app.delete(API_URL + 'users/:id', passport.authenticate('bearer', bearTokenOptions), async(req: Request, res: Response) =>
      {
       const user = req.user as User;
-      if (user.group.id !== 1)
+      if (req.params.id === undefined || req.params.id === null)
+      {
+       res.status(400).send();
+       return;
+      }
+      if (user.group.id !== 1 && user.id != req.params.id)
       {
        res.status(403).send();
        return;
       }
-      if(req.body===undefined||req.body===null)
-      {
-       res.status(400).send();
-       return;
-      }
-      if(req.body.id===undefined||req.body.id===null)
-      {
-       res.status(400).send();
-       return;
-      }
-      if(req.body.id==user.id)
-      {
-       res.status(400).send();
-       return;
-      }
-      
-      getConnection().getRepository(User).delete({id:req.body.id})
-       .then((value:DeleteResult)=>
+  
+      getConnection().getRepository(User).delete({id: req.params.id})
+       .then((value: DeleteResult) =>
        {
         res.status(200).send();
        })
-       .catch(()=>
-      {
-       res.status(500).send();
-      })
+       .catch(() =>
+       {
+        res.status(500).send();
+       });
      });
 
         app.get(API_URL + 'timelapse/codecs', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: any, res, next) => {
