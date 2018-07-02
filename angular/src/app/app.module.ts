@@ -33,7 +33,8 @@ import {ServiceWorkerModule} from '@angular/service-worker';
 import {NotificationsService} from './notifications/notifications.service';
 import {UserListService} from './user-list/user-list.service';
 import {UserDetailsModalComponent} from './user-details-modal/user-details-modal.component';
-import {MatDialogModule} from '@angular/material';
+import {MatDialogModule, MatInputModule} from '@angular/material';
+import {MatFormFieldModule} from '@angular/material/form-field';
 
 export function createTranslateLoader(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -57,6 +58,8 @@ const config: SocketIoConfig = {
         AppRoutingModule,
         SocketIoModule.forRoot(config),
         MatDialogModule,
+        MatFormFieldModule,
+        MatInputModule,
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,
