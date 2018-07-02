@@ -247,6 +247,7 @@ export class WebServerHelper {
             let detection: Detection = await repo.getLast();
             if (detection === undefined || detection === null) {
                 res.sendStatus(204);
+                return;
             }
             let detectionsWithoutPromises = null;
             try {
