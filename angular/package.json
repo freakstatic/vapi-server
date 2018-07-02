@@ -51,7 +51,6 @@
     "ng2-completer": "^1.6.3",
     "ng2-ion-range-slider": "^2.0.0",
     "ng2-nouislider": "^1.7.11",
-    "ngx-modal-dialog": "^3.0.0",
     "ngx-socket-io": "^1.0.8",
     "nouislider": "^11.1.0",
     "open-iconic": "^1.1.1",
