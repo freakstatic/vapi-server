@@ -388,7 +388,13 @@ export class WebServerHelper {
       const user = req.user as User;
       const updateUser=await UserHelper.UpdateIntance(req.body);
       
-      if (user.group.id !== 1 && user.id!==updateUser.id)
+      if(updateUser===null)
+      {
+       res.status(400).send();
+       return;
+      }
+      
+      if(user.group.id !== 1 && user.id!==updateUser.id)
       {
        res.status(403).send();
        return;
