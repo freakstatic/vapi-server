@@ -15,7 +15,7 @@ export class UserDetailsModalComponent implements OnInit
 {
     param = {value: 'world'};
     public groups:Observable<Group[]>;
-    private emailValidator:FormControl;
+    public emailValidator:FormControl;
 
     constructor(public dialogRef: MatDialogRef<UserDetailsModalComponent>,private userService:UserListService, @Inject(MAT_DIALOG_DATA) public user: User)
     {
