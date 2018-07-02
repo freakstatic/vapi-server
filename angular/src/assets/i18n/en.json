@@ -79,6 +79,9 @@
  "REMOVE":"remove",
  "ID":"ID",
 
+ "ADD_NEW_USER":"Add new user",
+ "ADD_NEW_GROUP":"Add new group",
+
  "MONDAY": "Monday",
  "TUESDAY": "Tuesday",
  "WEDNESDAY": "Wednesday",

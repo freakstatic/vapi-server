@@ -79,6 +79,9 @@
   "PASSWORD":"Password",
   "ID":"ID",
 
+  "ADD_NEW_USER":"Criar um novo utilizador",
+  "ADD_NEW_GROUP":"Criar um novo grupo",
+
   "MONDAY":"segunda-feira",
   "TUESDAY":"terça-feira",
   "WEDNESDAY":"quarta-feira",
