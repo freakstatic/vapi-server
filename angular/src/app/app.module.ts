@@ -31,9 +31,9 @@ import {MAT_MOMENT_DATE_FORMATS, MomentDateAdapter} from '@angular/material-mome
 import {AuthLoginGuard} from './auth/auth.login.guard';
 import {ServiceWorkerModule} from '@angular/service-worker';
 import {NotificationsService} from './notifications/notifications.service';
-import {ModalDialogModule} from 'ngx-modal-dialog';
 import {UserListService} from './user-list/user-list.service';
 import {UserDetailsModalComponent} from './user-details-modal/user-details-modal.component';
+import {MatDialogModule} from '@angular/material';
 
 export function createTranslateLoader(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -56,7 +56,7 @@ const config: SocketIoConfig = {
         RouterModule,
         AppRoutingModule,
         SocketIoModule.forRoot(config),
-        ModalDialogModule.forRoot(),
+        MatDialogModule,
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,
@@ -70,6 +70,9 @@ const config: SocketIoConfig = {
         AppComponent,
         AdminLayoutComponent,
         LoginComponent,
+        UserDetailsModalComponent
+    ],
+    entryComponents: [
         UserDetailsModalComponent
     ],
     providers: [
