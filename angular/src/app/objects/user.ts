@@ -4,6 +4,7 @@ export class User
  public username: string;
  public email: string;
  public groupId: number;
+ public password:string;
  
  public static Instance(data: any): User
  {
@@ -16,6 +17,7 @@ export class User
   user.username=data.username;
   user.email=data.email;
   user.groupId=data.group_id;
+  user.password=null;
   return user;
  }
 }
