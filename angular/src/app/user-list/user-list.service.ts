@@ -88,14 +88,14 @@ export class UserListService
    {
     if(obj.insertedId===undefined||obj.insertedId===null)
     {
-     //error
+     reject();
      return;
     }
     user.id=obj.insertedId;
     const users=this._users.getValue();
     users.push(user);
     this._users.next(users);
-    resolve(true);
+    resolve();
    },(error:any)=>
    {
     reject(error);
@@ -116,12 +116,13 @@ export class UserListService
     });
     if(index===-1)
     {
+     reject();
      return;
     }
     user.password=null;
     users[index]=user;
     this._users.next(users);
-    resolve(true);
+    resolve();
    },(error:any)=>
    {
     reject(error);
@@ -156,7 +157,7 @@ export class UserListService
      return false;
     });
     this._users.next(users);
-    resolve(true);
+    resolve();
    },(error:any)=>
    {
     reject(error);
