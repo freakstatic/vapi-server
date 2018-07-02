@@ -73,6 +73,7 @@
  "USER_GROUP":"User Group",
  "NAME":"Name",
  "VALUE":"Value",
+ "EMAIL":"Email",
  "PASSWORD":"Password",
  "ACTIONS":"Actions",
  "EDIT":"edit",
@@ -81,6 +82,9 @@
 
  "ADD_NEW_USER":"Add new user",
  "ADD_NEW_GROUP":"Add new group",
+
+ "SAVE":"Save",
+ "CANCEL":"Cancel",
 
  "MONDAY": "Monday",
  "TUESDAY": "Tuesday",

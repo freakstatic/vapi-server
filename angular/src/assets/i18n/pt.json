@@ -78,9 +78,13 @@
   "VALUE":"Valor",
   "PASSWORD":"Password",
   "ID":"ID",
+  "EMAIL":"Email",
 
   "ADD_NEW_USER":"Criar um novo utilizador",
   "ADD_NEW_GROUP":"Criar um novo grupo",
+
+  "SAVE":"Guardar",
+  "CANCEL":"Cancelar",
 
   "MONDAY":"segunda-feira",
   "TUESDAY":"terça-feira",
