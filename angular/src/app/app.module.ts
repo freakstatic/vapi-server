@@ -33,7 +33,7 @@ import {ServiceWorkerModule} from '@angular/service-worker';
 import {NotificationsService} from './notifications/notifications.service';
 import {UserListService} from './user-list/user-list.service';
 import {UserDetailsModalComponent} from './user-details-modal/user-details-modal.component';
-import {MAT_LABEL_GLOBAL_OPTIONS, MatDialogModule, MatInputModule, MatSelectModule} from '@angular/material';
+import {MAT_LABEL_GLOBAL_OPTIONS, MatButtonModule, MatDialogModule, MatInputModule, MatSelectModule} from '@angular/material';
 import {MatFormFieldModule} from '@angular/material/form-field';
 
 export function createTranslateLoader(http: HttpClient) {
@@ -61,6 +61,7 @@ const config: SocketIoConfig = {
         MatFormFieldModule,
         MatInputModule,
         MatSelectModule,
+        MatButtonModule,
         ReactiveFormsModule,
         TranslateModule.forRoot({
             loader: {
