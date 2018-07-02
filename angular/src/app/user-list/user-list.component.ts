@@ -31,7 +31,11 @@ export class UserListComponent implements OnInit
  public addNewUser()
  {
   const dialogRef=this.openUserDialog(null);
-  dialogRef.afterClosed().subscribe((result:User) => {
+  dialogRef.afterClosed().subscribe((result:User|boolean|undefined) => {
+   if(!result)
+   {
+    return;
+   }
    this.userListService.postUser(result);
   });
  }
@@ -40,7 +44,11 @@ export class UserListComponent implements OnInit
  {
   const userClone:User=JSON.parse(JSON.stringify(user));
   const dialogRef=this.openUserDialog(userClone);
-  dialogRef.afterClosed().subscribe((result:User) => {
+  dialogRef.afterClosed().subscribe((result:User|boolean|undefined) => {
+   if(!result)
+   {
+    return;
+   }
    this.userListService.putUser(result);
   });
  }
