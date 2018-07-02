@@ -1,6 +1,6 @@
-import {Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm";
-import {UserGroup} from "./UserGroup";
-import {Timelapse} from "./Timelapse";
+import {Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
+import {UserGroup} from './UserGroup';
+import {Timelapse} from './Timelapse';
 
 @Entity()
 export class User {
@@ -20,7 +20,7 @@ export class User {
     @Column()
     token: string;
 
-    @OneToOne(type => UserGroup)
+    @ManyToOne(type => UserGroup)
     @JoinColumn()
     group: UserGroup;
 
