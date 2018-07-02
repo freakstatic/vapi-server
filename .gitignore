@@ -78,4 +78,4 @@ motion/motion.conf
 /config.json
 /ssl/*
 
-/mariadb/mariadb
+/docker/mariadb/mariadb
