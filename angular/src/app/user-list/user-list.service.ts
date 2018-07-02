@@ -79,4 +79,88 @@ export class UserListService
     }
    });
  }
+ 
+ public postUser(user:User):Promise<boolean>
+ {
+  return new Promise<boolean>((resolve,reject)=>
+  {
+   this.http.post('api/users',user).subscribe((obj:any) =>
+   {
+    if(obj.insertedId===undefined||obj.insertedId===null)
+    {
+     //error
+     return;
+    }
+    user.id=obj.insertedId;
+    const users=this._users.getValue();
+    users.push(user);
+    this._users.next(users);
+    resolve(true);
+   },(error:any)=>
+   {
+    reject(error);
+   });
+  });
+ }
+ 
+ public putUser(user:User):Promise<boolean>
+ {
+  return new Promise<boolean>((resolve,reject)=>
+  {
+   this.http.put('api/users',user).subscribe(() =>
+   {
+    const users=this._users.getValue();
+    const index=users.findIndex((userElement:User)=>
+    {
+     return user.id===userElement.id;
+    });
+    if(index===-1)
+    {
+     return;
+    }
+    user.password=null;
+    users[index]=user;
+    this._users.next(users);
+    resolve(true);
+   },(error:any)=>
+   {
+    reject(error);
+   });
+  });
+ }
+ 
+ public deleteUser(user:User):Promise<boolean>
+ {
+  return new Promise<boolean>((resolve,reject)=>
+  {
+   this.http.delete('api/users/'+user.id).subscribe(() =>
+   {
+    const users=this._users.getValue().filter((userElement:User)=>
+    {
+     if(userElement.id!==user.id)
+     {
+      return true;
+     }
+     if(userElement.username!==user.username)
+     {
+      return true;
+     }
+     if(userElement.email!==user.email)
+     {
+      return true;
+     }
+     if(userElement.groupId!==user.groupId)
+     {
+      return true;
+     }
+     return false;
+    });
+    this._users.next(users);
+    resolve(true);
+   },(error:any)=>
+   {
+    reject(error);
+   });
+  });
+ }
 }
