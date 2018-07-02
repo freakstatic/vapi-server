@@ -31,9 +31,14 @@ export class UserHelper
   {
    return null;
   }
+ 
+  if (!data.hasOwnProperty('id'))
+  {
+   return null;
+  }
   
   const user = new User();
-  
+  user.id=data.id;
   if (data.hasOwnProperty('username'))
   {
    user.username = data.username;
