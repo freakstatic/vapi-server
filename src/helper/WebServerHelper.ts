@@ -8,7 +8,7 @@ import * as passport from 'passport';
 import {Strategy as LocalStrategy} from 'passport-local';
 import {Strategy} from 'passport-http-bearer';
 import * as path from 'path';
-import {getConnection, InsertResult} from 'typeorm';
+import {getConnection, InsertResult, UpdateResult} from 'typeorm';
 import {ErrorObject} from '../class/ErrorObject';
 import {TokenManager} from '../class/token.manager';
 import {User} from '../entity/User';
@@ -375,7 +375,7 @@ export class WebServerHelper {
       getConnection().getRepository(User).insert(newUser)
        .then((value: InsertResult) =>
        {
-        res.status(200).send();
+        res.status(200).send({insertedId:value.raw.insertId});
        })
        .catch((error) =>
        {
@@ -401,7 +401,7 @@ export class WebServerHelper {
       }
       
       getConnection().getRepository(User).update({ id: updateUser.id }, updateUser)
-       .then((value:InsertResult)=>
+       .then((value:UpdateResult)=>
        {
         res.status(200).send();
        }).
