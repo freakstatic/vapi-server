@@ -1,6 +1,6 @@
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {NgModule} from '@angular/core';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
 import {RouterModule} from '@angular/router';
 
@@ -33,7 +33,7 @@ import {ServiceWorkerModule} from '@angular/service-worker';
 import {NotificationsService} from './notifications/notifications.service';
 import {UserListService} from './user-list/user-list.service';
 import {UserDetailsModalComponent} from './user-details-modal/user-details-modal.component';
-import {MatDialogModule, MatInputModule} from '@angular/material';
+import {MAT_LABEL_GLOBAL_OPTIONS, MatDialogModule, MatInputModule, MatSelectModule} from '@angular/material';
 import {MatFormFieldModule} from '@angular/material/form-field';
 
 export function createTranslateLoader(http: HttpClient) {
@@ -60,6 +60,8 @@ const config: SocketIoConfig = {
         MatDialogModule,
         MatFormFieldModule,
         MatInputModule,
+        MatSelectModule,
+        ReactiveFormsModule,
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,
@@ -89,6 +91,7 @@ const config: SocketIoConfig = {
         {provide: MAT_DATE_LOCALE, useValue: 'pt'},
         {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]},
         {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS},
+        {provide: MAT_LABEL_GLOBAL_OPTIONS, useValue: {float: 'always'}}
     ],
     bootstrap: [AppComponent]
 })
