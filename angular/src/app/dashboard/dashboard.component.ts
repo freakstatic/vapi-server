@@ -247,6 +247,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
         const lastIndex = this.lastDetection.image.path.lastIndexOf('/');
         const filename = this.lastDetection.image.path.substr(lastIndex);
-        return environment.apiURL + '/detection/img' + filename;
+        return environment.apiEndpoint + 'detection/img' + filename;
     }
 }
