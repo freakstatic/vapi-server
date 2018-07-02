@@ -8,7 +8,7 @@ import * as passport from 'passport';
 import {Strategy as LocalStrategy} from 'passport-local';
 import {Strategy} from 'passport-http-bearer';
 import * as path from 'path';
-import {getConnection} from 'typeorm';
+import {getConnection, InsertResult} from 'typeorm';
 import {ErrorObject} from '../class/ErrorObject';
 import {TokenManager} from '../class/token.manager';
 import {User} from '../entity/User';
@@ -26,6 +26,8 @@ import {InvalidSubcriptionException} from '../exception/InvalidSubcriptionExcept
 import {TimelapseScheduleOption} from '../entity/TimelapseScheduleOption';
 import {TimelapseJobHelper} from './TimelapseJobHelper';
 import {UserGroup} from '../entity/UserGroup';
+import {DeleteResult} from 'typeorm/query-builder/result/DeleteResult';
+import {UserHelper} from '../entity/UserHelper';
 
 const util = require('util');
 const spawn = require('child_process').spawn;
@@ -351,6 +353,90 @@ export class WebServerHelper {
         res.status(200);
         res.send(users);
        });
+     });
+ 
+     app.post(API_URL + 'users', passport.authenticate('bearer', bearTokenOptions), async(req: Request, res: Response) =>
+     {
+      const userAthenticated = req.user as User;
+      if (userAthenticated.group.id !== 1)
+      {
+       res.status(403).send();
+       return;
+      }
+      
+      const newUser= await UserHelper.CreateIntance(req.body);
+      if(newUser===null)
+      {
+       res.sendStatus(400).send();
+       return;
+      }
+      
+      getConnection().getRepository(User).insert(newUser)
+       .then((value: InsertResult) =>
+       {
+        res.status(200).send();
+       })
+       .catch((error) =>
+       {
+        res.status(500).send();
+       });
+     });
+ 
+     app.put(API_URL + 'users', passport.authenticate('bearer', bearTokenOptions), async(req: Request, res:Response) =>
+     {
+      const user = req.user as User;
+      const updateUser=await UserHelper.UpdateIntance(req.body);
+      
+      if (user.group.id !== 1 && user.id!==updateUser.id)
+      {
+       res.status(403).send();
+       return;
+      }
+      
+      getConnection().getRepository(User).update({ id: updateUser.id }, updateUser)
+       .then((value:InsertResult)=>
+       {
+        res.status(200).send();
+       }).
+      catch(()=>
+      {
+       res.status(500).send();
+      })
+     });
+ 
+     app.delete(API_URL + 'users', passport.authenticate('bearer', bearTokenOptions), async(req: Request, res:Response) =>
+     {
+      const user = req.user as User;
+      if (user.group.id !== 1)
+      {
+       res.status(403).send();
+       return;
+      }
+      if(req.body===undefined||req.body===null)
+      {
+       res.status(400).send();
+       return;
+      }
+      if(req.body.id===undefined||req.body.id===null)
+      {
+       res.status(400).send();
+       return;
+      }
+      if(req.body.id==user.id)
+      {
+       res.status(400).send();
+       return;
+      }
+      
+      getConnection().getRepository(User).delete({id:req.body.id})
+       .then((value:DeleteResult)=>
+       {
+        res.status(200).send();
+       })
+       .catch(()=>
+      {
+       res.status(500).send();
+      })
      });
 
         app.get(API_URL + 'timelapse/codecs', passport.authenticate(AUTH_STRATEGY, bearTokenOptions), async (req: any, res, next) => {
