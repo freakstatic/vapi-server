@@ -83,6 +83,13 @@
   "ADD_NEW_USER":"Criar um novo utilizador",
   "ADD_NEW_GROUP":"Criar um novo grupo",
 
+  "USER_CREATED":"Utilizador criado",
+  "USER_NOT_CREATED":"Não foi possivel criar o utilizador",
+  "USER_UPDATED":"Utilizador atualizado",
+  "USER_NOT_UPDATED":"Não foi possivel atualizar o utilizador",
+  "USER_DELETED":"Utilizador apagado",
+  "USER_NOT_DELETED":"Não foi possivel apagar o utilizador",
+
   "SAVE":"Guardar",
   "CANCEL":"Cancelar",
 

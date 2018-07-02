@@ -80,6 +80,13 @@
  "REMOVE":"remove",
  "ID":"ID",
 
+ "USER_CREATED":"User created!",
+ "USER_NOT_CREATED":"Cannot create the user",
+ "USER_UPDATED":"User updated",
+ "USER_NOT_UPDATED":"Cannot update the user",
+ "USER_DELETED":"User deleted",
+ "USER_NOT_DELETED":"Cannot delete the user",
+
  "ADD_NEW_USER":"Add new user",
  "ADD_NEW_GROUP":"Add new group",
 
