@@ -18,7 +18,7 @@
  </mat-form-field>
 
  <mat-form-field>
-  <mat-select placeholder="{{ 'USER_GROUP' | translate:param }}" [(ngModel)]="groupID">
+  <mat-select placeholder="{{ 'USER_GROUP' | translate:param }}" [(ngModel)]="user.groupId">
    <mat-option *ngFor="let group of (groups | async)" [value]="group.id">
     {{ group.name }}
    </mat-option>

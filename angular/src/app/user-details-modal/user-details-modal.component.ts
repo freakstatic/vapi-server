@@ -13,7 +13,6 @@ import {Group} from '../objects/group';
 })
 export class UserDetailsModalComponent implements OnInit
 {
- public groupID:string;
  public groups:Observable<Group[]>;
  private emailValidator:FormControl;
  
@@ -22,14 +21,6 @@ export class UserDetailsModalComponent implements OnInit
   if (this.user === undefined || this.user === null)
   {
    this.user = new User();
-  }
-  if(this.user.groupId===undefined||this.user.groupId===null)
-  {
-   this.groupID='0';
-  }
-  else
-  {
-   this.groupID=this.user.groupId.toString(10);
   }
   this.groups=this.userService.groups;
   this.emailValidator=new FormControl(this.user.email,[Validators.email]);
@@ -45,7 +36,6 @@ export class UserDetailsModalComponent implements OnInit
   {
    return;
   }
-  this.user.groupId=parseInt(this.groupID,10);
   this.dialogRef.close(this.user);
  }
  
