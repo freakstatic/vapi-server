@@ -1,0 +1,32 @@
+<h2 mat-dialog-title>{{ 'ADD_NEW_USER' | translate:param }}</h2>
+<mat-dialog-content>
+
+ <mat-form-field appearance="outline">
+  <mat-label>{{ 'USERNAME' | translate:param }}</mat-label>
+  <input matInput [(ngModel)]="user.username"/>
+ </mat-form-field>
+
+ <mat-form-field appearance="outline">
+  <mat-label>{{ 'PASSWORD' | translate:param }}</mat-label>
+  <input matInput [(ngModel)]="user.password" type="password"/>
+ </mat-form-field>
+
+ <mat-form-field appearance="outline">
+  <mat-label>{{ 'EMAIL' | translate:param }}</mat-label>
+  <input matInput type="email" [formControl]="emailValidator" [(ngModel)]="user.email"/>
+  <!--<mat-error *ngIf="emailValidator.invalid">{{ getEmailErrorMessage() }}</mat-error>-->
+ </mat-form-field>
+
+ <mat-form-field>
+  <mat-select placeholder="{{ 'USER_GROUP' | translate:param }}" [(ngModel)]="groupID">
+   <mat-option *ngFor="let group of (groups | async)" [value]="group.id">
+    {{ group.name }}
+   </mat-option>
+  </mat-select>
+ </mat-form-field>
+
+</mat-dialog-content>
+<mat-dialog-actions>
+ <button mat-button [mat-dialog-close]="false">{{ 'CANCEL' | translate:param }}</button>
+ <button mat-button cdkFocusInitial (click)="closeModalOnSave()">{{ 'SAVE' | translate:param }}</button>
+</mat-dialog-actions>
