@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  'vapi-server':
+    build: .
+    container_name: vapi-server
+    ports:
+          - '8080:8080'
+    network_mode: "host"
+    volumes:
+      - ../timelapses:/home/node/vapi-server/timelapses

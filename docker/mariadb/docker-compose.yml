@@ -12,4 +12,5 @@ services:
       - MARIADB_DATABASE=vapi_database
     volumes:
       - ./:/bitnami
+    network_mode: "host"
 
